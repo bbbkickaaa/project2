@@ -1,8 +1,13 @@
 package com.API.User;
 
+import org.springframework.http.ResponseEntity;
+
 import com.API.User.Entity.User;
 
 public interface NewUserService {
 
-	public User createUser(User user);
+	public ResponseEntity<String> createUser(User user);
+	
+	public User findByUserid(String userid);
+	
 }
