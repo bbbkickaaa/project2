@@ -11,13 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserAddress {
 	
-	@Column(name="addr1",nullable = true)
+	@Column(name="addr1")
 	private String address1;
 	
-	@Column(name="addr2",nullable = true)
+	@Column(name="addr2")
 	private String address2;
 	
-	@Column(name="zipcod",nullable = true)
+	@Column(name="zipcod")
 	private String zipcode;
 	
 

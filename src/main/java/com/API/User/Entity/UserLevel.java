@@ -1,5 +1,6 @@
 package com.API.User.Entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,10 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class UserLevel {
 
+	@Column(table = "user_level")
 	 private int level;
+	
+	@Column(table = "user_level")
 	 private int points;
 	
 	 public void setLevel(int level) {

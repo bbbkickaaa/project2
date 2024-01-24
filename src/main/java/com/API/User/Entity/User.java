@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @SecondaryTables({
-	@SecondaryTable(name="user_address", pkJoinColumns = @PrimaryKeyJoinColumn(name="user_id", referencedColumnName = "id")),
-	@SecondaryTable(name="user_info" , pkJoinColumns = @PrimaryKeyJoinColumn(name="user_id", referencedColumnName = "id"))
+	@SecondaryTable(name="user_address", pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
+	@SecondaryTable(name="user_info" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
+	@SecondaryTable(name="user_level" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id"))
 })
 @Table(name = "users")
 public class User {
@@ -23,12 +24,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@Column(name="user_id" , unique=true)
+	@Column(name="user_id" , unique=true, nullable = false)
     private String userid;
 	
+	@Column(nullable = false)
     private String password;
     
-	@Column(name="nick_name")
+	@Column(name="nick_name", nullable=false)
     private String nickname;
 	
 	@Embedded
@@ -44,6 +46,12 @@ public class User {
 		@AttributeOverride(name="zipcode", column = @Column(table="user_address"))
 	})
 	private UserAddress address;
+	
+	@Column(name="created_date" ,nullable = false,length = 8)
+	private String createdDate;
+	
+	@Column(name="deleted_date" ,length = 8)
+	private String deletedDate;
 	
 	@ElementCollection
     private Set<UserRole> roles = new HashSet<>();
