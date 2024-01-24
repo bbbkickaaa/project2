@@ -8,6 +8,6 @@ public interface UserRepository extends Repository<User,Long>{
 
 	User save(User user);
     User findById(Long id);
-    User findByUserid(String userid);
+    User findByUserid(String userId);
     void delete(User user);
 }

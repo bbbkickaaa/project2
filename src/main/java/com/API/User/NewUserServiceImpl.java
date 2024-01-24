@@ -1,5 +1,7 @@
 package com.API.User;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,22 +13,29 @@ import com.API.User.Entity.User;
 @Service
 public class NewUserServiceImpl implements NewUserService {
 	
+	private static final Logger logger = LoggerFactory.getLogger(NewUserServiceImpl.class);
+	
 	 @Autowired
 	    private UserRepository userRepository;
 	 
 	 @Override
 	 @Transactional(rollbackFor = Exception.class)
 		public ResponseEntity<String> createUser(User user) {
+		 
+		 ResponseEntity<String> entity;
 			User existingUser = findByUserid(user.getUserid());
 
 			if (existingUser != null) {
-				
-				return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 사용자입니다.");
+				entity = ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 사용자입니다.");
 			}
-
-			userRepository.save(user);
-			
-			return ResponseEntity.status(HttpStatus.CREATED).body("사용자가 생성되었습니다.");
+			try {
+	            userRepository.save(user);
+	            entity = ResponseEntity.status(HttpStatus.CREATED).body("사용자가 생성되었습니다.");
+	        } catch (Exception e) {
+	        	 logger.error("사용자 생성 중 오류 발생", e);
+	            entity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 생성 중 오류가 발생했습니다.");
+	        }
+			return entity;
 		}
 
 		@Override

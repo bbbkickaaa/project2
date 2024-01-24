@@ -3,11 +3,9 @@ package com.API.User.Entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Embeddable
 @Getter
-@Setter
 @NoArgsConstructor
 public class UserAddress {
 	

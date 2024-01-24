@@ -3,6 +3,8 @@ package com.API.User.Entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -50,9 +52,16 @@ public class User {
 	@Column(name="created_date" ,nullable = false,length = 8)
 	private String createdDate;
 	
+	@Column(name="is_deleted" , nullable=false)
+	private boolean isDeleted;
+	
 	@Column(name="deleted_date" ,length = 8)
 	private String deletedDate;
 	
 	@ElementCollection
     private Set<UserRole> roles = new HashSet<>();
+	
+	@Convert(converter = BlockIdSetToStringConverter.class)
+	@Column(name="block_id")
+	private String blockId;
 }
