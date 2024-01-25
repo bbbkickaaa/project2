@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.API.User.Entity.User;
 
-public interface NewUserService {
+public interface LoginService{
 
-	public ResponseEntity<String> createUser(User user);
+public ResponseEntity<String> loginUser(User user);
 	
 }

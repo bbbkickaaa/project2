@@ -8,6 +8,7 @@ import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -63,5 +64,5 @@ public class User {
 	
 	@Convert(converter = BlockIdSetToStringConverter.class)
 	@Column(name="block_id")
-	private String blockId;
+	private Set<Integer> blockIds;
 }

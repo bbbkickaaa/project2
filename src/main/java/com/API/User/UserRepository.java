@@ -1,5 +1,7 @@
 package com.API.User;
 
+import java.util.Optional;
+
 import org.springframework.data.repository.Repository;
 
 import com.API.User.Entity.User;
@@ -7,7 +9,7 @@ import com.API.User.Entity.User;
 public interface UserRepository extends Repository<User,Long>{
 
 	User save(User user);
-    User findById(Long id);
-    User findByUserid(String userId);
+    Optional<User> findById(Long id);
+    Optional<User> findByUserid(String userId);
     void delete(User user);
 }

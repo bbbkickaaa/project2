@@ -1,5 +1,7 @@
 package com.API.User;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,34 +15,31 @@ import com.API.User.Entity.User;
 @Service
 public class NewUserServiceImpl implements NewUserService {
 	
-	private static final Logger logger = LoggerFactory.getLogger(NewUserServiceImpl.class);
-	
 	 @Autowired
 	    private UserRepository userRepository;
+	 
 	 
 	 @Override
 	 @Transactional(rollbackFor = Exception.class)
 		public ResponseEntity<String> createUser(User user) {
 		 
-		 ResponseEntity<String> entity;
-			User existingUser = findByUserid(user.getUserid());
+		 	ResponseEntity<String> entity;
+		 	String userid = user.getUserid();
+		 	
+		 	Optional<User> existingUser = userRepository.findByUserid(userid);
 
-			if (existingUser != null) {
+			if (existingUser.isPresent()) {
 				entity = ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 사용자입니다.");
 			}
-			try {
-	            userRepository.save(user);
-	            entity = ResponseEntity.status(HttpStatus.CREATED).body("사용자가 생성되었습니다.");
-	        } catch (Exception e) {
-	        	 logger.error("사용자 생성 중 오류 발생", e);
-	            entity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 생성 중 오류가 발생했습니다.");
-	        }
+			else {
+				try {
+		            userRepository.save(user);
+		            entity = ResponseEntity.status(HttpStatus.CREATED).body("사용자가 생성되었습니다.");
+		        } catch (Exception e) {
+		            entity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 생성 중 오류가 발생했습니다.");
+		        }
+			}
 			return entity;
-		}
-
-		@Override
-		public User findByUserid(String userid) {
-			return userRepository.findByUserid(userid);
 		}
 
 
