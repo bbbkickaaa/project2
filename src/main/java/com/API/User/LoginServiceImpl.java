@@ -19,27 +19,28 @@ public class LoginServiceImpl implements LoginService{
 	 
 	 private static final Logger logger = LoggingFactory.getLogger();
 	 
-	 public ResponseEntity<String> loginUser(User user) {
-	 
-		 ResponseEntity<String> entity;
-		 String userid = user.getUserid();
-		 String password = user.getPassword();
-		 Optional<User> existingUser = userRepository.findByUserid(userid);
-		 System.out.println();
-		 if(existingUser.isEmpty()) {
-			 entity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패했습니다.");
-		 }
-		 else {
-			if(existingUser.get().getPassword().equals(password)) {
-				entity = ResponseEntity.status(HttpStatus.ACCEPTED).body("정상적으로 로그인 되었습니다.");
-			}
-			else {
-				entity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패했습니다.");
-			}
-		 }
+	 @Override
+		 public ResponseEntity<String> loginUser(User user) {
 		 
-		 return entity;
-	 }
+			 ResponseEntity<String> entity;
+			 String userid = user.getUserid();
+			 String password = user.getPassword();
+			 Optional<User> existingUser = userRepository.findByUserid(userid);
+			 
+			 if(existingUser.isEmpty()) {
+				 entity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패했습니다.");
+			 }
+			 else {
+				if(existingUser.get().getPassword().equals(password)) {
+					entity = ResponseEntity.status(HttpStatus.ACCEPTED).body("정상적으로 로그인 되었습니다.");
+				}
+				else {
+					entity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패했습니다.");
+				}
+			 }
+			 
+			 return entity;
+		 }
 
 
 }

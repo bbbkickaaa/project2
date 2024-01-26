@@ -4,8 +4,8 @@ transpileDependencies: true,
 outputDir: "../src/main/resources/static",
 indexPath: "index.html",
 devServer: {
-port: 8082,
-proxy: "http://localhost:8082"
+port: 8080,
+proxy: "http://localhost:8080"
 },
 chainWebpack: config => {
 const svgRule = config.module.rule("svg");

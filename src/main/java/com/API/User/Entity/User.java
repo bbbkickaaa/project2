@@ -1,6 +1,6 @@
 package com.API.User.Entity;
 
-import java.util.HashSet;
+import java.util.HashSet; 
 import java.util.Set;
 
 import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
@@ -8,7 +8,6 @@ import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
