@@ -1,22 +1,24 @@
 package com.API.User.Entity;
 
+import java.time.LocalDate;
 import java.util.HashSet; 
 import java.util.Set;
 
+import com.API.User.RandomNicknameGenerator;
 import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @SecondaryTables({
-	@SecondaryTable(name="user_address", pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
-	@SecondaryTable(name="user_info" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
+	// @SecondaryTable(name="user_address", pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
+	// @SecondaryTable(name="user_info" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
 	@SecondaryTable(name="user_level" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id"))
 })
 @Table(name = "users")
@@ -32,15 +34,16 @@ public class User {
 	@Column(nullable = false)
     private String password;
     
-	@Column(name="nick_name", nullable=false)
-    private String nickname;
-	
-	@Embedded
-	private UserInfo info;
+	@Column(name="nick_name", nullable=false, length = 8)
+    private String nickname = RandomNicknameGenerator.generateRandomNickname();
 	
 	@Embedded
 	private UserLevel userLevel;
 	
+	private String picture;
+	
+	private String email;
+	/*
 	@Embedded
 	@AttributeOverrides({
 		@AttributeOverride(name="address1", column = @Column(table="user_address", name="addr1")),
@@ -48,20 +51,39 @@ public class User {
 		@AttributeOverride(name="zipcode", column = @Column(table="user_address"))
 	})
 	private UserAddress address;
+	*/
 	
 	@Column(name="created_date" ,nullable = false,length = 8)
-	private String createdDate;
+	private String createdDate = LocalDate.now().toString().replace("-", "");
 	
 	@Column(name="is_deleted" , nullable=false)
-	private boolean isDeleted;
+	private boolean isDeleted = false;
 	
 	@Column(name="deleted_date" ,length = 8)
 	private String deletedDate;
 	
-	@ElementCollection
-    private Set<UserRole> roles = new HashSet<>();
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private UserRole role;
 	
 	@Convert(converter = BlockIdSetToStringConverter.class)
 	@Column(name="block_id")
 	private Set<Integer> blockIds;
+	
+	@Builder
+	public User(String name, String email, String picture, UserRole role) {
+		this.setUserid(name);
+		this.setEmail(email);
+		this.setPicture(picture);
+		this.setRole(role);
+	}
+	
+	public User update(String name) {
+		this.setUserid(name);
+		return this;
+	}
+	
+	public String getRoleKey() {
+		return this.role.getKey();
+	}
 }

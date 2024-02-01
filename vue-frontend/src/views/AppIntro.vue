@@ -96,7 +96,7 @@
   
 
   <script>
-  import ModalComponent from '../components/ModalComponent.vue';
+  import ModalComponent from '../components/layout/ModalComponent.vue';
   import LoginForm from './AppLogin.vue';
   import SignupForm from './AppSign.vue';
   

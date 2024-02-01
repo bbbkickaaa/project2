@@ -13,6 +13,11 @@
         <input id="signup-email" type="email" v-model="signupForm.email" required>
       </div>
       <button type="submit">회원가입</button>
+      <div>
+        <a href="http://localhost:8082/oauth2/authorization/google?redirect_uri=http://localhost:3000/oauth2/redirect">
+          <img src="../assets/img/google/web_dark_sq_SU@3x.png" id ="loginGoogle" alt="">
+        </a>
+      </div>
     </form>
   </template>
   
@@ -33,6 +38,12 @@
         alert(`회원가입 시도: ${this.signupForm.username}`);
       }
     }
+    
   };
   </script>
-  
+  <style>
+    #loginGoogle{
+      width: 300px;
+      height: 80px;
+    }
+  </style>

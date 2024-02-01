@@ -1,14 +1,18 @@
 package com.API.User.Entity;
 
-import jakarta.persistence.Embeddable;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Embeddable
-@NoArgsConstructor
-public class UserRole {
+@RequiredArgsConstructor
+public enum UserRole {
 	
-	private String role;
+	GUEST("ROLE_GUEST","손님"),	
+	USER("ROLE_USER", "일반사용자"),
+	ADMIN("ROLE_ADMIN","관리자");
+	
+	private final String key;
+	private final String title;
+	
 
 }

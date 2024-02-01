@@ -8,7 +8,7 @@ import AppIntro from './views/AppIntro.vue';
 import MainLayout from './components/layout/MainLayout.vue';
 import AppHome from './views/AppHome.vue';
 import AppAbout from './views/AppAbout.vue';
-
+import Redirect from "./views/ReDirect.vue";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -24,8 +24,11 @@ const router = createRouter({
         { path: 'about', component: AppAbout }
       ]
     },
-    // 모든 정의되지 않은 경로를 /main으로 리다이렉트
-    { path: '/:pathMatch(.*)*', redirect: '/main' }
+    {path: '/oauth2/authorization/google'},
+    {path: '/oauth2/redirect', component: Redirect},
+    { path: '/another-path' },
+    // 나머지 모든 정의되지 않은 경로를 /main으로 리다이렉트
+    //{ path: '/:pathMatch(.*)*', redirect: '/main' }
   ]
 });
 
@@ -36,7 +39,7 @@ app.use(router);
 app.mount('#app');
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = false; // 토큰 유효성 검사 로직
+  const isAuthenticated = true; // 토큰 유효성 검사 로직
 
   if (!isAuthenticated && to.path !== '/intro') {
     next('/intro'); // 인증되지 않았다면 /intro로 리다이렉트

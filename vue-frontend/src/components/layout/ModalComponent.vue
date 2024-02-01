@@ -20,11 +20,7 @@
         this.$emit('close');
       },
       watch: {
-    show(newVal) {
-      if (newVal) {
-        this.$emit('close');
-      }
-    }
+    
   } 
     }
   };
