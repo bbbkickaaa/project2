@@ -16,6 +16,8 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+application-oauth.properties
+application-jwt.properties
 
 ### IntelliJ IDEA ###
 .idea
