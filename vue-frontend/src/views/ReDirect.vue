@@ -15,10 +15,10 @@ export default {
       store.commit('setToken', token);
       sessionStorage.setItem('accessToken', token);
       window.alert('로그인하였습니다');
-      router.push({path:'/'})
+      router.push({path:'/main'})
     } else {
       window.alert('로그인에 실패하였습니다.')
-      router.push({path:'/login'})
+      router.push({path:'/intro'})
     }
   }
 }

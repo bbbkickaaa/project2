@@ -2,6 +2,7 @@ package com.API.User.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,4 +39,9 @@ public class UserLevel {
 	            this.level = 1;
 	        }
 	    }
+
+	public UserLevel(int i, int j) {
+		this.level = i;
+		this.points = j;
+	}
 }

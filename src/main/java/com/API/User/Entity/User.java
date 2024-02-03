@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @SecondaryTables({
+	@SecondaryTable(name="user_level" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id" ) , indexes = @Index(columnList = "id"))
 	// @SecondaryTable(name="user_address", pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
 	// @SecondaryTable(name="user_info" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")),
-	@SecondaryTable(name="user_level" , pkJoinColumns = @PrimaryKeyJoinColumn(name="id", referencedColumnName = "id"))
 })
 @Table(name = "users")
 public class User {
@@ -38,6 +38,10 @@ public class User {
     private String nickname = RandomNicknameGenerator.generateRandomNickname();
 	
 	@Embedded
+	@AttributeOverrides({
+	    @AttributeOverride(name="level", column=@Column(table="user_level", name="level")),
+	    @AttributeOverride(name="points", column=@Column(table="user_level", name="points"))
+	})
 	private UserLevel userLevel;
 	
 	private String picture;
@@ -71,11 +75,14 @@ public class User {
 	private Set<Integer> blockIds;
 	
 	@Builder
-	public User(String name, String email, String picture, UserRole role) {
+	public User(String name, String email, String picture, UserRole role, String password, UserLevel userlevel , String nickname) {
 		this.setUserid(name);
 		this.setEmail(email);
 		this.setPicture(picture);
 		this.setRole(role);
+		this.setPassword(password);
+		this.setUserLevel(userlevel);
+		this.setNickname(nickname);
 	}
 	
 	public User update(String name) {
@@ -86,4 +93,5 @@ public class User {
 	public String getRoleKey() {
 		return this.role.getKey();
 	}
+
 }

@@ -3,6 +3,7 @@ package com.API.User.Oauth2;
 import java.util.Map; 
 
 import com.API.User.Entity.User;
+import com.API.User.Entity.UserLevel;
 import com.API.User.Entity.UserRole;
 
 import lombok.Builder;
@@ -60,9 +61,12 @@ public class OAuthAttributes {
  
     public User toEntity() {
         return User.builder()
-                .name(name)
+                .name(email)
                 .email(email)
                 .role(UserRole.USER)
+                .userlevel(new UserLevel(1, 0))
+                .password(PasswordGenerator.generateRandomPassword(15))
+                .nickname(name)
                 .build();
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.API.User.UserRepository;
 import com.API.User.Entity.User;
+import com.API.User.Entity.UserLevel;
 
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -45,7 +46,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         User user = userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> entity.update(attributes.getName()))
                 .orElse(attributes.toEntity());
-        user.setPassword(PasswordGenerator.generateRandomPassword(10));
         return userRepository.save(user);
     }
 }

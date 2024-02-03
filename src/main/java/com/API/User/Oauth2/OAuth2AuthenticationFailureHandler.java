@@ -23,7 +23,7 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
  
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        String targetUrl = CookieUtils.getCookie(request, "http://localhost:3001/main")
+        String targetUrl = CookieUtils.getCookie(request, "http://localhost:3001/intro")
                 .map(Cookie::getValue)
                 .orElse(("/"));
  

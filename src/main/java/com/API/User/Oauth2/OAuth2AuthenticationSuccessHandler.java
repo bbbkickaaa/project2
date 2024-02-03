@@ -32,7 +32,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     }
  
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Optional<String> redirectUri = CookieUtils.getCookie(request, "http://localhost:3001/intro")
+        Optional<String> redirectUri = CookieUtils.getCookie(request, "http://localhost:3001/main")
                 .map(Cookie::getValue);
  
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());

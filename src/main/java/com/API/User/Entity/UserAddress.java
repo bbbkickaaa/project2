@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+//Not Work Now
+
 @Embeddable
 @Getter
 @NoArgsConstructor

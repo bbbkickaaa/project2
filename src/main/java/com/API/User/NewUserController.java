@@ -1,34 +1,41 @@
 package com.API.User;
 
-import org.springframework.beans.factory.annotation.Autowired;   
+import org.springframework.beans.factory.annotation.Autowired;    
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.API.User.Entity.User;
+import com.API.User.Oauth2.JwtTokenProvider;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class NewUserController {
 
 	@Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    JwtTokenProvider tokenProvider;
+	
+	@Autowired
 	NewUserService newUserService;
 	
 	@Autowired
 	LoginService loginService;
 	
-	private final HttpSession httpSession;
-
 	@PostMapping("/public/join")
     public ResponseEntity<String> createUser(@RequestBody User user) {
+		System.out.println(user);
         return newUserService.createUser(user);
     }
 	
@@ -37,9 +44,4 @@ public class NewUserController {
 		return loginService.loginUser(user);
 	}
 	
-	@PostMapping("/public/join/google")
-    public String userProfile(@AuthenticationPrincipal OAuth2User principal) {
-		System.out.print((String)principal.getAttribute("email"));
-        return "User's email: " + principal.getAttribute("email");
-    }
 }
