@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
-public class NewUserController {
+public class UserController {
 
 	@Autowired
     AuthenticationManager authenticationManager;

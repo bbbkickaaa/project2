@@ -5,6 +5,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class NewUserServiceImpl implements NewUserService {
+public class NewUserServiceImpl implements NewUserService{
 	
 	 @Autowired
 	    private UserRepository userRepository;
@@ -42,7 +45,6 @@ public class NewUserServiceImpl implements NewUserService {
 			        String nickName = RandomNicknameGenerator.generateRandomNickname();
 			        
 			        //
-			        
 			        user.setPassword(encodedPassword);
 			        user.setNickname(nickName);
 			        user.setRole(UserRole.USER);
@@ -63,5 +65,6 @@ public class NewUserServiceImpl implements NewUserService {
 			return entity;
 		}
 
+	}
 
-}
+
