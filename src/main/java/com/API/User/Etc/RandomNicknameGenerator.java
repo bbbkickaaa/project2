@@ -1,4 +1,4 @@
-package com.API.User;
+package com.API.User.Etc;
 
 import java.security.SecureRandom;
 

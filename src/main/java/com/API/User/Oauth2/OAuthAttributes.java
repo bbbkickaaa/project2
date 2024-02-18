@@ -5,6 +5,7 @@ import java.util.Map;
 import com.API.User.Entity.User;
 import com.API.User.Entity.UserLevel;
 import com.API.User.Entity.UserRole;
+import com.API.User.Etc.PasswordGenerator;
 
 import lombok.Builder;
 import lombok.Getter;

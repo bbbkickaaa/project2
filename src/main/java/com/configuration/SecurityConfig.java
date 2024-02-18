@@ -1,24 +1,29 @@
 package com.configuration;
 
-import java.util.Arrays;   
+import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.API.User.CustomAuthenticationProvider;
 import com.API.User.Oauth2.CustomOAuth2UserService;
 import com.API.User.Oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.API.User.Oauth2.JwtAuthenticationFilter;
@@ -38,7 +43,10 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-		
+    
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(customAuthenticationProvider());
+    }	
 	 
 	    public SecurityConfig(JwtTokenProvider jwtTokenProvider, CustomOAuth2UserService customOAuth2UserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) {
 	        this.jwtTokenProvider = jwtTokenProvider;
@@ -47,6 +55,11 @@ public class SecurityConfig {
 	        this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
 	    }
 	 
+	    @Bean
+	    public CustomAuthenticationProvider customAuthenticationProvider() {
+	    	return new CustomAuthenticationProvider();
+	    }
+	    
 	    @Bean
 	    public HttpCookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository() {
 	        return new HttpCookieOAuth2AuthorizationRequestRepository();
@@ -76,6 +89,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE"));
         config.setAllowedHeaders(Arrays.asList("*"));
+        config.setExposedHeaders(Arrays.asList("Authorization"));
         config.setMaxAge(3600 * 6L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -85,6 +99,11 @@ public class SecurityConfig {
 	
 	@Bean
 	protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		
+		 CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+		 requestHandler.setCsrfRequestAttributeName("_csrf");
+		
+		
 	    // 기본 보안 설정
 	    http
 	        .cors(cors -> cors.configurationSource(configurationSource()))

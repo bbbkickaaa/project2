@@ -1,4 +1,4 @@
-package com.API.User.Oauth2;
+package com.API.User.Etc;
 
 import java.security.SecureRandom;
 import java.util.Random;

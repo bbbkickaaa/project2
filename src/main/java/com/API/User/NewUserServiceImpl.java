@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.API.User.Entity.User;
 import com.API.User.Entity.UserLevel;
 import com.API.User.Entity.UserRole;
+import com.API.User.Etc.RandomNicknameGenerator;
 
 import lombok.extern.slf4j.Slf4j;
 
