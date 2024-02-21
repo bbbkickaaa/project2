@@ -11,6 +11,7 @@ export default {
   created() {
     const token = this.$route.query.token
     console.log('token',token)
+    alert(token);
     if (token) {
       store.commit('setToken', token);
       sessionStorage.setItem('accessToken', token);

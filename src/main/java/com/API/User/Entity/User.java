@@ -1,14 +1,12 @@
 package com.API.User.Entity;
 
-import java.time.LocalDate;
+import java.time.LocalDate; 
 import java.util.HashSet; 
 import java.util.Set;
-
 import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
 import com.API.User.Etc.RandomNicknameGenerator;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;

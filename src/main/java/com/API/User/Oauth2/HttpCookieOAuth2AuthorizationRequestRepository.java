@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Component;
-
 import com.nimbusds.oauth2.sdk.util.StringUtils;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -30,13 +28,14 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
             CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
             return;
         }
- 
+       
         CookieUtils.addCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, CookieUtils.serialize(authorizationRequest), cookieExpireSeconds);
         String redirectUriAfterLogin = request.getParameter(REDIRECT_URI_PARAM_COOKIE_NAME);
         if (StringUtils.isNotBlank(redirectUriAfterLogin)) {
             CookieUtils.addCookie(response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
         }
     }
+ 
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request,HttpServletResponse response) {
         return this.loadAuthorizationRequest(request);
@@ -46,7 +45,4 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
         CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
     }
-
-	
 }
-

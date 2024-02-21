@@ -8,6 +8,7 @@ import com.API.User.Entity.User;
 import com.API.User.Entity.UserRole;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,17 +16,17 @@ public class CustomUserDetails implements UserDetails {
 
     private final User user;
 
+    private final List<GrantedAuthority> authorities;
+
     public CustomUserDetails(User user) {
         this.user = user;
+        UserRole role = user.getRole();
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(role.getTitle()));
     }
 
-    private List<UserRole> roles;
-    
-
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role.getTitle()))
-                .collect(Collectors.toList());
+        return authorities;
     }
 
     @Override
@@ -37,6 +38,7 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return user.getUserid();
     }
+    
 
     @Override
     public boolean isAccountNonExpired() {

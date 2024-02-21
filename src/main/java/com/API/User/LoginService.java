@@ -4,8 +4,10 @@ import org.springframework.http.ResponseEntity;
 
 import com.API.User.Entity.User;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 public interface LoginService{
 
-public ResponseEntity<String> loginUser(User user);
+public ResponseEntity<?> loginUser(User user,HttpServletResponse response);
 	
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.API.User.Entity.User;
 import com.API.User.Oauth2.JwtTokenProvider;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +41,8 @@ public class UserController {
     }
 	
 	@PostMapping("/public/login")
-	public ResponseEntity<String> loginUser(Authentication authentication){
-		User user = (User) authentication.getPrincipal();
-		return loginService.loginUser(user);
+	public ResponseEntity<?> loginUser(@RequestBody User user, HttpServletResponse response){
+		return loginService.loginUser(user,response);
 	}
 	
 }
