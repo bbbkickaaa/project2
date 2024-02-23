@@ -6,7 +6,7 @@ import App from './App.vue';
 import AppIntro from './views/AppIntro.vue';
 //
 import MainLayout from './components/layout/MainLayout.vue';
-import MainBoard from './views/MainBoard.vue';
+import MainBoard from './components/layout/main/MainBoard.vue';
 import AppAbout from './views/AppAbout.vue';
 import ReDirect from "./views/ReDirect.vue";
 

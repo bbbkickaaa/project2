@@ -6,11 +6,11 @@
   </template>
   
   <script>
-  import AppHeader from './AppHeader.vue';
-  
+  import AppHeader from './main/AppHeader.vue';
+
   export default {
     components: {
-        AppHeader
+        AppHeader,
     }
   };
   </script>

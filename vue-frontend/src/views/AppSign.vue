@@ -2,7 +2,7 @@
     <form id="LoginForm" @submit.prevent="onSignupSubmit">
       <div class="forms">
         <label for="signup-username" class= "forms_label">UserId :</label>
-        <input id="signup-username" type="text" v-model="signupForm.userid" required>
+        <input id="signup-username" type="text" v-model.trim="signupForm.userid" required>
       </div>
       <div class="forms">
         <label for="signup-password" class= "forms_label">PassWord :</label>
@@ -52,7 +52,7 @@ import axios from 'axios';
       onSignupSubmit() {
         axios.post('http://localhost:8080/api/public/join', this.signupForm)
           .then(response => {
-            alert(response.status.body); // 상태 코드를 알림으로 표시
+            alert(response.data); // 상태 코드를 알림으로 표시
           })
           .catch(error => {
             if (error.response) {

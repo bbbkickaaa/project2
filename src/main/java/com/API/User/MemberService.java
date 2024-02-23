@@ -5,11 +5,8 @@ import org.springframework.security.core.Authentication;
 
 import com.API.User.Entity.User;
 
-import jakarta.servlet.http.HttpServletResponse;
+public interface MemberService  {
 
-public interface LoginService{
+	public ResponseEntity<User> getUser(Authentication authentication);
 
-public ResponseEntity<?> loginUser(User user,HttpServletResponse response);
-
-	
 }

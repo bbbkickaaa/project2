@@ -1,6 +1,9 @@
 package com.API.User.Oauth2;
 
-import java.util.Map; 
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.API.User.Entity.User;
 import com.API.User.Entity.UserLevel;
@@ -13,10 +16,15 @@ import lombok.Getter;
 @Getter
 @Builder
 public class OAuthAttributes {
+	
+	@Autowired
+    private PasswordEncoder passwordEncoder;
+	
     private Map<String, Object> attributes;
     private String nameAttributeKey;
     private String name;
     private String email;
+    private String userid;
  
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         if("naver".equals(registrationId)) {
@@ -32,6 +40,7 @@ public class OAuthAttributes {
         return OAuthAttributes.builder()
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
+                .userid((String) attributes.get("sub"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
@@ -62,7 +71,7 @@ public class OAuthAttributes {
  
     public User toEntity() {
         return User.builder()
-                .name(email)
+                .name(userid)
                 .email(email)
                 .role(UserRole.USER)
                 .userlevel(new UserLevel(1, 0))

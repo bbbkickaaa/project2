@@ -12,13 +12,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -103,4 +108,40 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+    
+    
+    public boolean validateRefreshToken(String refreshToken) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(refreshToken);
+
+            // 시그니처 확인
+            String algorithm = claims.getHeader().getAlgorithm();
+            if (!algorithm.equals(SignatureAlgorithm.HS256.getValue())) {
+                throw new UnsupportedJwtException("Unsupported signature algorithm");
+            }
+
+            // 만료일 확인
+            Date expirationDate = claims.getBody().getExpiration();
+            Date now = new Date();
+            if (expirationDate.before(now)) {
+                throw new ExpiredJwtException(null, null, "Refresh token expired");
+            }
+
+            return true;
+        } catch (ExpiredJwtException ex) {
+            // 만료된 토큰
+            return false;
+        } catch (Exception e) {
+            // 유효하지 않은 토큰
+            return false;
+        }
+    }
+    public String resolveToken(String bearerToken) {
+    	String[] parts = bearerToken.split(" ");
+        return parts[1];
+    }
+
 }

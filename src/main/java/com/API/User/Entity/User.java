@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
 import com.API.User.Etc.RandomNicknameGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.Builder;

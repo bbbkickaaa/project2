@@ -11,7 +11,12 @@ const store = new Vuex.Store({
         setToken(state, token) {
             state.token = token;
         }
+    },
+    methods: {
+        clearState(state) {
+            state.token = null;      
     }
+}
 })
  
 export default store;

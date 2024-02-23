@@ -89,8 +89,8 @@ public class SecurityConfig {
 	    public CorsConfigurationSource configurationSource () {
 	    
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(false);
-        config.setAllowedOrigins(Arrays.asList("*"));
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         config.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setExposedHeaders(Arrays.asList("Authorization"));
@@ -120,16 +120,16 @@ public class SecurityConfig {
 	    // HTTP 요청에 대한 권한 설정
 	    http
 	    	.authorizeHttpRequests(auth -> auth
-	    	.requestMatchers("/webjars/**", "/js/**", "/image/**", "/","/oauth2/**", "/login/oauth2/**","/auth/**","/api/**").permitAll()
+	    	.requestMatchers("/webjars/**", "/js/**", "/image/**", "/","/oauth2/**", "/login/oauth2/**","/auth/**","/api/public/**").permitAll()
             .anyRequest().authenticated()
         );
 	 
 	    
 	    
-	  /*  http
+	    http
 	    	.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN)));
-	*/
+	
 	    // OAuth2 로그인 설정
 
 	  http

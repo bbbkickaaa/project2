@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginServiceImpl implements LoginService{
 	
 	@Autowired
-	JwtTokenProvider jwtTokenProvider;
+	private JwtTokenProvider tokenProvider;
 	
 	@Autowired
 	Custom2AuthenticationProvider authenticationProvider;
@@ -37,22 +37,19 @@ public class LoginServiceImpl implements LoginService{
 	@Override
 	@Transactional
 	public ResponseEntity<?> loginUser(User user, HttpServletResponse response) {
-		
 	    try {
 	        Authentication authentication = authenticationProvider.authenticate(
 	            new UsernamePasswordAuthenticationToken(user.getUserid(), user.getPassword())
 	        );
-	        
-	        JwtToken token = jwtTokenProvider.generateToken(authentication);
+	        JwtToken token = tokenProvider.generateToken(authentication);
 	        String accessToken = token.getAccessToken();
 	        String refreshToken = token.getRefreshToken();
 	        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+	        refreshTokenCookie.setHttpOnly(true); // JavaScript에서 쿠키에 접근 불가
 	        refreshTokenCookie.setMaxAge(259200); // 3일간 유효
 	        refreshTokenCookie.setDomain("localhost");
 	        refreshTokenCookie.setPath("/");
-	        //refreshTokenCookie.setHttpOnly(true); // JavaScript에서 쿠키에 접근 불가
 	        response.addCookie(refreshTokenCookie);
-	        
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.set("Authorization", "Bearer " + accessToken);
 	        System.out.println(accessToken);
@@ -63,4 +60,5 @@ public class LoginServiceImpl implements LoginService{
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패.");
 	    }
 	}
+	
 }
