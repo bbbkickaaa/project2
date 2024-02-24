@@ -1,16 +1,21 @@
 <template>
-    <form @submit.prevent="onLoginSubmit">
-      <div>
-        <label for="login-username">사용자명:</label>
-        <input id="login-username" type="text" v-model.trim="loginForm.userid" required>
-      </div>
-      <div>
-        <label for="login-password">비밀번호:</label>
-        <input id="login-password" type="password" v-model="loginForm.password" required>
-      </div>
-      <button type="submit">로그인</button>
-    </form>
-  </template>
+  <form @submit.prevent="onLoginSubmit" class="p-3 mb-2 bg-light text-dark">
+    <div class="mb-3">
+      <label for="login-username" class="form-label">사용자명:</label>
+      <input id="login-username" type="text" class="form-control" v-model.trim="loginForm.userid" required>
+    </div>
+    <div class="mb-3">
+      <label for="login-password" class="form-label">비밀번호:</label>
+      <input id="login-password" type="password" class="form-control" v-model="loginForm.password" required>
+    </div>
+    <button type="submit" class="btn btn-secondary">로그인</button>
+    <div class="mt-3" >
+      <a  href="http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000/oauth2/redirect">
+        <img style="width: 200px; height: 50px; margin-top: 40px;" src="../assets/img/google/web_dark_sq_SU@3x.png" id="loginGoogle" alt="" class="img-fluid">
+      </a>
+    </div>
+  </form>
+</template>
   
   <script>
   import axios from 'axios';
@@ -47,4 +52,8 @@
 }
   }
   </script>
+
+  <style>
+
+  </style>
   

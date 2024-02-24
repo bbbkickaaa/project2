@@ -1,4 +1,4 @@
-package com.API.User.Entity.Converter;
+package com.API.User.Etc;
 
 import java.util.Arrays;
 import java.util.HashSet;

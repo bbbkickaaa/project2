@@ -3,7 +3,8 @@ package com.API.User.Entity;
 import java.time.LocalDate; 
 import java.util.HashSet; 
 import java.util.Set;
-import com.API.User.Entity.Converter.BlockIdSetToStringConverter;
+
+import com.API.User.Etc.BlockIdSetToStringConverter;
 import com.API.User.Etc.RandomNicknameGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

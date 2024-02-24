@@ -1,27 +1,148 @@
 <template>
-    <div id="app" class="container mt-4">
-        <h2 class="mb-4">게시판 미리보기</h2>
-        <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action" aria-current="true" v-for="n in 20" :key="n">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">게시물 제목 {{ n }}</h5>
-                    <small>3일 전</small>
-                </div>
-                <p class="mb-1">게시물 내용이 여기에 표시됩니다...</p>
-                <small>작성자 이름</small>
-            </a>
+    <div class ="container">
+        <div class="table board-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">글번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">작성자</th>
+                            <th scope="col">조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="limitedBoard.length > 0" >
+                        <tr  v-for="list in limitedBoard" :key="list.id">
+                            <td>{{ list.id }}</td>
+                            <td><a class="title" :href="toDetails">{{ list.title }}</a></td>
+                            <td>{{ list.nickname }}</td>
+                            <td>{{ list.views }}</td>
+                        </tr>
+                        <!-- 추가 게시글들 -->
+                    </tbody>
+                    <tbody>
+                        <!-- 게시글 데이터 반복 -->
+                        <tr v-for="list in emptyRowsCount" :key="list">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <!-- 추가 게시글들 -->
+                    </tbody>
+                </table>
+            </div> 
+            <div class ="sections">
+               <button @click="writePost" class="btn btn-secondary writeBoard">글쓰기</button>
+             </div>
+            <nav aria-label="Page navigation" class="paging mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" v-for="n in 5" :key="n">
+                        <a class="page-link" href="#">{{ n }}</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" v-for="n in 5" :key="n">
-                    <a class="page-link" href="#">{{ n }}</a>
-                </li>
-            </ul>
-        </nav>
-    </div>  
 </template>
 
 
 <script>
-export default {}
+export default {
+data(){
+    return{
+        TheBoard :{data : []},
+    }
+},
+computed: {
+    limitedBoard: function() {
+        return this.TheBoard.data.slice(0, 20);
+    },
+    emptyRowsCount: function() {
+      return Math.max(20 - this.limitedBoard.length, 0);
+    }
+    }
+,
+mounted(){
+  this.$axios.get('/api/board/get')
+          .then(response => {
+            console.log(response.data.content)
+            this.TheBoard.data = response.data.content;
+          })
+          .catch(error => {
+            if (error.response) {
+              alert("Error: 오류가 발생했습니다.");
+            } else if (error.request) {
+              alert("Error: 서버로부터 응답이 없습니다.");
+            } else {
+              alert(`${error.message}`);
+            }
+        });
+},
+methods :{
+    writePost() {
+        this.$router.push('/post')
+    }
+}
+}
 </script>
+
+<style scoped>
+.board-table {
+    margin: 0 auto;
+    width: 1000px !important;
+    height: auto;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+}
+.table th, .table td {
+    height: 41px;
+    box-sizing: border-box;
+}
+
+.table th {
+    text-align: center;
+    border-top: 1px solid rgba(108, 117, 125, 0.5);
+}
+
+.table th:first-child, .table td:first-child{
+    width: 80px;
+    border-right: 1px dashed rgba(108, 117, 125, 0.5);
+    text-align: center;
+    border-left: 1px solid rgba(108, 117, 125, 0.5);
+}
+
+.table th:nth-child(2), .table td:nth-child(2){
+    padding-left: 20px;
+}
+
+.table th:nth-child(3), .table td:nth-child(3){
+    width: 100px;
+    border-right: 1px dashed rgba(108, 117, 125, 0.5); 
+    text-align: center;
+    border-left: 1px dashed rgba(108, 117, 125, 0.5);
+}
+.table th:nth-child(4), .table td:nth-child(4){
+    width: 100px;
+    text-align: center;
+    border-right: 1px solid rgba(108, 117, 125, 0.5);
+}
+.sections{
+    width :1300px;
+    display: grid;
+    justify-content: end;
+    grid-template-columns: repeat(15, 1fr);
+    margin-bottom : 100px;
+}
+.sections .writeBoard {
+    grid-column-start: 13;
+}
+
+.title{
+    color: black;
+    text-decoration-line: none;
+}
+.title:hover {
+    cursor: pointer;
+    text-decoration-line: underline;
+}
+
+</style>

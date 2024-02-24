@@ -1,4 +1,4 @@
-package com.API.User;
+package com.API.User.Security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

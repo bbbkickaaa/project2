@@ -1,4 +1,4 @@
-package com.API.User; 
+package com.API.User.Security; 
 import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

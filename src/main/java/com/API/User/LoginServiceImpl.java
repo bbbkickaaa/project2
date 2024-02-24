@@ -16,8 +16,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.API.User.Entity.User;
-import com.API.User.Oauth2.JwtToken;
-import com.API.User.Oauth2.JwtTokenProvider;
+import com.API.User.Jwt.JwtToken;
+import com.API.User.Jwt.JwtTokenProvider;
+import com.API.User.Security.Custom2AuthenticationProvider;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

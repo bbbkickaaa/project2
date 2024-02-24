@@ -20,7 +20,7 @@
                 <div class="container px-5">
                     <h1 class="masthead-heading mb-0">Proto Type</h1>
                     <h2 class="masthead-subheading mb-0">For Your Community</h2>
-                    <a class="btn btn-primary btn-xl rounded-pill mt-5" href="#scroll">Intro</a>
+                    <a class="btn btn-dark btn-xl rounded-pill mt-5" style="width: 200px; border-radius: 20%;" href="#scroll">Intro</a>
                 </div>
             </div>
             <div class="bg-circle-1 bg-circle"></div>

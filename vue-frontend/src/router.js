@@ -9,7 +9,7 @@ import MainLayout from './components/layout/MainLayout.vue';
 import MainBoard from './components/layout/main/MainBoard.vue';
 import AppAbout from './views/AppAbout.vue';
 import ReDirect from "./views/ReDirect.vue";
-
+import NewPost from "./components/layout/main/NewPost.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,6 +26,7 @@ const router = createRouter({
       path: '/main',
       component: MainLayout,
       children: [
+        { path:'/post', component : NewPost},
         { path: '', component: MainBoard },
         { path: 'about', component: AppAbout }
       ]

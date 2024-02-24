@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.API.User.Entity.User;
+import com.API.User.Entity.UserDTO;
+import com.API.User.Jwt.JwtTokenProvider;
 import com.API.User.Oauth2.CookieUtils;
-import com.API.User.Oauth2.JwtTokenProvider;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,7 +60,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/member/getUser")
-	public ResponseEntity<User> getUser(@RequestHeader("Authorization") String authorizationHeader) {
+	public ResponseEntity<UserDTO> getUser(@RequestHeader("Authorization") String authorizationHeader) {
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
         return memberService.getUser(authentication);

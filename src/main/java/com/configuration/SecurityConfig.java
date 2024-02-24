@@ -26,13 +26,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.API.User.Custom2AuthenticationProvider;
+import com.API.User.Jwt.JwtAuthenticationFilter;
+import com.API.User.Jwt.JwtTokenProvider;
 import com.API.User.Oauth2.CustomOAuth2UserService;
 import com.API.User.Oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import com.API.User.Oauth2.JwtAuthenticationFilter;
-import com.API.User.Oauth2.JwtTokenProvider;
 import com.API.User.Oauth2.OAuth2AuthenticationFailureHandler;
 import com.API.User.Oauth2.OAuth2AuthenticationSuccessHandler;
+import com.API.User.Security.Custom2AuthenticationProvider;
 
 import jakarta.servlet.DispatcherType;
 import lombok.extern.slf4j.Slf4j;

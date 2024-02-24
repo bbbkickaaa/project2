@@ -1,4 +1,4 @@
-package com.API.User.Oauth2;
+package com.API.User.Jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

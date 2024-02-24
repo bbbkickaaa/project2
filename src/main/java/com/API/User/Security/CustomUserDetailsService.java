@@ -1,4 +1,4 @@
-package com.API.User;
+package com.API.User.Security;
 
 import java.util.Optional;
 
@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.API.User.UserRepository;
 import com.API.User.Entity.User;
 
 @Service
