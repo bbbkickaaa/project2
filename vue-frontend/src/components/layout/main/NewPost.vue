@@ -24,7 +24,7 @@
         post: {
           title: '',
           content: '',
-          id : '',
+          id : ''
         },
         minLength : 5
       };
@@ -58,25 +58,11 @@
             }
            });
         },
-},
-
-mounted(){
-  this.$axios.get('/api/member/getUser')
-          .then(response => {
-            this.post.id = response.data.id;
-          })
-          .catch(error => {
-            if (error.response) {
-              alert("Error: 오류가 발생했습니다.");
-            } else if (error.request) {
-              alert("Error: 서버로부터 응답이 없습니다.");
-            } else {
-              alert("토큰이 만료되었습니다.");
-            }
-        });
-},
-
-  };
+        },
+    mounted() {
+        this.post.id = sessionStorage.getItem('userIdx');
+    },
+    }
 
   </script>
   <style scoped>
@@ -100,10 +86,10 @@ mounted(){
         width :1000px;
         display: flex;
     }
-    .sections button:first-child {
+    .sections button {
         margin-left: 20px;
+        width: 80px;
+        height: 37px;
     }
-    .sections button:last-child {
-        margin-left: 20px;
-    }
+
   </style>

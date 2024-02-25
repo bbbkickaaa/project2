@@ -1,6 +1,6 @@
 <template>
     <div class ="container">
-        <div class="table board-table">
+        <div class="board-table">
                 <table class="table">
                     <thead>
                         <tr>
@@ -11,9 +11,9 @@
                         </tr>
                     </thead>
                     <tbody v-if="limitedBoard.length > 0" >
-                        <tr  v-for="list in limitedBoard" :key="list.id">
-                            <td>{{ list.id }}</td>
-                            <td><a class="title" :href="toDetails">{{ list.title }}</a></td>
+                        <tr  v-for="list in limitedBoard" :key="list.boardId">
+                            <td>{{ list.boardId }}</td>
+                            <td><a class="title" @click="toDetails(list.boardId)">{{ list.title }} {{ '[' + list.commentCount + ']'}}</a></td>
                             <td>{{ list.nickname }}</td>
                             <td>{{ list.views }}</td>
                         </tr>
@@ -62,7 +62,7 @@ computed: {
     }
 ,
 mounted(){
-  this.$axios.get('/api/board/get')
+  this.$axios.get('/api/board/getAll')
           .then(response => {
             console.log(response.data.content)
             this.TheBoard.data = response.data.content;
@@ -79,13 +79,19 @@ mounted(){
 },
 methods :{
     writePost() {
-        this.$router.push('/post')
+        this.$router.push('/main/post')
+    },
+    toDetails(id){
+        this.$router.push({path:'/main/detail' , query : {id:id}})
     }
 }
 }
 </script>
 
 <style scoped>
+.container {
+    height: 1200px;
+}
 .board-table {
     margin: 0 auto;
     width: 1000px !important;
@@ -115,7 +121,7 @@ methods :{
 }
 
 .table th:nth-child(3), .table td:nth-child(3){
-    width: 100px;
+    width: 150px;
     border-right: 1px dashed rgba(108, 117, 125, 0.5); 
     text-align: center;
     border-left: 1px dashed rgba(108, 117, 125, 0.5);
@@ -126,14 +132,15 @@ methods :{
     border-right: 1px solid rgba(108, 117, 125, 0.5);
 }
 .sections{
-    width :1300px;
-    display: grid;
-    justify-content: end;
-    grid-template-columns: repeat(15, 1fr);
+    width :1000px;
+    display: relative;
     margin-bottom : 100px;
 }
 .sections .writeBoard {
-    grid-column-start: 13;
+    width: 80px;
+    margin : 0 auto;
+    position: absolute;
+    right: 160px;
 }
 
 .title{

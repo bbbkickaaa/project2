@@ -1,6 +1,6 @@
 package com.API.Board;
 
-import java.util.Map;
+import java.util.Map; 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.API.Board.DTO.BoardReviewDTO;
 
@@ -23,7 +24,7 @@ public class BoardController {
 	@Autowired
 	BoardService boardService;
 
-	@GetMapping("/get")
+	@GetMapping("/getAll")
 	public ResponseEntity<Page<BoardReviewDTO>> findAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
 		
 		return boardService.findAll(pageable);
@@ -33,4 +34,24 @@ public class BoardController {
     public ResponseEntity<?> postBoard(@RequestBody Map<String, Object> requestData) {
        return boardService.postBoard(requestData);
     }
+	
+	@GetMapping("/getDetail")
+	public ResponseEntity<?> findbyId(@RequestParam("id") Long id){
+		return boardService.findbyId(id);
+	}
+	
+	@GetMapping("/getPostCount")
+	public ResponseEntity<?> countUserPostsAndComments(@RequestParam("id") Long id){
+		return boardService.countUserPostsAndComments(id);
+	}
+	
+	@PostMapping("/postViews")
+	public ResponseEntity<?> postViews(@RequestBody String boardId){
+		return boardService.postViews(boardId);
+	}
+	
+	@PostMapping("/deleteBoard")
+	public ResponseEntity<?> deleteBoard(@RequestBody String boardId){
+		return boardService.deleteBoard(boardId);
+	}
 }

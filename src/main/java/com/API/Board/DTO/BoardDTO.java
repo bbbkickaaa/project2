@@ -1,7 +1,6 @@
 package com.API.Board.DTO;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import com.API.Board.Entity.Comment;
 
@@ -14,12 +13,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardReviewDTO {
+public class BoardDTO {
 
-	private Long boardId;
+    private Long id;
     private String title;
-    private Long userId;
-    private String nickname;
+    private String content;
+    private int likes;
     private int views;
-    private Long commentCount;
+    private Long userIdx;
+    private String nickname;
+    private String writeDate;
+    private List<Comment> comments;
+
 }
