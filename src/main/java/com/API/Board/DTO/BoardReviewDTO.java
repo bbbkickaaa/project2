@@ -21,5 +21,6 @@ public class BoardReviewDTO {
     private Long userId;
     private String nickname;
     private int views;
+    private int likes;
     private Long commentCount;
 }

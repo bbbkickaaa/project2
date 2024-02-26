@@ -11,11 +11,12 @@ import AppAbout from './views/AppAbout.vue';
 import ReDirect from "./views/ReDirect.vue";
 import NewPost from "./components/layout/main/NewPost.vue";
 import BoardDetails from "./components/layout/main/BoardDetails.vue"
-
+import BoardAlter from "./components/layout/main/BoardAlter.vue"
+import { checkPostOwner } from './routerGuard';
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [
+  routes : [
     {
       path: '/intro',
       component: AppIntro
@@ -27,20 +28,24 @@ const router = createRouter({
     {
       path: '/main',
       component: MainLayout,
-      props : true,
+      props: true,
       children: [
-        { path:'/main/post', component : NewPost},
-        { path:'/main/detail', component : BoardDetails},
-        { path: '', component: MainBoard },
-        { path: '/main/about', component: AppAbout }
+        { path: 'post', component: NewPost }, 
+        { 
+          path: 'detail/:id', 
+          component: BoardDetails},
+        {path: 'detail/:id/edit', component: BoardAlter, name: 'BoardAlter' ,beforeEnter: checkPostOwner},
+        { path: '', component: MainBoard }, 
+        { path: 'about', component: AppAbout } 
       ]
     },
-    { path: '/oauth2/authorization/google'},
-    { path: '/oauth2/redirect', component: ReDirect},
-    { path: '/another-path' },
+    { path: '/oauth2/authorization/google' },
+    { path: '/oauth2/redirect', component: ReDirect },
+    { path: '/another-path' }
+  ]
+  
     // 나머지 모든 정의되지 않은 경로를 /main으로 리다이렉트
     //{ path: '/:pathMatch(.*)*', redirect: '/main' }
-  ]
 });
 
 

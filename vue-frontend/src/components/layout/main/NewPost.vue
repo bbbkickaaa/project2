@@ -24,7 +24,7 @@
         post: {
           title: '',
           content: '',
-          id : ''
+          id : '',
         },
         minLength : 5
       };

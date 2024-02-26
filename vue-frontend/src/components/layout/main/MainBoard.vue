@@ -13,7 +13,7 @@
                     <tbody v-if="limitedBoard.length > 0" >
                         <tr  v-for="list in limitedBoard" :key="list.boardId">
                             <td>{{ list.boardId }}</td>
-                            <td><a class="title" @click="toDetails(list.boardId)">{{ list.title }} {{ '[' + list.commentCount + ']'}}</a></td>
+                            <td><a class="title" @click="toDetails(list.boardId)">{{ list.title }} {{ '[' + list.commentCount + ']'}} <span v-if="list.likes">{{ '+' + list.likes }}</span></a></td>
                             <td>{{ list.nickname }}</td>
                             <td>{{ list.views }}</td>
                         </tr>
@@ -64,7 +64,6 @@ computed: {
 mounted(){
   this.$axios.get('/api/board/getAll')
           .then(response => {
-            console.log(response.data.content)
             this.TheBoard.data = response.data.content;
           })
           .catch(error => {
@@ -82,7 +81,7 @@ methods :{
         this.$router.push('/main/post')
     },
     toDetails(id){
-        this.$router.push({path:'/main/detail' , query : {id:id}})
+        this.$router.push({ path: `/main/detail/${id}` });
     }
 }
 }

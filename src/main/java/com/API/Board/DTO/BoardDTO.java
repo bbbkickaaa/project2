@@ -23,6 +23,7 @@ public class BoardDTO {
     private Long userIdx;
     private String nickname;
     private String writeDate;
-    private List<Comment> comments;
+    private String alterDate;
+    private List<CommentDTO> comments;
 
 }

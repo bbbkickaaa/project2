@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -65,5 +66,10 @@ public class UserController {
         Authentication authentication =  tokenProvider.getAuthentication(token);
         return memberService.getUser(authentication);
 	}
-	
+	@GetMapping("member/check-post-owner/{id}")
+	public ResponseEntity<?> checkPostOwner(@RequestHeader("Authorization") String authorizationHeader , @PathVariable("id") Long id){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return memberService.checkPostOwner(authentication,id);
+	}
 }

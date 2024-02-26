@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.API.Board.DTO.BoardReviewDTO;
+import com.API.Board.DTO.DeleteCommentDTO;
 
 import org.springframework.data.domain.Sort;
 @Controller
@@ -34,11 +35,16 @@ public class BoardController {
     public ResponseEntity<?> postBoard(@RequestBody Map<String, Object> requestData) {
        return boardService.postBoard(requestData);
     }
-	
 	@GetMapping("/getDetail")
 	public ResponseEntity<?> findbyId(@RequestParam("id") Long id){
 		return boardService.findbyId(id);
 	}
+	
+	@GetMapping("/getDetailOnlyAlter")
+	public ResponseEntity<?> findbyIdOnlyAlter(@RequestParam("id") Long id){
+		return boardService.findbyIdOnlyAlter(id);
+	}
+	
 	
 	@GetMapping("/getPostCount")
 	public ResponseEntity<?> countUserPostsAndComments(@RequestParam("id") Long id){
@@ -53,5 +59,20 @@ public class BoardController {
 	@PostMapping("/deleteBoard")
 	public ResponseEntity<?> deleteBoard(@RequestBody String boardId){
 		return boardService.deleteBoard(boardId);
+	}
+	
+	@PostMapping("/postRecommend")
+	public ResponseEntity<?> postRecommend(@RequestBody String boardId){
+		return boardService.postRecommend(boardId);
+	}
+	
+	@PostMapping("/postComment")
+	public ResponseEntity<?> postComment(@RequestBody Map<String, Object> requestData){
+		return boardService.postComment(requestData);
+	}
+	
+	@PostMapping("/deleteComment")
+	public ResponseEntity<?> deleteComment(@RequestBody DeleteCommentDTO dto){
+		return boardService.deleteComment(dto);
 	}
 }

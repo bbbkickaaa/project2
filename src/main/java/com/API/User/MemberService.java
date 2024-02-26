@@ -9,5 +9,5 @@ import com.API.User.Entity.UserDTO;
 public interface MemberService  {
 
 	public ResponseEntity<UserDTO> getUser(Authentication authentication);
-
+	public ResponseEntity<?> checkPostOwner(Authentication authentication , Long postId);
 }

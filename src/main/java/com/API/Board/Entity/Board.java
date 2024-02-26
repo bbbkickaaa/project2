@@ -29,7 +29,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "board")
-@SecondaryTable(name = "board_comments", pkJoinColumns = @PrimaryKeyJoinColumn(name = "board_id"))
 public class Board {
 
     @Id
@@ -52,11 +51,13 @@ public class Board {
     @Column(nullable = false)
     private int views = 0;
     
-    @ElementCollection
-    @CollectionTable(name = "board_comments", joinColumns = @JoinColumn(name = "board_id"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
     
     @Column(name="write_date" ,length = 8)
 	private String writeDate = LocalDate.now().toString().replace("-", "");
+    
+    @Column(name="alter_date" ,length = 8)
+	private String alterDate;
     
 }

@@ -3,8 +3,12 @@ package com.API.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +18,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.API.Board.DTO.BoardAlterDTO;
 import com.API.Board.DTO.BoardDTO;
 import com.API.Board.DTO.BoardPostCountDTO;
 import com.API.Board.DTO.BoardReviewDTO;
+import com.API.Board.DTO.CommentDTO;
+import com.API.Board.DTO.DeleteCommentDTO;
 import com.API.Board.Entity.Board;
+import com.API.Board.Entity.Comment;
 import com.API.User.UserRepository;
 import com.API.User.Entity.User;
 
@@ -52,13 +60,25 @@ public class BoardService {
 		            () -> new EntityNotFoundException("User not found with ID: " + id));
 			String title = (String) requestData.get("title");
 			String content = (String) requestData.get("content");
-			board.setTitle(title);
-			board.setContent(content);
-			board.setAuthor(author);
-			boardRepository.save(board);
-			return ResponseEntity.status(HttpStatus.OK).body("정상 등록 되었습니다.");
-			}
-				catch (ClassCastException e) {
+			Object boardIdObj = requestData.get("boardId");
+			if (boardIdObj == null) {
+					board.setTitle(title);
+					board.setContent(content);
+					board.setAuthor(author);
+					boardRepository.save(board);
+				return ResponseEntity.status(HttpStatus.OK).body("정상 등록 되었습니다.");
+				}else {
+					Long boardId = Long.valueOf(boardIdObj.toString());
+					Optional<Board> board2o = boardRepository.findById(boardId);
+					Board board2 = board2o.get();
+					board2.setAlterDate(LocalDate.now().toString().replace("-", ""));
+					board2.setContent(content);
+					board2.setTitle(title);
+					boardRepository.save(board2);
+					return ResponseEntity.status(HttpStatus.OK).body("정상 등록 되었습니다.");
+				}
+				
+			}catch (ClassCastException e) {
 					    log.error("ClassCastException occurred", e);
 			    return ResponseEntity.badRequest().build(); 
 			} catch (NullPointerException e) {
@@ -69,7 +89,11 @@ public class BoardService {
 			    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
 	}
+		
 	
+		
+		
+		
 	public ResponseEntity<?> findbyId(Long id){
 		Optional<Board> wrapBoard = boardRepository.findById(id);
 		Board board = wrapBoard.get();
@@ -84,11 +108,40 @@ public class BoardService {
 	    boardDTO.setLikes(board.getLikes());
 	    boardDTO.setViews(board.getViews());
 	    boardDTO.setWriteDate(board.getWriteDate());
-	    boardDTO.setComments(board.getComments());
+	    boardDTO.setAlterDate(board.getAlterDate());
+	    List<CommentDTO> listDto = new ArrayList<>();
+	    List<Comment> list = board.getComments();
+	    list.stream().forEach(comment -> {
+	    	CommentDTO dto = new CommentDTO();
+	    	dto.setContent(comment.getContent());
+	    	dto.setNickname(comment.getAuthor().getNickname());
+	    	dto.setUserid(comment.getAuthor().getId());
+	    	dto.setWriteDate(comment.getWriteDate());
+	    	dto.setCommentId(comment.getId());
+	    	listDto.add(dto);
+	    });
+	    boardDTO.setComments(listDto);
 	    boardDTO.setNickname(board.getAuthor().getNickname());
-		
 		return ResponseEntity.ok().body(boardDTO);
 		
+	}
+	
+	public ResponseEntity<?> findbyIdOnlyAlter(Long id){
+		
+		Optional<Board> board = boardRepository.findById(id);
+		if(board.isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
+		else {
+			BoardAlterDTO dto = new BoardAlterDTO();
+			Board boards = board.get();
+			dto.setTitle(boards.getTitle());
+			dto.setContent(boards.getContent());
+			dto.setId(id);
+			dto.setUserIdx(boards.getAuthor().getId());
+			
+			return ResponseEntity.ok(dto);
+		}
 	}
 	
 	public ResponseEntity<?> countUserPostsAndComments(Long id){
@@ -110,8 +163,6 @@ public class BoardService {
         boardRepository.save(board.get());
         
         return ResponseEntity.ok().body("조회수 증가되었습니다.");
-		
-		
 	}
 	
 	public ResponseEntity<?> deleteBoard(String boardIdS){
@@ -119,9 +170,85 @@ public class BoardService {
 		boardRepository.deleteById(boardId);
 		
 		return ResponseEntity.ok().body("삭제 되었습니다.");
-		
 	}
+	public ResponseEntity<?> postRecommend(String boardIdS){
+		Long boardId = Long.valueOf(boardIdS);
+		Optional<Board> board = boardRepository.findById(boardId);
+		if(board.isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
+		board.get().setLikes((board.get().getLikes() + 1));
+		boardRepository.save(board.get());
+		return ResponseEntity.ok().body("추천 증가되었습니다.");
+	}
+	
+	
+	public ResponseEntity<?> postComment(Map<String, Object> requestData){
+		try {
+			String userIdAsString = (String) requestData.get("userIdx");
+			Long userid = Long.valueOf(userIdAsString);
+			int boardidAsInt = (Integer) requestData.get("BoardId");
+			Long boardid = Long.valueOf(boardidAsInt);
+			String content = (String) requestData.get("comment");
+			Optional<Board> boards = boardRepository.findById(boardid);
+			Board board = boards.get();
+			User author = userRepository.findById(userid).orElseThrow(
+		            () -> new EntityNotFoundException("User not found with ID: " + userid));
+			Comment comment = new Comment();
+			comment.setAuthor(author);
+			comment.setContent(content);
+			
+			if (board.getComments() == null) {
+			    board.setComments(new ArrayList<>());
+			}
+			List<Comment> comments = board.getComments();
+			comments.add(comment);
+			board.setComments(comments);
+			boardRepository.save(board);
+			
+			Board board2 = boardRepository.findById(boardid).get();
+			List<CommentDTO> comments2 = new ArrayList<>();
+			board2.getComments().stream().forEach(list -> {
+				CommentDTO dto = new CommentDTO();
+				dto.setCommentId(list.getId());
+				dto.setNickname(list.getAuthor().getNickname());
+				dto.setContent(list.getContent());
+				dto.setUserid(list.getAuthor().getId());
+				dto.setWriteDate(list.getWriteDate());
+				comments2.add(dto);
+			}
+);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(comments2);
+			}
+				catch (ClassCastException e) {
+					    log.error("ClassCastException occurred", e);
+			    return ResponseEntity.badRequest().build(); 
+			} catch (NullPointerException e) {
+			    log.error("NullPointerException occurred", e);
+			    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			} catch(EntityNotFoundException e) {
+			    log.error("EntityNotFoundException occurred", e);
+			    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
+	}
+	
+	public ResponseEntity<?> deleteComment(DeleteCommentDTO dto){
+		Long BoardId = dto.getBoardId();
+		Long CommentId = dto.getCommentId();
+		Optional<Board> boardOptional = boardRepository.findById(BoardId);
+		if (boardOptional.isPresent()) {
+	        Board board = boardOptional.get();
+	        boolean removed = board.getComments().removeIf(comment -> comment.getId().equals(CommentId));
+		if (removed) {
+        boardRepository.save(board);
+        return ResponseEntity.ok().build();
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("댓글을 찾을 수 없습니다.");
+		}}else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 게시판이 없습니다.");
+}
 	    
-	    
+}
 }
 
