@@ -44,19 +44,11 @@ public class NewUserServiceImpl implements NewUserService{
 				try {
 					String encodedPassword = passwordEncoder.encode(user.getPassword());
 			        String nickName = RandomNicknameGenerator.generateRandomNickname();
-			        
-			        //
 			        user.setPassword(encodedPassword);
 			        user.setNickname(nickName);
 			        user.setRole(UserRole.USER);
 			        user.setUserLevel(new UserLevel(1,0));
-			        
-			        //
-			        
 		            userRepository.save(user);
-		            
-		            //
-		            
 		            entity = ResponseEntity.status(HttpStatus.CREATED).body("사용자가 생성되었습니다.");
 		        } catch (Exception e) {
 		            entity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 생성 중 오류가 발생했습니다.");

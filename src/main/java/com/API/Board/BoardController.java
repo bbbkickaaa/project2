@@ -33,6 +33,7 @@ public class BoardController {
 	
 	@PostMapping("/post")
     public ResponseEntity<?> postBoard(@RequestBody Map<String, Object> requestData) {
+		
        return boardService.postBoard(requestData);
     }
 	@GetMapping("/getDetail")

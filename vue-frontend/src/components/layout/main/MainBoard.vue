@@ -36,8 +36,8 @@
              </div>
             <nav aria-label="Page navigation" class="paging mt-4">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item" v-for="n in 5" :key="n">
-                        <a class="page-link" href="#">{{ n }}</a>
+                    <li class="page-item" v-for="n in pageNumbers" :key="n">
+                        <a class="page-link" @click="setPage(n-1)">{{ n }}</a>
                     </li>
                 </ul>
             </nav>
@@ -50,6 +50,9 @@ export default {
 data(){
     return{
         TheBoard :{data : []},
+        GetPageInfo : [],
+        currentPage:'',
+        totalPages:''
     }
 },
 computed: {
@@ -58,13 +61,44 @@ computed: {
     },
     emptyRowsCount: function() {
       return Math.max(20 - this.limitedBoard.length, 0);
-    }
-    }
+    },
+    pageNumbers() {
+        const windowSize = 5;
+        let startPage, endPage;
+
+        if (this.totalPages <= windowSize) {
+        startPage = 1;
+        endPage = this.totalPages;
+        } else {
+        if (this.currentPage >= Math.ceil(windowSize / 2)) {
+            startPage = Math.max(1, this.currentPage - Math.floor(windowSize / 2));
+            endPage = startPage + windowSize - 1;
+            if (endPage > this.totalPages) {
+            endPage = this.totalPages;
+            startPage = Math.max(1, endPage - windowSize + 1);
+            }
+        } else {
+            startPage = 1;
+            endPage = windowSize;
+        }
+        }
+        const pages = [];
+        for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+        }
+        return pages;
+}
+}
 ,
 mounted(){
-  this.$axios.get('/api/board/getAll')
+  this.getBoard(0);
+},
+methods :{
+    getBoard(page){
+        this.$axios.get('/api/board/getAll',  {params: {page: page,size: 20}})
           .then(response => {
             this.TheBoard.data = response.data.content;
+            this.totalPages = response.data.totalPages;
           })
           .catch(error => {
             if (error.response) {
@@ -75,8 +109,13 @@ mounted(){
               alert(`${error.message}`);
             }
         });
-},
-methods :{
+    },
+    setPage(page){
+        this.currentPage = page;
+        this.getBoard(page);
+
+    },
+    
     writePost() {
         this.$router.push('/main/post')
     },
@@ -150,5 +189,10 @@ methods :{
     cursor: pointer;
     text-decoration-line: underline;
 }
-
+.page-link:hover {
+    cursor: pointer;
+}
+.page-link{
+    color: #888;
+}
 </style>
