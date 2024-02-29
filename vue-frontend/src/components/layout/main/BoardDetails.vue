@@ -137,8 +137,9 @@ methods: {
             }})
         },
   PostRecommend (){
-    this.$axios.post('/api/board/postRecommend', this.BoardInfo.id)
+    this.$axios.post('/api/board/postRecommend', this.BoardInfo)
     .then(()=>{this.BoardInfo.likes += 1, this.IsRecommended = true})
+    .catch((response)=>{alert(response.response.data);})
   },
   PostComment(){
     this.$axios.post('/api/board/postComment', this.CommentForm)

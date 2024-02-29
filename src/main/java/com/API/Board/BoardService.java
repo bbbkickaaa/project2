@@ -5,19 +5,15 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
-
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.API.Board.DTO.BoardAlterDTO;
 import com.API.Board.DTO.BoardDTO;
 import com.API.Board.DTO.BoardPostCountDTO;
@@ -171,15 +167,26 @@ public class BoardService {
 		
 		return ResponseEntity.ok().body("삭제 되었습니다.");
 	}
-	public ResponseEntity<?> postRecommend(String boardIdS){
-		Long boardId = Long.valueOf(boardIdS);
-		Optional<Board> board = boardRepository.findById(boardId);
+	public ResponseEntity<?> postRecommend(Map<String, Object> requestData){
+		int userIdAsString = (Integer) requestData.get("userIdx");
+		int userId = Integer.valueOf(userIdAsString);
+		int boardidAsString = (Integer) requestData.get("id");
+		Long boardLong = Long.valueOf(boardidAsString);
+		
+		Optional<Board> board = boardRepository.findById(boardLong);
 		if(board.isEmpty()) {
 			return ResponseEntity.badRequest().build();
 		}
-		board.get().setLikes((board.get().getLikes() + 1));
-		boardRepository.save(board.get());
-		return ResponseEntity.ok().body("추천 증가되었습니다.");
+		if (board.get().getLikesUsers() == null || !board.get().getLikesUsers().stream().anyMatch(user -> user.equals(userId))) {
+		    board.get().setLikes(board.get().getLikes() + 1);
+		    Set<Integer> set = new HashSet<>();
+		    set.add(userId);
+		    board.get().setLikesUsers(set);
+		    boardRepository.save(board.get());
+		    return ResponseEntity.ok().body("추천되었습니다.");
+		} else {
+		    return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 추천되었습니다.");
+		}
 	}
 	
 	

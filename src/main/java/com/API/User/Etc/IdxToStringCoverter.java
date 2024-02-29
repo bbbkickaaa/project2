@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import jakarta.persistence.*;
 
 @Converter
-public class BlockIdSetToStringConverter implements AttributeConverter<Set<Integer>, String> {
+public class IdxToStringCoverter implements AttributeConverter<Set<Integer>, String> {
 	
     @Override
     public String convertToDatabaseColumn(Set<Integer> blockIds) {

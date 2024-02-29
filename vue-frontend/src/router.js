@@ -13,6 +13,7 @@ import NewPost from "./components/layout/main/NewPost.vue";
 import BoardDetails from "./components/layout/main/BoardDetails.vue"
 import BoardAlter from "./components/layout/main/BoardAlter.vue"
 import { checkPostOwner } from './routerGuard';
+import Identity from './components/layout/main/IdentityContent.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -30,6 +31,7 @@ const router = createRouter({
       component: MainLayout,
       props: true,
       children: [
+        {path : 'identity', component:Identity},
         { path: 'post', component: NewPost }, 
         { 
           path: 'detail/:id', 
@@ -41,11 +43,11 @@ const router = createRouter({
     },
     { path: '/oauth2/authorization/google' },
     { path: '/oauth2/redirect', component: ReDirect },
-    { path: '/another-path' }
-  ]
-  
+    { path: '/another-path' },
+    
     // 나머지 모든 정의되지 않은 경로를 /main으로 리다이렉트
-    //{ path: '/:pathMatch(.*)*', redirect: '/main' }
+    { path: '/:pathMatch(.*)*', redirect: '/main' }
+  ]
 });
 
 

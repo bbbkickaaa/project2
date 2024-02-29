@@ -4,12 +4,15 @@ package com.API.Board.Entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.API.User.Entity.User;
+import com.API.User.Etc.IdxToStringCoverter;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -47,6 +50,10 @@ public class Board {
 
     @Column(nullable = false)
     private int likes = 0;
+    
+    @Convert(converter = IdxToStringCoverter.class)
+    @Column(name = "likes_users")
+    private Set<Integer> likesUsers;
 
     @Column(nullable = false)
     private int views = 0;

@@ -63,8 +63,8 @@ public class BoardController {
 	}
 	
 	@PostMapping("/postRecommend")
-	public ResponseEntity<?> postRecommend(@RequestBody String boardId){
-		return boardService.postRecommend(boardId);
+	public ResponseEntity<?> postRecommend(@RequestBody Map<String, Object> requestData){
+		return boardService.postRecommend(requestData);
 	}
 	
 	@PostMapping("/postComment")

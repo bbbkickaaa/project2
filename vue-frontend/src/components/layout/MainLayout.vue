@@ -1,6 +1,6 @@
 <template>
     <div>
-      <AppHeader></AppHeader>
+      <AppHeader @Alter-identity="handleAlterIdentity"></AppHeader>
         <div class="Wraps">
            <router-view></router-view>
         </div>
@@ -17,6 +17,11 @@
       return {
       }
     },
+    methods:{
+      handleAlterIdentity() {
+        this.$router.push('main/identity')
+    }
+  }
   };
   </script>
   <style>

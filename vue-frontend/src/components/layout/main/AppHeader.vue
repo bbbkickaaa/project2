@@ -7,7 +7,7 @@
               <p class="registration-date">가입일: <span>{{userData.createdDate}}</span></p>
               <p class="posts">글 갯수: {{userData.postCount}}</p>
               <p class="comments">댓글 갯수: {{ userData.commentCount }}</p>
-              <button class="btn btn-secondary edit" >정보수정</button>
+              <button class="btn btn-secondary edit" @click="AlterIdentity" >정보수정</button>
               <button class="btn btn-secondary logout" @click="logout">로그아웃</button>
           </div>
           
@@ -38,7 +38,6 @@ mounted(){
             this.userData = response.data;
             this.getUserPostCount(this.userData.id)
             sessionStorage.setItem('userIdx',this.userData.id)
-            console.log(this.userData.id)
           })
           .catch(error => {
             if (error.response) {
@@ -77,12 +76,15 @@ methods:{
               alert("토큰이 만료되었습니다.");
             }
         });
+    },
+    AlterIdentity(){
+      this.$emit('Alter-identity');
     }
 }
 }
 </script>
 
-<style>
+<style scoped>
 .user-info{
   width: 1000px;
   height: 100px;
