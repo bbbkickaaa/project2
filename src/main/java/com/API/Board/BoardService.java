@@ -38,6 +38,9 @@ public class BoardService {
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	CommentRepository commentRepository;
+	
 	public ResponseEntity<Page<BoardReviewDTO>> findAll(Pageable pageable){
 		Page<BoardReviewDTO> paging = boardRepository.findAllBoardDTOs(pageable);
 	    if (paging.isEmpty()) {
@@ -143,8 +146,9 @@ public class BoardService {
 	public ResponseEntity<?> countUserPostsAndComments(Long id){
 		BoardPostCountDTO dto = new BoardPostCountDTO();
 		Long postCount = boardRepository.countPostsByAuthorId(id);
-		Long CommentCount = boardRepository.countCommentsByAuthorId(id);
-		dto.setCommentCount(CommentCount);
+		List<Comment> CommentCount = commentRepository.findByauthorId(id);
+		Long count = CommentCount.stream().count();
+		dto.setCommentCount(count);
 		dto.setPostCount(postCount);
 		return ResponseEntity.ok(dto);
 	}

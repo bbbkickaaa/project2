@@ -25,7 +25,7 @@ public class BoardController {
 	@Autowired
 	BoardService boardService;
 
-	@GetMapping("/getAll")
+	@GetMapping("/get-all")
 	public ResponseEntity<Page<BoardReviewDTO>> findAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
 		
 		return boardService.findAll(pageable);
@@ -36,43 +36,43 @@ public class BoardController {
 		
        return boardService.postBoard(requestData);
     }
-	@GetMapping("/getDetail")
+	@GetMapping("/get-detail")
 	public ResponseEntity<?> findbyId(@RequestParam("id") Long id){
 		return boardService.findbyId(id);
 	}
 	
-	@GetMapping("/getDetailOnlyAlter")
+	@GetMapping("/get-detail-only-alter")
 	public ResponseEntity<?> findbyIdOnlyAlter(@RequestParam("id") Long id){
 		return boardService.findbyIdOnlyAlter(id);
 	}
 	
 	
-	@GetMapping("/getPostCount")
+	@GetMapping("/get-post-count")
 	public ResponseEntity<?> countUserPostsAndComments(@RequestParam("id") Long id){
 		return boardService.countUserPostsAndComments(id);
 	}
 	
-	@PostMapping("/postViews")
+	@PostMapping("/post-views")
 	public ResponseEntity<?> postViews(@RequestBody String boardId){
 		return boardService.postViews(boardId);
 	}
 	
-	@PostMapping("/deleteBoard")
+	@PostMapping("/delete-board")
 	public ResponseEntity<?> deleteBoard(@RequestBody String boardId){
 		return boardService.deleteBoard(boardId);
 	}
 	
-	@PostMapping("/postRecommend")
+	@PostMapping("/post-recommend")
 	public ResponseEntity<?> postRecommend(@RequestBody Map<String, Object> requestData){
 		return boardService.postRecommend(requestData);
 	}
 	
-	@PostMapping("/postComment")
+	@PostMapping("/post-comment")
 	public ResponseEntity<?> postComment(@RequestBody Map<String, Object> requestData){
 		return boardService.postComment(requestData);
 	}
 	
-	@PostMapping("/deleteComment")
+	@PostMapping("/delete-comment")
 	public ResponseEntity<?> deleteComment(@RequestBody DeleteCommentDTO dto){
 		return boardService.deleteComment(dto);
 	}

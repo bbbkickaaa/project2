@@ -1,5 +1,7 @@
 package com.API.User;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;    
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok().body("삭제되었습니다.");
 	}
 	
-	@GetMapping("/member/getUser")
+	@GetMapping("/member/get-user")
 	public ResponseEntity<UserDTO> getUser(@RequestHeader("Authorization") String authorizationHeader) {
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
@@ -71,5 +73,20 @@ public class UserController {
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
 		return memberService.checkPostOwner(authentication,id);
+	}
+	
+	@PostMapping("member/delete-user")
+	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String id){
+		Long userId = Long.valueOf(id);
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return memberService.deleteUser(authentication,userId);
+	}
+	
+	@PostMapping("member/alter-user")
+	public ResponseEntity<String> alterUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Object> requestData){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return memberService.alterUser(authentication,requestData);
 	}
 }

@@ -47,7 +47,7 @@ export default {
         this.id = id;
         this.post.boardId = this.$route.params.id;
         this.post.id = sessionStorage.getItem('userIdx');
-        this.$axios.get('/api/board/getDetailOnlyAlter', { params: { id: id }})
+        this.$axios.get('/api/board/get-detail-only-alter', { params: { id: id }})
         .then(Response => {this.post.title = Response.data.title; this.post.content = Response.data.content });
     }
 

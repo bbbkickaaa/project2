@@ -95,7 +95,7 @@ mounted(){
 },
 methods :{
     getBoard(page){
-        this.$axios.get('/api/board/getAll',  {params: {page: page,size: 20}})
+        this.$axios.get('/api/board/get-all',  {params: {page: page,size: 20}})
           .then(response => {
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;

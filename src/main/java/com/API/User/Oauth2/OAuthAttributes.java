@@ -79,4 +79,8 @@ public class OAuthAttributes {
                 .nickname(name)
                 .build();
     }
+    public OAuthAttributes withNewUserId(String newUserId) {
+        this.userid = newUserId;
+        return this;
+    }
 }

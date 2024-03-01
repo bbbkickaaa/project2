@@ -107,8 +107,6 @@ public class SecurityConfig {
 		 CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
 		 requestHandler.setCsrfRequestAttributeName("_csrf");
 		
-		
-	    // 기본 보안 설정
 	    http
 	        .cors(cors -> cors.configurationSource(configurationSource()))
 	        .csrf(AbstractHttpConfigurer::disable)
@@ -117,21 +115,16 @@ public class SecurityConfig {
 	        .httpBasic(AbstractHttpConfigurer::disable)
 	        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-	    // HTTP 요청에 대한 권한 설정
 	    http
 	    	.authorizeHttpRequests(auth -> auth
 	    	.requestMatchers("/webjars/**", "/js/**", "/image/**", "/","/oauth2/**", "/login/oauth2/**","/auth/**","/api/public/**").permitAll()
             .anyRequest().authenticated()
         );
 	 
-	    
-	    
 	    http
 	    	.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN)));
 	
-	    // OAuth2 로그인 설정
-
 	  http
 	    .oauth2Login(oauth2Login -> oauth2Login
 	            .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint

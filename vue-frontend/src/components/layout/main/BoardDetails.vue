@@ -87,7 +87,7 @@
     },
 mounted(){
     const id = parseInt(this.$route.params.id, 10);
-    this.$axios.get('/api/board/getDetail', { params: { id: id }})
+    this.$axios.get('/api/board/get-detail', { params: { id: id }})
     .then(response => {
             console.log(response.data)
             this.BoardInfo = response.data;
@@ -110,7 +110,7 @@ mounted(){
 watch: {
     ShowModal(newValue) {
         if (newValue) {
-        this.showSignupModal = false;
+        this.ShowModal = false;
         }
     }
 },
@@ -122,10 +122,10 @@ methods: {
     return this.userIdx == this.BoardInfo.userIdx;
   },
   PlusViews(){
-    this.$axios.post('/api/board/postViews', this.BoardInfo.id)
+    this.$axios.post('/api/board/post-views', this.BoardInfo.id)
   },
   DeleteBoard(){
-    this.$axios.post('/api/board/deleteBoard', this.BoardInfo.id)
+    this.$axios.post('/api/board/delete-board', this.BoardInfo.id)
     .then(()=> {this.$router.push('/main')})
     .catch(error => {
             if (error.response) {
@@ -137,19 +137,19 @@ methods: {
             }})
         },
   PostRecommend (){
-    this.$axios.post('/api/board/postRecommend', this.BoardInfo)
+    this.$axios.post('/api/board/post-recommend', this.BoardInfo)
     .then(()=>{this.BoardInfo.likes += 1, this.IsRecommended = true})
     .catch((response)=>{alert(response.response.data);})
   },
   PostComment(){
-    this.$axios.post('/api/board/postComment', this.CommentForm)
+    this.$axios.post('/api/board/post-comment', this.CommentForm)
     .then(response => {
       this.CommentForm.comment = '';
       this.BoardInfo.comments.push(response.data[response.data.length - 1])
     })
     },
     DeleteComment(commentId,boardId){
-    this.$axios.post('/api/board/deleteComment', {commentId,boardId})
+    this.$axios.post('/api/board/delete-comment', {commentId,boardId})
     .then(()=>this.BoardInfo.comments = this.BoardInfo.comments.filter(comment => comment.commentId !== commentId))
     },
     AlterBoard(id) {

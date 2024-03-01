@@ -1,6 +1,8 @@
 package com.API.User.Oauth2;
 
-import java.util.Collections; 
+import java.util.Collections;
+import java.util.Optional;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -42,10 +44,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
  
     private User saveOrUpdate(OAuthAttributes attributes) {
-        User user = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getUserid()))
-                .orElse(attributes.toEntity());
-        return userRepository.save(user);
+    	 Optional<User> existingUserOpt = userRepository.findByEmail(attributes.getEmail());
+
+    	    if (existingUserOpt.isPresent()) {
+    	        User existingUser = existingUserOpt.get();
+    	        if (existingUser.isDeleted()) {
+    	            throw new IllegalStateException("삭제된 회원입니다.");
+    	        }
+    	        existingUser.update(attributes.getUserid());
+    	        return userRepository.save(existingUser);
+    	    } else {
+    	        return userRepository.save(attributes.toEntity());
+    	    }
     }
 }
 

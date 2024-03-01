@@ -33,7 +33,7 @@ data(){
     }
 },
 mounted(){
-  this.$axios.get('/api/member/getUser')
+  this.$axios.get('/api/member/get-user')
           .then(response => {
             this.userData = response.data;
             this.getUserPostCount(this.userData.id)
@@ -58,7 +58,7 @@ methods:{
       router.push({path:'/intro'})
     },
     getUserPostCount(id) {
-          this.$axios.get('/api/board/getPostCount', {
+          this.$axios.get('/api/board/get-post-count', {
             params: {
               id: id
             }
