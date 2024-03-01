@@ -27,7 +27,6 @@
   </script>
   
   <style scoped>
-  /* 모달 오버레이 스타일 */
   .modal-overlay {
     position: fixed;
     left: 0;
@@ -41,21 +40,19 @@
     z-index: 1000;
   }
   
-  /* 모달 컨텐츠 스타일 */
   .modal-content {
     background-color: #ffffff;
-    padding: 30px; /* 컨텐츠 패딩 */
+    padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    min-height: 500px; /* 최소 세로 높이를 800px로 설정 */
-    overflow-y: auto; /* 세로 스크롤 추가 */
+    min-height: 500px;
+    overflow-y: auto;
     width: 80%;
-    max-width: 600px; /* 최대 너비 설정 */
+    max-width: 600px;
     z-index: 1001;
     position: relative;
   }
   
-  /* 모달 닫기 버튼 스타일 */
   .close {
     position: absolute;
     top: 10px;
@@ -65,7 +62,6 @@
     cursor: pointer;
   }
   
-  /* 모달 애니메이션 스타일 */
   .modal-content {
     transform: scale(0);
     animation: modal-show 0.3s forwards;
@@ -82,9 +78,8 @@
     }
   }
   
-  /* 모달 내부 컨텐츠 스타일 */
   .content-wrapper {
-    max-height: 600px; /* 내부 텍스트 높이 제한 */
-    overflow-y: scroll; /* 세로 스크롤 추가 */
+    max-height: 600px;
+    overflow-y: scroll;
   }
   </style>

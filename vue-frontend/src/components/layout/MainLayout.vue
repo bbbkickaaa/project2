@@ -1,7 +1,7 @@
 <template>
     <div>
       <AppHeader @Alter-identity="handleAlterIdentity"></AppHeader>
-        <div class="Wraps">
+        <div class="wraps">
            <router-view></router-view>
         </div>
     </div>
@@ -25,7 +25,7 @@
   };
   </script>
   <style>
-    .Wraps{
+    .wraps{
           position : relative;
           width: 1300px;
           height: 1000px;

@@ -31,11 +31,11 @@
     </div>
 
     <modal-component :show="ShowModal" @close="ShowModal = false" class="">
-                <div class="modalInner">
+                <div class="modal-inner">
                 <h4 style="text-align: center; padding-top: 50px;">정말 탈퇴하시겠습니까?</h4>
-                    <div class="ButtonOuter">
-                        <button class="btn btn-secondary modalButton" @click="deleteAccount">네</button>
-                        <button class="btn btn-secondary modalButton" @click="ShowModal = false">취소</button>
+                    <div class="button-outer">
+                        <button class="btn btn-secondary modal-button" @click="deleteAccount">네</button>
+                        <button class="btn btn-secondary modal-button" @click="ShowModal = false">취소</button>
                     </div>
                 </div>
     </modal-component>
@@ -122,19 +122,19 @@
     padding: 30px;
     margin-bottom: 30px;
   }
-  .modalInner{
+  .modal-inner{
         box-sizing: border-box;
         padding: 30px;
         border: 1px solid rgba(108, 117, 125, 0.2);
         height: 400px;
         margin-top: 30px;
     }
-    .modalButton{
+    .modal-button{
         margin: 0 auto;
         width: 100px;
         margin-right: 20px;
     }
-    .ButtonOuter{
+    .button-outer{
         box-sizing: border-box;
         border-top: 1px dashed rgba(108, 117, 125, 0.2);
         margin-left: 100px;

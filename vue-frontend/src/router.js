@@ -7,7 +7,6 @@ import AppIntro from './views/AppIntro.vue';
 //
 import MainLayout from './components/layout/MainLayout.vue';
 import MainBoard from './components/layout/main/MainBoard.vue';
-import AppAbout from './views/AppAbout.vue';
 import ReDirect from "./views/ReDirect.vue";
 import NewPost from "./components/layout/main/NewPost.vue";
 import BoardDetails from "./components/layout/main/BoardDetails.vue"
@@ -38,14 +37,13 @@ const router = createRouter({
           component: BoardDetails},
         {path: 'detail/:id/edit', component: BoardAlter, name: 'BoardAlter' ,beforeEnter: checkPostOwner},
         { path: '', component: MainBoard }, 
-        { path: 'about', component: AppAbout } 
       ]
     },
     { path: '/oauth2/authorization/google' },
     { path: '/oauth2/redirect', component: ReDirect },
     { path: '/another-path' },
     
-    // 나머지 모든 정의되지 않은 경로를 /main으로 리다이렉트
+
     { path: '/:pathMatch(.*)*', redirect: '/main' }
   ]
 });

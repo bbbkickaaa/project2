@@ -1,7 +1,7 @@
 <template>
     <div class="wrap">
-        <div class="container mt-4 contentWrap">
-            <div class="post-detail innerBox">
+        <div class="container mt-4 content-wrap">
+            <div class="post-detail inner-box">
                 <div class="post-info">
                     <ul>
                         <li class="infos">작성자 : {{ BoardInfo.nickname }}</li>
@@ -13,7 +13,7 @@
                 <h3 class="post-title titles">{{ BoardInfo.title  }}</h3>
                 <p class="post-content contents">{{ BoardInfo.content }}</p>
                 <div class = "recommend">
-                    <button class="btn btn-primary recommendButton" :disabled="IsRecommended" @click="PostRecommend"><span>추천 : {{BoardInfo.likes }}</span></button>
+                    <button class="btn btn-primary recommend-button" :disabled="IsRecommended" @click="PostRecommend"><span>추천 : {{BoardInfo.likes }}</span></button>
                 </div>
             </div>
                 
@@ -32,11 +32,11 @@
             </form>
         </div>
             <modal-component :show="ShowModal" @close="ShowModal = false" class="">
-                <div class="modalInner">
+                <div class="modal-inner">
                 <h4 style="text-align: center; padding-top: 50px;">정말 삭제하시겠습니까?</h4>
-                    <div class="ButtonOuter">
-                        <button class="btn btn-secondary modalButton" @click="DeleteBoard">네</button>
-                        <button class="btn btn-secondary modalButton" @click="ShowModal = false">취소</button>
+                    <div class="button-outer">
+                        <button class="btn btn-secondary modal-button" @click="DeleteBoard">네</button>
+                        <button class="btn btn-secondary modal-button" @click="ShowModal = false">취소</button>
                     </div>
                 </div>
             </modal-component>
@@ -168,7 +168,7 @@ methods: {
         padding-top : 50px;
         margin-bottom: 100px;
     }
-    .contentWrap{
+    .content-wrap{
         height : 1100px;
     }
 
@@ -177,7 +177,7 @@ methods: {
         display: flex;
         justify-content: center;
     }
-    .recommend .recommendButton{
+    .recommend .recommend-button{
         position: absolute;
         top: 20px;
         width: 150px;
@@ -185,7 +185,7 @@ methods: {
 
     }
 
-    .innerBox{
+    .inner-box{
         margin: 0 auto;
         width: 900px;
         border: 1px solid rgba(108, 117, 125, 0.2);
@@ -216,7 +216,7 @@ methods: {
         padding-top: 15px;
         padding-left: 10px;
     }
-    .modalInner{
+    .modal-inner{
         box-sizing: border-box;
         padding: 30px;
         border: 1px solid rgba(108, 117, 125, 0.2);
@@ -228,7 +228,7 @@ methods: {
         width: 100px;
         margin-right: 20px;
     }
-    .ButtonOuter{
+    .button-outer{
         box-sizing: border-box;
         border-top: 1px dashed rgba(108, 117, 125, 0.2);
         margin-left: 100px;

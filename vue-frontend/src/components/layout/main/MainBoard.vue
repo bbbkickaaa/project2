@@ -32,7 +32,7 @@
                 </table>
             </div> 
             <div class ="sections">
-               <button @click="writePost" class="btn btn-secondary writeBoard">글쓰기</button>
+               <button @click="writePost" class="btn btn-secondary write-board">글쓰기</button>
              </div>
             <nav aria-label="Page navigation" class="paging mt-4">
                 <ul class="pagination justify-content-center">
@@ -174,7 +174,7 @@ methods :{
     display: relative;
     margin-bottom : 100px;
 }
-.sections .writeBoard {
+.sections .write-board {
     width: 80px;
     margin : 0 auto;
     position: absolute;

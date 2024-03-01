@@ -14,9 +14,9 @@
     </div>
     <button id="submit" type="submit" class="btn btn-secondary" :disabled="!isPossible">회원가입</button>
     <div class ="labels">
-      <label class="showText" v-if="!isUserIdValid && signupForm.userid"> {{ showTextId }} </label>
-      <label class="showText" v-if="!isPasswordValid && signupForm.password"> {{ showTextPw }} </label>
-      <label class="showText" v-if="!isEmailValid && signupForm.email"> {{ showTextEmail }} </label>
+      <label class="show-text" v-if="!isUserIdValid && signupForm.userid"> {{ showTextId }} </label>
+      <label class="show-text" v-if="!isPasswordValid && signupForm.password"> {{ showTextPw }} </label>
+      <label class="show-text" v-if="!isEmailValid && signupForm.email"> {{ showTextEmail }} </label>
   </div>
     <div class="mt-3">
       <a  href="http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000/oauth2/redirect">
@@ -88,7 +88,7 @@ import axios from 'axios';
 }
   </script>
   <style>
-  .showText{
+  .show-text{
     margin-top: 5px;
     margin-right: 10px;
   }
