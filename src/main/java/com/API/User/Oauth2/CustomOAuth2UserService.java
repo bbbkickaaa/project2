@@ -1,7 +1,11 @@
 package com.API.User.Oauth2;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -44,18 +48,19 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
  
     private User saveOrUpdate(OAuthAttributes attributes) {
-    	 Optional<User> existingUserOpt = userRepository.findByEmail(attributes.getEmail());
+    	Optional<Set<User>> existingUsersOpt = userRepository.findByEmail(attributes.getEmail());
 
-    	    if (existingUserOpt.isPresent()) {
-    	        User existingUser = existingUserOpt.get();
-    	        if (existingUser.isDeleted()) {
-    	            throw new IllegalStateException("삭제된 회원입니다.");
-    	        }
-    	        existingUser.update(attributes.getUserid());
-    	        return userRepository.save(existingUser);
-    	    } else {
-    	        return userRepository.save(attributes.toEntity());
-    	    }
+        if (existingUsersOpt.isPresent()) {
+        	Set<User> existingUsers = existingUsersOpt.get();
+            User mostRecentNonDeletedUser = existingUsers.stream()
+                .filter(user -> user.getAccountType().equals(attributes.getAccountType()) && !user.isDeleted())
+                .max(Comparator.comparing(User::getId))
+                .orElse(null);
+            if (mostRecentNonDeletedUser != null) {
+                return userRepository.save(mostRecentNonDeletedUser);
+            }
+        } 
+        return userRepository.save(attributes.toEntity());
     }
 }
 

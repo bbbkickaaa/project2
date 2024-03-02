@@ -74,8 +74,11 @@ public class User {
 	@Column(name="block_id")
 	private Set<Integer> blockIds;
 	
+	@Column(name="account_type", nullable = false)
+	private String accountType;
+	
 	@Builder
-	public User(String name, String email, String picture, UserRole role, String password, UserLevel userlevel , String nickname) {
+	public User(String name, String email, String picture, UserRole role, String password, UserLevel userlevel , String nickname, String accountType) {
 		this.setUserid(name);
 		this.setEmail(email);
 		this.setPicture(picture);
@@ -83,6 +86,7 @@ public class User {
 		this.setPassword(password);
 		this.setUserLevel(userlevel);
 		this.setNickname(nickname);
+		this.setAccountType(accountType);
 	}
 	
 	public User update(String name) {

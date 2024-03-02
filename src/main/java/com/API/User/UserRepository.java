@@ -1,6 +1,8 @@
 package com.API.User;
 
-import java.util.Optional; 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.repository.Repository;
 import com.API.User.Entity.User;
@@ -12,5 +14,5 @@ public interface UserRepository extends Repository<User,Long>{
     Optional<User> findById(Long id);
     Optional<User> findByUserid(String userId);
     void delete(User user);
-    Optional<User> findByEmail(String email);
+    Optional<Set<User>> findByEmail(String email);
 }

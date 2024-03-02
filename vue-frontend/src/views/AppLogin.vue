@@ -11,7 +11,13 @@
     <button type="submit" class="btn btn-secondary">로그인</button>
     <div class="mt-3" >
       <a  href="http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000/oauth2/redirect">
-        <img style="width: 200px; height: 50px; margin-top: 40px;" src="../assets/img/google/web_dark_sq_SU@3x.png" id="loginGoogle" alt="" class="img-fluid">
+        <img style="width: 200px; height: 50px; margin-top: 40px;" src="../assets/img/oauth/web_dark_sq_SU@3x.png" id="loginGoogle" alt="" class="img-fluid">
+      </a>
+      <a  href="http://localhost:8080/oauth2/authorization/naver?redirect_uri=http://localhost:3000/oauth2/redirect">
+        <img style="width: 200px; height: 50px;" src="../assets/img/oauth/btnW_complete.png" id="login-naver" alt="" class="img-fluid">
+      </a>
+      <a  href="http://localhost:8080/oauth2/authorization/kakao?redirect_uri=http://localhost:3000/oauth2/redirect">
+        <img style="width: 200px; height: 50px;" src="../assets/img/oauth/kakao_login_medium_narrow.png" id="login-naver" alt="" class="img-fluid">
       </a>
     </div>
   </form>

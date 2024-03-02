@@ -48,6 +48,7 @@ public class NewUserServiceImpl implements NewUserService{
 			        user.setNickname(nickName);
 			        user.setRole(UserRole.USER);
 			        user.setUserLevel(new UserLevel(1,0));
+			        user.setAccountType("Local");
 		            userRepository.save(user);
 		            entity = ResponseEntity.status(HttpStatus.CREATED).body("사용자가 생성되었습니다.");
 		        } catch (Exception e) {
