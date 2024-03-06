@@ -36,8 +36,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         JwtToken token = tokenProvider.generateToken(authentication);
         String refreshToken = token.getRefreshToken();
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true); // JavaScript에서 쿠키에 접근 불가
-        refreshTokenCookie.setMaxAge(259200); // 3일간 유효
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setMaxAge(259200); 
         refreshTokenCookie.setDomain("localhost");
         refreshTokenCookie.setPath("/");
         response.addCookie(refreshTokenCookie);

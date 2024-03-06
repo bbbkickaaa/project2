@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.API.Board.BoardRepository;
 import com.API.Board.Entity.Board;
+import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
-import com.API.User.Entity.UserDTO;
 import com.API.User.Etc.RandomNicknameGenerator;
 
 @Service

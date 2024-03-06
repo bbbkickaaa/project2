@@ -11,6 +11,7 @@
     <div class="mb-3">
       <label for="signup-email" class="form-label">이메일 :</label>
       <input id="signup-email" type="email" class="form-control" v-model="signupForm.email" required>
+      <button :disabled="!isEmailValid" class="btn btn-secondary"> 인증하기</button>
     </div>
     <button id="submit" type="submit" class="btn btn-secondary" :disabled="!isPossible">회원가입</button>
     <div class ="labels">
@@ -18,12 +19,15 @@
       <label class="show-text" v-if="!isPasswordValid && signupForm.password"> {{ showTextPw }} </label>
       <label class="show-text" v-if="!isEmailValid && signupForm.email"> {{ showTextEmail }} </label>
   </div>
-    <div class="mt-3">
+    <div class="oauth-form">
       <a  href="http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000/oauth2/redirect">
         <img style="width: 200px; height: 50px;" src="../assets/img/oauth/web_dark_sq_SU@3x.png" id="login-google" alt="" class="img-fluid">
       </a>
       <a  href="http://localhost:8080/oauth2/authorization/naver?redirect_uri=http://localhost:3000/oauth2/redirect">
         <img style="width: 200px; height: 50px;" src="../assets/img/oauth/btnW_complete.png" id="login-naver" alt="" class="img-fluid">
+      </a>
+      <a  href="http://localhost:8080/oauth2/authorization/kakao?redirect_uri=http://localhost:3000/oauth2/redirect">
+        <img style="width: 200px; height: 50px;" src="../assets/img/oauth/kakao_login_medium_narrow.png" id="login-kakao" alt="" class="img-fluid">
       </a>
     </div>
   </form>
@@ -90,10 +94,14 @@ import axios from 'axios';
 }
 }
   </script>
-  <style>
+  <style scoped>
   .show-text{
     margin-top: 5px;
     margin-right: 10px;
   }
   .labels{height: 50px; width: auto; margin-bottom: 20px;}
+
+  .img-fluid{ margin-right: 20px; margin-top: 20px;}
+
+  .oauth-form a{width: 200px; height: 50px;}
   </style>

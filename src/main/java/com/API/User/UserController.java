@@ -2,6 +2,8 @@ package com.API.User;
 
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;    
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.API.User.DTO.EmailCheckDto;
+import com.API.User.DTO.EmailRequestDTO;
+import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
-import com.API.User.Entity.UserDTO;
 import com.API.User.Jwt.JwtTokenProvider;
 import com.API.User.Oauth2.CookieUtils;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +40,7 @@ public class UserController {
 
 	@Autowired
 	private JwtTokenProvider tokenProvider;
+    private final MailService mailService;
 	
 	@Autowired
 	NewUserService newUserService;
@@ -89,4 +92,21 @@ public class UserController {
         Authentication authentication =  tokenProvider.getAuthentication(token);
 		return memberService.alterUser(authentication,requestData);
 	}
+	
+    @PostMapping ("/public/mail-send")
+    public ResponseEntity<?> mailSend(@RequestBody @Valid EmailRequestDTO emailDto){
+        return mailService.joinEmail(emailDto.getEmail());
+	    }
+    
+    @PostMapping("/mail-auth-check")
+    public String AuthCheck(@RequestBody @Valid EmailCheckDto emailCheckDto){
+        Boolean Checked=mailService.CheckAuthNum(emailCheckDto.getEmail(),emailCheckDto.getAuthNum());
+        if(Checked){
+            return "ok";
+        }
+        else{
+            throw new NullPointerException("뭔가 잘못!");
+        }
+    }
+    
 }

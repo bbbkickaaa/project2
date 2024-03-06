@@ -42,12 +42,9 @@ const logout = () => {
     });
 };
 
-
-
 axiosInstance.interceptors.response.use(response => {
   return response;
 }, async function (error) {
-
   if (!sessionStorage.getItem('accessToken') || (error.response && error.response.status === 401)) {
     if (!isRefreshing) {
       isRefreshing = true;
@@ -57,15 +54,13 @@ axiosInstance.interceptors.response.use(response => {
         },
         withCredentials: true
       }).then(response => {
-        // refreshToken 성공 시
+
         const authHeader = response.headers['authorization'] || response.headers['Authorization'];
         const newToken = authHeader.split(' ')[1];
         sessionStorage.setItem('accessToken', newToken);
-        // 성공적으로 새로운 토큰을 받았을 때 이전 요청 다시 보내기
         const originalRequest = error.config;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
-
       }).catch(refreshError => {
         logout();
         return Promise.reject(refreshError);
@@ -73,7 +68,6 @@ axiosInstance.interceptors.response.use(response => {
         isRefreshing = false;
       });
     }
-    // refreshToken이 완료될 때까지 대기
     return refreshPromise.catch(refreshError => {
       logout();
       return Promise.reject(refreshError);

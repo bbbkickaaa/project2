@@ -26,7 +26,6 @@ public class Custom2AuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
         
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        
         if (userDetails instanceof CustomUserDetails) {
             CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
             if (!customUserDetails.isEnabled()) {
@@ -34,9 +33,6 @@ public class Custom2AuthenticationProvider implements AuthenticationProvider {
             }
         }
         if (passwordEncoder.matches(password, userDetails.getPassword())) {
-        	
-        	
-        	
             return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         } else {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");

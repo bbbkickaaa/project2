@@ -32,7 +32,6 @@ import org.springframework.security.core.userdetails.User;
 
 @Slf4j
 @Component
-@PropertySource(value = {"classpath:application-jwt.properties"})
 public class JwtTokenProvider {
  
     private final Key key;

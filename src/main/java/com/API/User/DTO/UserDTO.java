@@ -1,4 +1,6 @@
-package com.API.User.Entity;
+package com.API.User.DTO;
+
+import com.API.User.Entity.UserLevel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

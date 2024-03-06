@@ -5,8 +5,8 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
+import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
-import com.API.User.Entity.UserDTO;
 
 public interface MemberService  {
 

@@ -19,7 +19,7 @@
                 
             <div class="actions">
                 <button class="btn btn-secondary" v-if="CompareWithUsers()" @click="AlterBoard(id)">수정</button>
-                <button class="btn btn-secondary" v-if="CompareWithUsers()" @click="ShowModal = true;" @close="closeModal">삭제</button>
+                <button class="btn btn-secondary" v-if="CompareWithUsers()" @click="ShowModal = true" @close="closeModal">삭제</button>
                 <button class="btn btn-secondary" @click="ToMain">돌아가기</button>
             </div>
         
@@ -31,6 +31,7 @@
                 </div>
             </form>
         </div>
+            
             <modal-component :show="ShowModal" @close="ShowModal = false" class="">
                 <div class="modal-inner">
                 <h4 style="text-align: center; padding-top: 50px;">정말 삭제하시겠습니까?</h4>
