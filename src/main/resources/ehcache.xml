@@ -1,0 +1,19 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.ehcache.org/v3"
+        xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
+        xsi:schemaLocation="
+            http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
+            http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
+<!-- config : XML 구성의 루트 요소이다. --> 
+	<cache alias="mailCache">
+    <key-type>java.lang.String</key-type> <!-- 메일 인증코드의 키는 보통 문자열 형태로 사용됩니다. -->
+    <value-type>java.lang.String</value-type> <!-- 메일 인증코드의 값도 문자열 형태로 저장됩니다. -->
+    <expiry>
+        <ttl unit="seconds">300</ttl> <!-- 메일 인증코드의 유효 시간을 5분 (300초)으로 설정합니다. -->
+    </expiry>
+    <resources>
+        <heap unit="entries">1000</heap> <!-- 힙 메모리에 저장할 최대 캐시 항목 수를 지정합니다. -->
+        <!-- offheap 설정은 필요에 따라 추가하거나 생략할 수 있습니다. -->
+    </resources>
+	</cache>
+</config>

@@ -11,7 +11,7 @@
     <div class="mb-3">
       <label for="signup-email" class="form-label">이메일 :</label>
       <input id="signup-email" type="email" class="form-control" v-model="signupForm.email" required>
-      <button :disabled="!isEmailValid" class="btn btn-secondary"> 인증하기</button>
+      <button :disabled="!isEmailValid" @click="AuthenticateMail" class="btn btn-secondary"> 인증하기</button>
     </div>
     <button id="submit" type="submit" class="btn btn-secondary" :disabled="!isPossible">회원가입</button>
     <div class ="labels">
@@ -79,8 +79,16 @@ import axios from 'axios';
       this.isUserIdValid = userid.length > 6;
       this.isPasswordValid = password.length > 8;
       this.isEmailValid = email.length > 10 && email.includes('@') && email.includes('.');
+    },
+    AuthenticateMail(){
+      var submitMail = false;
+      if(!submitMail){ 
+        axios.post('http://localhost:8080/api/public/join', this.signupForm.email ).then(()=>{
+        submitMail = true; this.isEmailValid = false;}
+        )
     }
   },
+},
  watch: {
   'signupForm.userid': function() {
     this.updateIsPossible();

@@ -1,11 +1,15 @@
 package com.API.User;
+import org.hibernate.cache.spi.support.CacheUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import com.API.User.Etc.CacheUtil;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -16,10 +20,9 @@ public class MailService {
 	
 	@Value("${spring.mail.username}") 
 	private String gmail;
-	
     @Autowired
     private JavaMailSender mailSender;
-
+    private CacheUtil cacheUtil;
 
     public ResponseEntity<?> joinEmail(String email) {
     	Random r = new Random();
@@ -38,11 +41,11 @@ public class MailService {
                         "인증 번호는 " + authNumber + "입니다." +
                         "<br>" +
                         "인증번호를 제대로 입력해주세요"; 
-        ResponseEntity<?> entity = mailSend(setFrom, toMail, title, content);
+        ResponseEntity<?> entity = mailSend(setFrom, toMail, title, content,authNumber);
         return entity;
     }
 
-    public ResponseEntity<MimeMessage> mailSend(String setFrom, String toMail, String title, String content) {
+    public ResponseEntity<MimeMessage> mailSend(String setFrom, String toMail, String title, String content, int authNumber) {
         MimeMessage message = mailSender.createMimeMessage();//JavaMailSender 객체를 사용하여 MimeMessage 객체를 생성
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message,true,"utf-8");//이메일 메시지와 관련된 설정을 수행합니다.
@@ -51,6 +54,7 @@ public class MailService {
             helper.setSubject(title);//이메일의 제목을 설정
             helper.setText(content,true);//이메일의 내용 설정 두 번째 매개 변수에 true를 설정하여 html 설정으로한다.
             mailSender.send(message);
+            cacheUtil.setData(String.valueOf(authNumber), toMail);
             return ResponseEntity.ok(message);
             
         } catch (MessagingException e) {//이메일 서버에 연결할 수 없거나, 잘못된 이메일 주소를 사용하거나, 인증 오류가 발생하는 등 오류
@@ -60,17 +64,18 @@ public class MailService {
         
 
     }
-    
-    public boolean CheckAuthNum(String email,String authNum){
-        if(redisUtil.getData(authNum)==null){
-            return false;
+    public ResponseEntity<String> checkAuthNum(String email, String authNum) {
+        try {
+            String storedEmail = cacheUtil.getData(authNum);
+            if (email.equals(storedEmail)) {
+            	return ResponseEntity.ok("일치합니다.");
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        else if(redisUtil.getData(authNum).equals(email)){
-             return true;
-         }
-         else{
-             return false;
-         }
     }
+
 
 }

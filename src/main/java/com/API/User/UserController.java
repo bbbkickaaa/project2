@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.API.User.DTO.EmailCheckDto;
+import com.API.User.DTO.EmailCheckDTO;
 import com.API.User.DTO.EmailRequestDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
@@ -99,14 +99,8 @@ public class UserController {
 	    }
     
     @PostMapping("/mail-auth-check")
-    public String AuthCheck(@RequestBody @Valid EmailCheckDto emailCheckDto){
-        Boolean Checked=mailService.CheckAuthNum(emailCheckDto.getEmail(),emailCheckDto.getAuthNum());
-        if(Checked){
-            return "ok";
-        }
-        else{
-            throw new NullPointerException("뭔가 잘못!");
-        }
+    public ResponseEntity<String> AuthCheck(@RequestBody @Valid EmailCheckDTO emailCheckDto){
+        return mailService.checkAuthNum(emailCheckDto.getEmail(),emailCheckDto.getAuthNum());
     }
     
 }
