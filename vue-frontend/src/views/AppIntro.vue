@@ -8,26 +8,12 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><button @click="showLoginModal = true;" class="nav-link" @close="closeModal">log In</button></li>
-                        <li class="nav-item"><button @click="showSignupModal = true;" class="nav-link" @close="closeModal">Sign Up</button></li>
+                        <li class="nav-item"><button @click="showLoginModal = true;" class="nav-link" @close="closeModal">로그인</button></li>
+                        <li class="nav-item"><button @click="showSignupModal = true;" class="nav-link" @close="closeModal">회원가입</button></li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <!-- Header-->
-        <header class="masthead text-center text-white">
-            <div class="masthead-content">
-                <div class="container px-5">
-                    <h1 class="masthead-heading mb-0">Proto Type</h1>
-                    <h2 class="masthead-subheading mb-0">For Your Community</h2>
-                    <a class="btn btn-dark btn-xl rounded-pill mt-5" style="width: 200px; border-radius: 20%;" href="#scroll">Intro</a>
-                </div>
-            </div>
-            <div class="bg-circle-1 bg-circle"></div>
-            <div class="bg-circle-2 bg-circle"></div>
-            <div class="bg-circle-3 bg-circle"></div>
-            <div class="bg-circle-4 bg-circle"></div>
-        </header>
         <!-- Content section 1-->
         <section id="scroll">
             <div class="container px-5">
@@ -37,7 +23,7 @@
                     </div>
                     <div class="col-lg-6 order-lg-1">
                         <div class="p-5">
-                            <h2 class="display-4">이건 <br> 프로토타입 입니다.</h2>
+                            <h2 class="display-4"> 프로토타입 입니다.</h2>
                             <p><br><br>민감한 정보 및  인적사항을 입력하지 말아주세요. <br><br> 주기적으로 초기화가 되나 보안상 문제가 발생할 수  있습니다.</p>
                         </div>
                     </div>
@@ -88,8 +74,8 @@
     </modal-component>
 
 <!-- 회원가입 모달 컴포넌트 -->
-    <modal-component :show="showSignupModal" @close="showSignupModal = false">
-      <signup-form></signup-form>
+    <modal-component :show="showSignupModal"  @close="showSignupModal = false">
+      <signup-form @close-modal="showSignupModal = false"></signup-form>
     </modal-component>
     </div>
   </template>

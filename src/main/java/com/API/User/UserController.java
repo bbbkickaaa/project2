@@ -95,10 +95,11 @@ public class UserController {
 	
     @PostMapping ("/public/mail-send")
     public ResponseEntity<?> mailSend(@RequestBody @Valid EmailRequestDTO emailDto){
+    System.out.println(emailDto.getEmail());
         return mailService.joinEmail(emailDto.getEmail());
 	    }
     
-    @PostMapping("/mail-auth-check")
+    @PostMapping("/public/mail-auth-check")
     public ResponseEntity<String> AuthCheck(@RequestBody @Valid EmailCheckDTO emailCheckDto){
         return mailService.checkAuthNum(emailCheckDto.getEmail(),emailCheckDto.getAuthNum());
     }
