@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.API.User.DTO.EmailCheckDTO;
 import com.API.User.DTO.EmailRequestDTO;
+import com.API.User.DTO.SendPasswordDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
 import com.API.User.Jwt.JwtTokenProvider;
@@ -48,6 +49,8 @@ public class UserController {
 	MemberService memberService;
 	@Autowired
 	LoginService loginService;
+	
+
 	
 	@PostMapping("/public/join")
     public ResponseEntity<String> createUser(@RequestBody User user) {
@@ -102,6 +105,16 @@ public class UserController {
     @PostMapping("/public/mail-auth-check")
     public ResponseEntity<String> AuthCheck(@RequestBody @Valid EmailCheckDTO emailCheckDto){
         return mailService.checkAuthNum(emailCheckDto.getEmail(),emailCheckDto.getAuthNum());
+    }
+    
+    @PostMapping("/public/forgot-password")
+    public ResponseEntity<?> checkUserIdToEmail(@RequestBody String userId){
+        return memberService.checkUserIdToEmail(userId);
+    }
+    
+    @PostMapping("/public/send-password")
+    public ResponseEntity<?> setPasswordToEmail(@RequestBody SendPasswordDTO dto){
+        return memberService.setPasswordToEmail(dto);
     }
     
 }

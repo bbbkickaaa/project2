@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.API.Board.DTO.BoardImageUploadDTO;
 import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.DTO.DeleteCommentDTO;
 
@@ -32,7 +33,7 @@ public class BoardController {
 	}
 	
 	@PostMapping("/post")
-    public ResponseEntity<?> postBoard(@RequestBody Map<String, Object> requestData) {
+    public ResponseEntity<?> postBoard(@RequestBody Map<String, Object> requestData, BoardImageUploadDTO imageDTO) {
 		
        return boardService.postBoard(requestData);
     }

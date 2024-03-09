@@ -88,6 +88,7 @@ import axios from 'axios';
       this.isEmailValid = email.length > 10 && email.includes('@') && email.includes('.');
     },
     AuthenticateMail(){
+      let loader = this.$loading.show();
       var submitMail = false;
       this.isSendAuthenticateMail = true;
       if(!submitMail){ 
@@ -97,7 +98,7 @@ import axios from 'axios';
         submitMail = true;
         this.getResponseMailSend = true;
         console.log(response)}
-        )
+        ).finally(()=>{loader.hide();})
     }
   },
     CheckMailCorrect(event){

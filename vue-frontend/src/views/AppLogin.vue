@@ -34,7 +34,7 @@
         <input id="login-password" placeholder="비밀번호를 입력해 주세요." type="password" class="form-control" v-model="loginForm.password" required>
       </div>
       <button type="submit" class="btn btn-primary submit-login">이메일 계정 로그인</button>
-      <a class="forgot-password">비밀번호를 잊으셨나요?</a>
+      <a class="forgot-password" @click="forgotPassword">비밀번호를 잊으셨나요?</a>
     </div>
   </form>
 </template>
@@ -53,24 +53,28 @@
     methods: {
       onLoginSubmit() {
         axios.post('http://localhost:8080/api/public/login', this.loginForm,{withCredentials: true})
-    .then(response => {
-      const authHeader = response.headers['authorization'] || response.headers['Authorization'];
-      if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        sessionStorage.setItem('accessToken', token);
+      .then(response => {
+        const authHeader = response.headers['authorization'] || response.headers['Authorization'];
+        if (authHeader) {
+          const token = authHeader.split(' ')[1];
+          sessionStorage.setItem('accessToken', token);
 
-        this.$router.push({ path: '/main' });
-        alert("로그인 성공")
-      } else {
-        this.$router.push({path:'/intro'})
-        throw new Error('Authorization 토큰이 없습니다.');
-      }
-    })
-    .catch(error => {
-      alert("로그인에 실패했습니다.")
-      console.log(error);
-    });
-  }
+          this.$router.push({ path: '/main' });
+          alert("로그인 성공")
+        } else {
+          this.$router.push({path:'/intro'})
+          throw new Error('Authorization 토큰이 없습니다.');
+        }
+      })
+      .catch(error => {
+        alert("로그인에 실패했습니다.")
+        console.log(error);
+      });
+  },
+  forgotPassword(){
+    this.$emit('switchComponent', 'password');
+  },
+  
 }
   }
   </script>

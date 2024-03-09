@@ -4,9 +4,12 @@
         <div class="mb-3">
           <label for="titleInput" class="form-label">제목</label>
           <input type="text" class="form-control" id="titleInput" v-model="post.title" maxlength="80" :minlength="minLength" required placeholder="제목을 입력하세요">
+          <div v-if="imageUrl">
+            <img :src="imageUrl" alt="게시물 이미지">
+          </div>
         </div>
         <div class="mb-3">
-          <label for="contentInput" class="form-label">내용</label>
+          <input type="file" accept="image/*" @change="handleFileUpload">
           <textarea class="form-control contents" id="contentInput" v-model="post.content" maxlength="400" :minlength="minLength" required rows="4" placeholder="내용을 입력하세요"></textarea>
         </div>
         <div class ="sections">
@@ -21,6 +24,11 @@
   export default {
     data() {
       return {
+        //img
+      postContent: '',
+      selectedFile: null,
+      imageUrl: null,
+
         post: {
           title: '',
           content: '',
@@ -58,10 +66,18 @@
             }
            });
         },
+        handleFileUpload(event){
+          this.selectedFile = event.target.files[0];
+          console.log('selectedFile:', this.selectedFile);
+          this.imageUrl = URL.createObjectURL(this.selectedFile);
+          console.log('imageUrl:', this.imageUrl);
+    },
+        
         },
     mounted() {
         this.post.id = sessionStorage.getItem('userIdx');
     },
+    
     }
 
   </script>

@@ -5,6 +5,9 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import Vuex from 'vuex';
 import axios from 'axios';
 import store from './store';
+import {LoadingPlugin} from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
+
 // Import Bootstrap and BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -14,7 +17,13 @@ app.use(Vuex);
 app.use(BootstrapVue);
 app.use(IconsPlugin);
 app.use(router);
-
+app.use(LoadingPlugin, {
+  color: '#000',
+  loader: 'spinner',
+  backgroundColor: 'rgba(0, 0, 0, 0.6)', // 어두운 배경
+  opacity: 0.5,
+  zIndex: 9999, // 높은 z-index
+});
 // axiosConfig.js
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:8080'

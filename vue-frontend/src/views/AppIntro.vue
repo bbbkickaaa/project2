@@ -70,7 +70,9 @@
     </body>
     <!-- 로그인 모달 컴포넌트 -->
     <modal-component :show="showLoginModal" @close="showLoginModal = false">
-      <login-form></login-form>
+      <login-form v-if="SwitchLoginForm ==='login'" @switch-component="SwitchLogin"></login-form>
+      <app-login-password @present-email="switchLoginWithEmail" @switch-login="SwitchLogin" v-if="SwitchLoginForm === 'password'"></app-login-password>
+      <app-login-email :showEmail="email" :userId="userId" v-if="SwitchLoginForm === 'email'" @switch-login="SwitchLogin"></app-login-email>
     </modal-component>
 
 <!-- 회원가입 모달 컴포넌트 -->
@@ -85,16 +87,23 @@
   import ModalComponent from '../components/layout/ModalComponent.vue';
   import LoginForm from './AppLogin.vue';
   import SignupForm from './AppSign.vue';
-  
+  import AppLoginPassword from './AppLoginPassword.vue';
+  import AppLoginEmail from './AppLoginEmail.vue';
+
   export default {
     name : "AppIntro",
     components: {
+      AppLoginEmail,
       ModalComponent,
       LoginForm,
-      SignupForm
+      SignupForm,
+      AppLoginPassword,
     },
     data() {
       return {
+        userId : '',
+        email : '',
+        SwitchLoginForm : 'login',
         showLoginModal: false,
         showSignupModal: false
       };
@@ -110,7 +119,17 @@
         this.showLoginModal = false;
       }
     }
+  },
+  methods :{ 
+    SwitchLogin(component){
+      this.SwitchLoginForm = component;
+  },
+   switchLoginWithEmail(data){
+    this.email = data.email;
+    this.userId = data.userId
+    this.SwitchLoginForm = 'email'
   }
+}
   };
   </script>
   

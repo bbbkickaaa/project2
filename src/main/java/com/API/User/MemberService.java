@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
+import com.API.User.DTO.SendPasswordDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
 
@@ -14,4 +15,6 @@ public interface MemberService  {
 	public ResponseEntity<?> checkPostOwner(Authentication authentication , Long postId);
 	public ResponseEntity<String> deleteUser(Authentication authentication, Long Id);
 	public ResponseEntity<String> alterUser(Authentication authentication, Map<String, Object> requestData);
+	public ResponseEntity<?> checkUserIdToEmail(String userId);
+	public ResponseEntity<?> setPasswordToEmail(SendPasswordDTO dto);
 }

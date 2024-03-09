@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,17 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.API.Board.BoardRepository;
 import com.API.Board.Entity.Board;
+import com.API.User.DTO.SendPasswordDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
+import com.API.User.Etc.PasswordGenerator;
 import com.API.User.Etc.RandomNicknameGenerator;
 
 @Service
 public class MemberServiceImpl implements MemberService {
+	
+	@Autowired
+		private MailService mailservice;
 
 	 @Autowired
 	    private UserRepository userRepository;
@@ -53,6 +59,7 @@ public class MemberServiceImpl implements MemberService {
 		return ResponseEntity.notFound().build();
 	}
 	
+	@Override
 	public ResponseEntity<?> checkPostOwner(Authentication authentication , Long postId){
 		String userid = authentication.getName();
 		Optional<User> user = userRepository.findByUserid(userid);
@@ -73,6 +80,7 @@ public class MemberServiceImpl implements MemberService {
 		}
 	}
 	
+	@Override
 	public ResponseEntity<String> deleteUser(Authentication authentication, Long Id){
 		String userid = authentication.getName();
 		Optional<User> user = userRepository.findByUserid(userid);
@@ -87,6 +95,7 @@ public class MemberServiceImpl implements MemberService {
 		}
 	}
 	
+	@Override
 	public ResponseEntity<String> alterUser(Authentication authentication, Map<String, Object> requestData){
 		String userid = authentication.getName();
 		Optional<User> user = userRepository.findByUserid(userid);
@@ -104,4 +113,34 @@ public class MemberServiceImpl implements MemberService {
 			
 		}
 	}
+	
+	@Override
+	public ResponseEntity<?> checkUserIdToEmail(String userId){
+		Optional<User> user = userRepository.findByUserid(userId);
+		if(user.isPresent() && !user.get().isDeleted() ) {
+			String email = user.get().getEmail();
+			return ResponseEntity.ok(email);
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("해당하는 정보가 없습니다.");
+		}
+	}
+	
+	@Override
+	public ResponseEntity<?> setPasswordToEmail(SendPasswordDTO dto){
+		Optional<User> user = userRepository.findByUserid(dto.getUserId());
+		if(user.isPresent()) {
+			String randomPassword = PasswordGenerator.generateRandomPassword(8);
+			String password = passwordEncoder.encode(randomPassword);
+			user.get().setPassword(password);
+			userRepository.save(user.get());
+			mailservice.mailSend2(dto.getEmail(),randomPassword);
+			
+			return ResponseEntity.ok("메일 전송 되었습니다.");
+			
+			
+		}else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("해당하는 정보가 없습니다.");
+		}
+	};
 }

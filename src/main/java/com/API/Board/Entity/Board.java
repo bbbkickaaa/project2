@@ -61,6 +61,9 @@ public class Board {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
     
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BoardImage> boardImage;
+    
     @Column(name="write_date" ,length = 8)
 	private String writeDate = LocalDate.now().toString().replace("-", "");
     

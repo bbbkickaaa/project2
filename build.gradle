@@ -45,7 +45,11 @@ dependencies {
 	implementation 'org.hibernate:hibernate-validator:6.0.17.Final'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'javax.cache:cache-api:1.1.0'
-
+	
+	
+	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
+	implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
+	
 }
 
 tasks.named('test') {

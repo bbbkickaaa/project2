@@ -25,5 +25,6 @@ public class BoardDTO {
     private String writeDate;
     private String alterDate;
     private List<CommentDTO> comments;
+    private List<String> imageUrls;
 
 }
