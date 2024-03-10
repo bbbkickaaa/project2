@@ -1,7 +1,7 @@
 <template>
     <div class="password-reset-form container bg-light text-dark mt-2">
       <form @submit.prevent="submitForm" class="wrap-form p-3 mb-2 ">
-        <h3 class="mb-5 mt-4">해당 이메일이 맞으신가요?</h3>
+        <h3 class="title">해당 이메일이 맞으신가요?</h3>
         <h3 class="text-center mb-10 mt-4 show-mail" style="color: #999999;">{{ showEmail }}</h3>
         <button type="submit" class="btn btn-primary text-center email-btn">제 이메일이 맞습니다.</button>
         <a class="back mt-3 d-block" @click="turnBack" >뒤로가기</a>
@@ -41,6 +41,9 @@
    h1 {text-align: center;}
    .form-group{
     margin-bottom: 20px;
+   }
+   .title{
+    margin-top: 50px;
    }
 
    .email-btn{

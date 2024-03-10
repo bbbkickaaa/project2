@@ -2,15 +2,15 @@
     <div class="wrap">
         <div class="container mt-4 content-wrap">
             <div class="post-detail inner-box">
-                <div class="post-info">
-                    <ul>
-                        <li class="infos">작성자 : {{ BoardInfo.nickname }}</li>
-                        <li class="infos">조회수 : {{ BoardInfo.views }}</li>
-                        <li class="infos">작성일 : {{ BoardInfo.writeDate }}</li>
-                        <li v-if="BoardInfo.alterDate" class="infos">수정일 : {{ BoardInfo.alterDate }}</li>
+                <div class ="post-title ">
+                    <ul class="infos">
+                        <li >{{ BoardInfo.writeDate }}</li>
+                        <li v-if="BoardInfo.alterDate">수정일 - {{ BoardInfo.alterDate }}</li>
                     </ul>
-                </div>
-                <h3 class="post-title titles">{{ BoardInfo.title  }}</h3>
+                    <p class="author">{{ BoardInfo.nickname }}</p>
+                    <h3 class="titles">{{ BoardInfo.title  }}</h3>
+                    <p class="count">조회수 - {{ BoardInfo.views }}</p>
+                 </div>
                 <p class="post-content contents">{{ BoardInfo.content }}</p>
                 <div class = "recommend">
                     <button class="btn btn-primary recommend-button" :disabled="IsRecommended" @click="PostRecommend"><span>추천 : {{BoardInfo.likes }}</span></button>
@@ -20,7 +20,7 @@
             <div class="actions">
                 <button class="btn btn-secondary" v-if="CompareWithUsers()" @click="AlterBoard(id)">수정</button>
                 <button class="btn btn-secondary" v-if="CompareWithUsers()" @click="ShowModal = true" @close="closeModal">삭제</button>
-                <button class="btn btn-secondary" @click="ToMain">돌아가기</button>
+                <button class="btn btn-secondary" @click="ToMain">뒤로가기</button>
             </div>
         
         <!-- 댓글 입력 폼 -->
@@ -43,8 +43,8 @@
             </modal-component>
         </div>  
     <!-- 댓글 리스트 -->
-    <div class="comment-list mt-4" v-if="BoardInfo.comments">
-        <div class="comment-box">
+    <div class="comment-list mt-4" v-if="BoardInfo.comments.length>1">
+        <div class="comment-box" v-if="BoardInfo.comments">
             <div class="comment" v-for="(list,index) in BoardInfo.comments" :key="list.commentId" >
                 <p class="comment-nickname"><span class="comment-idx">{{ index + 1 }}.       
                 </span>{{  list.nickname  }} <label class="comment-writeDate">{{ '(' + list.writeDate + ')' }}</label></p>
@@ -164,10 +164,12 @@ methods: {
     .wrap {
         margin : 0 auto;
         width : 1000px !important;
-        border : 1px solid rgba(108, 117, 125, 0.5);
+        border : 1px solid rgba(108, 117, 125, 0.2);
         min-height : 1200px;
-        padding-top : 50px;
+        padding-top : 30px;
         margin-bottom: 100px;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
     }
     .content-wrap{
         height : 1100px;
@@ -199,22 +201,19 @@ methods: {
         height: 400px;
     }
     .actions {
-        display: inline-block;
         text-align: right;
-        width: 1000px;
+        width: 900px;
         height: 50px;
+        margin: 0 auto;
     }
     .actions .btn {
-        margin-right: 20px;
+        width: 120px;
+        height: 50px;
     }
-    .actions .btn:last-child {
-        margin-right: 40px;
-    }
-    .titles{
-        line-height: 50px;
+    .post-title{
+        position: relative;
         border-bottom: 1px solid rgba(108, 117, 125, 0.2);
-        height: 80px;
-        padding-top: 15px;
+        height: 180px;
         padding-left: 10px;
     }
     .modal-inner{
@@ -239,35 +238,26 @@ methods: {
         height: 150px;
         padding-left: 130px;
     }
-
-    .post-info {
-    text-align: right; 
-    font-family: Arial, sans-serif; 
-    color: #888; 
-    padding: 5px;
-    border-bottom: 1px dashed rgba(108, 117, 125, 0.2);
-    height: 150px;
-    }
-
-    .post-info ul {
-       
-        list-style: none; 
-        padding: 0; 
-    }
-
     .infos {
-        margin-bottom: 10px; 
-        font-size: 16px; 
+        position: absolute;
+        font-size: 16px;
+        font-family: Arial, sans-serif; 
+        color: #888; 
+        right: 0;
+        list-style: none; 
     }
 
     .comment-list{
         min-height: 300px;
     }
     .comment-box{
+        background-color: white;
         width: 1000px;
-        border: 1px solid rgba(108, 117, 125, 0.5);
+        border: 1px solid rgba(108, 117, 125, 0.2);
         margin: 0 auto;
         margin-bottom: 150px;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
     }
     .comment{
         margin: 0 auto;
@@ -276,6 +266,16 @@ methods: {
         padding: 10px;
         padding-top: 50px;
         border-top: 1px dashed rgba(108, 117, 125, 0.2);
+    }
+
+    .comment-form {
+        width: 900px;
+        margin: 0 auto;
+    }
+
+    .comment-form .btn {
+        width: 120px;
+        height: 50px;
     }
     .comment-nickname{
         padding-top: 20px;

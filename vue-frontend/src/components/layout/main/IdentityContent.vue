@@ -1,31 +1,40 @@
 <template>
     <div class="user-identity">
+      <div class="form-title">
+        <h2>나의 정보</h2>
+        <p>본 페이지에서 회원정보 수정이 가능합니다.</p>
+      </div>
       <form @submit.prevent="submitPost">
         <div class="form-group">
           <label for="userid">아이디</label>
-          <input type="text" class="form-control" id="userid" v-model="form.id" disabled>
+          <input type="text" class="form-input" id="userid" v-model="form.id" disabled>
         </div>
   
         <div class="form-group">
           <label for="nickname">닉네임</label>
-          <input type="text" class="form-control" minlength="3" maxlength="8" id="nickname" v-model="form.nickname">
+          <input type="text" placeholder="새 닉네임 입력" class="form-input" minlength="3" maxlength="8" id="nickname" v-model="form.nickname">
         </div>
   
         <div class="form-group">
-          <label for="password">패스워드</label>
-          <input type="password" class="form-control" minlength="8" placeholder="새 비밀번호 입력." id="password" v-model="form.password">
-          <label v-show="form.password">구글 로그인일 경우 패스워드를 변경하시면 해당 아이디 및 비밀번호로 로그인이 가능합니다.</label>
+          <label for="password">새 비밀번호</label>
+          <input type="password" class="form-input" minlength="8" placeholder="새 비밀번호 입력" id="password" v-model="form.password">
+        </div>
+
+        <div class="form-group">
+          <label for="password-check">비밀번호 확인</label>
+          <input type="password" class="form-input" minlength="8" placeholder="비밀번호 확인" id="password-check" v-model="passwordCheck">
         </div>
   
         <div class="form-group">
           <label for="email">이메일</label>
-          <input type="email" :disabled="true" class="form-control" id="email" v-model="userData.email">
+          <input type="email" :disabled="true" class="form-input" id="email" v-model="userData.email">
         </div>
-  
-        <button type="submit" class="btn btn-primary form-button">저장</button>
-        <button type="submit" class="btn btn-secondary form-button" @click ="$router.push('/main')">뒤로가기</button>
+        <div  class="delete-button">  
+          <button type="submit" class="btn btn-primary form-button " style="color: white;"><i class="material-symbols-outlined">check</i> 변경 사항 저장</button>
+          <button type="submit" class="btn btn-secondary form-button" @click ="$router.push('/main')">뒤로가기</button>
+        </div>
         <div>
-            <button type="button" class="btn btn-secondary form-button" @click="ShowModal = true" @close="closeModal">회원탈퇴</button>
+            <a class="delete-user" @click="ShowModal = true" @close="closeModal">회원탈퇴</a>
         </div>
       </form>
     </div>
@@ -56,6 +65,7 @@
             nickname:'',
             password : ''
         },
+        passwordCheck : '',
         ShowModal: false,
         id : null ,
         userData: {
@@ -81,9 +91,10 @@
       })
     },
     submitPost(){
+        if(this.form.password === this.passwordCheck){
         this.$axios.post('/api/member/alter-user',this.form)
         .then(response=>{alert(response.data); this.$router.push('/main')})
-    },
+    }else{ alert("패스워드가 일치하지 않습니다.")}},
 },
     watch: {
         ShowModal(newValue) {
@@ -113,14 +124,34 @@
   
   <style>
   .user-identity {
-    border: 1px solid rgba(108, 117, 125, 0.5);
+    border: 1px solid rgba(108, 117, 125, 0.2);
     margin: 80px auto;
     width: 1000px;
     padding: 20px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    height: 1000px;
+  }
+  .form-title{
+    width: 900px;
+    padding-left: 30px;
+    padding-top: 30px;
+    margin-bottom: 50px;
+  }
+  .form-title h2 {
+    margin-bottom: 20px;
   }
   .form-group{
-    padding: 30px;
-    margin-bottom: 30px;
+    padding: 15px 60px;
+    margin-left: 100px;
+  }
+  .form-group label {
+    width: 120px;
+    height: 60px;
+    line-height: 60px;
+    margin-right: 50px;
+    border-right : 1px solid rgba(108, 117, 125, 1);
+    display: inline-block;
   }
   .modal-inner{
         box-sizing: border-box;
@@ -145,9 +176,37 @@
         padding-left: 130px;
     }
     .form-button{
-
         margin-left: 30px;
         margin-bottom: 100px;
+
+        height: 50px;
     }
+    .form-button:first-child{
+      width: 160px;
+    }
+    
+    .form-button:last-child {
+      width: 120px;
+    }
+    .form-input{
+      width: 400px;
+      height: 60px;
+      padding: 20px;
+    }
+
+    .material-symbols-outlined{
+      vertical-align: middle;
+    }
+    .delete-user {
+      padding: 30px;
+      color: #999999;
+    }
+    .delete-user:hover{
+      cursor: pointer;
+    }
+    .delete-button{
+      margin-top: 100px;
+    }
+
   </style>
   

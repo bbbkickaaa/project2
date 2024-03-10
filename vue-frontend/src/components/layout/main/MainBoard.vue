@@ -31,16 +31,16 @@
                     </tbody>
                 </table>
             </div> 
-            <div class ="sections">
-               <button @click="writePost" class="btn btn-secondary write-board">글쓰기</button>
-             </div>
-            <nav aria-label="Page navigation" class="paging mt-4">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item" v-for="n in pageNumbers" :key="n">
-                        <a class="page-link" @click="setPage(n-1)">{{ n }}</a>
-                    </li>
-                </ul>
-            </nav>
+                <div class ="sections">
+                <button @click="writePost" class="btn btn-primary write-board">새 글 작성하기</button>
+                <nav aria-label="Page navigation" class="paging mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" v-for="n in pageNumbers" :key="n">
+                            <a class="page-link" @click="setPage(n-1)">{{ n }}</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
 </template>
 
@@ -128,7 +128,8 @@ methods :{
 
 <style scoped>
 .container {
-    height: 1200px;
+    height: 1100px;
+    
 }
 .board-table {
     margin: 0 auto;
@@ -136,49 +137,82 @@ methods :{
     height: auto;
     box-sizing: border-box;
     margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+.table thead tr:first-child th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.table thead tr:first-child th:last-child {
+  border-top-right-radius: 10px;
+}
+
+.table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+.table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+.table th, .table td {
+
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f4f4f4;
+
+}
+
+
+
 .table th, .table td {
     height: 41px;
     box-sizing: border-box;
 }
 
 .table th {
+    border-top: 1px solid rgba(108, 117, 125, 0.2);
     text-align: center;
-    border-top: 1px solid rgba(108, 117, 125, 0.5);
 }
 
 .table th:first-child, .table td:first-child{
     width: 80px;
-    border-right: 1px dashed rgba(108, 117, 125, 0.5);
     text-align: center;
-    border-left: 1px solid rgba(108, 117, 125, 0.5);
+    border-left: 1px solid rgba(108, 117, 125, 0.2);
+    border-right: 1px dashed rgba(108, 117, 125, 0.2);
 }
 
 .table th:nth-child(2), .table td:nth-child(2){
     padding-left: 20px;
+    border-right: 1px dashed rgba(108, 117, 125, 0.2);
 }
 
 .table th:nth-child(3), .table td:nth-child(3){
     width: 150px;
-    border-right: 1px dashed rgba(108, 117, 125, 0.5); 
     text-align: center;
-    border-left: 1px dashed rgba(108, 117, 125, 0.5);
+    border-right: 1px dashed rgba(108, 117, 125, 0.2);
 }
 .table th:nth-child(4), .table td:nth-child(4){
     width: 100px;
     text-align: center;
-    border-right: 1px solid rgba(108, 117, 125, 0.5);
 }
 .sections{
     width :1000px;
-    display: relative;
     margin-bottom : 100px;
+    margin: 0 auto;
+    height: 100px;
+    text-align: right;
 }
 .sections .write-board {
-    width: 80px;
+    width: 160px;
+    height: 50px;
     margin : 0 auto;
-    position: absolute;
-    right: 160px;
+    display: inline-block;
 }
 
 .title{
@@ -195,4 +229,6 @@ methods :{
 .page-link{
     color: #888;
 }
+
+
 </style>

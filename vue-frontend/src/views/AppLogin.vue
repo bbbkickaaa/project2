@@ -2,7 +2,7 @@
   <form @submit.prevent="onLoginSubmit" class="p-3 mb-2 bg-light text-dark">
     <div class="oauth-form">
       <a  href="http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000/oauth2/redirect">
-      <div class="img-form" >
+      <div class="img-form" style="background-color: white;" >
         <div>
            <img src="../assets/img/oauth/web_dark_sq_SU@3x.png" id="login-google" alt="" class="img-fluid">
            <label class="img-label">구글 계정 로그인</label>

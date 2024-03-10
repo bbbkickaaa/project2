@@ -1,7 +1,7 @@
 <template>
   <div class="password-reset-form container bg-light text-dark mt-2">
     <form @submit.prevent="submitForm" class="wrap-form p-3 mb-2 ">
-      <h1 class="text-center mb-4 mt-4">비밀번호를 분실 하셨나요?</h1>
+      <h3 class="text-center title">비밀번호를 분실 하셨나요?</h3>
       <div class="form-group">
         <input type="text" class="form-control" placeholder="회원 아이디를 입력해 주세요." minlength="6" id="userId" v-model="userId" required>
       </div>
@@ -46,8 +46,10 @@
   margin: 0 auto;
   text-align: center;
  }
+ .title{margin-top: 50px;}
  .form-group{
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  margin-top: 30px;
  }
  .password-btn{
   margin: 0 auto;

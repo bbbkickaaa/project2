@@ -1,13 +1,13 @@
 <template>
     <header>
       <div class="container">
-          <div class="user-info py-3">
+          <div class="user-info">
               <h4>반갑습니다. {{ userData.nickname }}님.</h4>
               <p class="level">회원 레벨: <span class="badge bg-secondary">{{userData.userLevel.level}}</span></p>
               <p class="registration-date">가입일: <span>{{userData.createdDate}}</span></p>
               <p class="posts">글 갯수: {{userData.postCount}}</p>
               <p class="comments">댓글 갯수: {{ userData.commentCount }}</p>
-              <button class="btn btn-secondary edit" @click="AlterIdentity" >정보수정</button>
+              <button class="btn btn-primary edit" @click="AlterIdentity" >정보수정</button>
               <button class="btn btn-secondary logout" @click="logout">로그아웃</button>
           </div>
           
@@ -85,13 +85,27 @@ methods:{
 </script>
 
 <style scoped>
+header {
+  
+  width: 1100px;
+  margin: 0 auto;
+}
+.container{
+  width: 1100px;
+  margin: 0 auto;
+}
 .user-info{
   width: 1000px;
-  height: 100px;
-  border: 1px solid rgba(108, 117, 125, 0.5);
+  height: 130px;
+  border: 1px solid rgba(108, 117, 125, 0.2);
   margin: 80px auto;
-  padding: 20px;
+  padding: 30px;
   position: relative;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.user-info h4 {
+  margin-bottom: 10px;
 }
 
 .user-info p { 
@@ -106,8 +120,13 @@ methods:{
   }
 .user-info .edit { 
   position: absolute;
-  right: 130px;
+  right: 180px;
   bottom: 20px;
+  }
+
+  .user-info .btn {
+    width: 120px;
+    height: 50px;
   }
 
 </style>
