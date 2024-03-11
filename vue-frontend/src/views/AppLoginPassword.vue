@@ -46,9 +46,11 @@
   margin: 0 auto;
   text-align: center;
  }
- .title{margin-top: 50px;}
+ .title{
+  margin-top: 50px;
+  margin-bottom: 60px;}
  .form-group{
-  margin-bottom: 10px;
+  margin-bottom: 40px;
   margin-top: 30px;
  }
  .password-btn{

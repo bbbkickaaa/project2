@@ -25,7 +25,7 @@ public interface BoardRepository extends Repository<Board, Long> {
 	    @Query("SELECT COUNT(b) FROM Board b WHERE b.author.id = :id")
 	    Long countPostsByAuthorId(@Param("id") Long id);
 	    
-	    @Query("SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c)) FROM Board b JOIN b.author u LEFT JOIN b.comments c GROUP BY b.id, b.title, u.id, u.nickname, b.views")
+	    @Query("SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) FROM Board b JOIN b.author u LEFT JOIN b.comments c GROUP BY b.id, b.title, u.id, u.nickname, b.views")
 	    Page<BoardReviewDTO> findAllBoardDTOs(Pageable pageable);
 	    
 	    void deleteById(Long id);

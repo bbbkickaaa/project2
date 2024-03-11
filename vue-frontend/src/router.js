@@ -12,6 +12,7 @@ import BoardAlter from "./components/layout/main/BoardAlter.vue"
 import MainLayout from './components/layout/MainLayout.vue';
 
 import { checkPostOwner } from './routerGuard';
+import {validateCategoryRoute} from './routerGuard';
 import Identity from './components/layout/main/IdentityContent.vue'
 
 const router = createRouter({
@@ -25,20 +26,32 @@ const router = createRouter({
       path: '/',
       redirect: '/intro'
     },
+
+
     {
       path: '/main',
       component: MainLayout,
       props: true,
       children: [
-        {path : 'identity', component:Identity},
+        { path: '', component: MainBoard },
+        { path: ':category1/:category2?/:category3?', component: MainBoard, beforeEnter:validateCategoryRoute},
+        { path: 'identity', component: Identity },
         { path: 'post', component: NewPost }, 
         { 
-          path: 'detail/:id', 
-          component: BoardDetails},
-        {path: 'detail/:id/edit', component: BoardAlter, name: 'BoardAlter' ,beforeEnter: checkPostOwner},
-        { path: '', component: MainBoard }, 
+          path: ':category1/:category2/:category3/detail/:id', 
+          component: BoardDetails,
+          name : 'boardDetail',
+          beforeEnter:validateCategoryRoute
+        },
+        { 
+          path: ':category1/:category2/:category3/detail/:id/edit', 
+          component: BoardAlter, 
+          name: 'BoardAlter', 
+          beforeEnter: checkPostOwner
+        },
       ]
     },
+    
     { path: '/oauth2/authorization/google' },
     { path: '/oauth2/redirect', component: ReDirect },
     { path: '/another-path' },

@@ -1,8 +1,15 @@
 <template>
     <div class="user-identity">
+      <div><span class="material-symbols-outlined turn-back" @click="$router.push('/main')">undo</span></div>
       <div class="form-title">
         <h2>나의 정보</h2>
         <p>본 페이지에서 회원정보 수정이 가능합니다.</p>
+      </div>
+      <div class="user-image">
+        <a>
+          <img :src="userData.picture" style="border-radius: 50%; width:150px; height: 150px; border: 5px solid darkolivegreen;" alt="profile">
+          <span class="material-symbols-outlined camera">photo_camera</span>
+        </a>
       </div>
       <form @submit.prevent="submitPost">
         <div class="form-group">
@@ -32,10 +39,12 @@
         <div  class="delete-button">  
           <button type="submit" class="btn btn-primary form-button " style="color: white;"><i class="material-symbols-outlined">check</i> 변경 사항 저장</button>
           <button type="submit" class="btn btn-secondary form-button" @click ="$router.push('/main')">뒤로가기</button>
+
+          <div class="delete-user" >
+            <a @click="ShowModal = true" @close="closeModal">회원탈퇴</a>
         </div>
-        <div>
-            <a class="delete-user" @click="ShowModal = true" @close="closeModal">회원탈퇴</a>
         </div>
+
       </form>
     </div>
 
@@ -76,7 +85,7 @@
             nickname: '',
             postCount:'',
             commentCount:'',
-            password : ''
+            picture: '',
       }
       }
     },
@@ -122,7 +131,23 @@
 }}
   </script>
   
-  <style>
+  <style scoped>
+  .user-image{
+    position: relative;
+    width: 150px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+  }
+  .user-image:hover{
+    cursor: pointer;
+  }
+  .camera{
+    color: slategrey;
+    font-size: 50px;
+    position: absolute;
+    right: 15px;
+    bottom: 10px;
+  }
   .user-identity {
     border: 1px solid rgba(108, 117, 125, 0.2);
     margin: 80px auto;
@@ -135,11 +160,12 @@
   .form-title{
     width: 900px;
     padding-left: 30px;
+    margin-left: 70px;
     padding-top: 30px;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
   }
   .form-title h2 {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   .form-group{
     padding: 15px 60px;
@@ -177,8 +203,6 @@
     }
     .form-button{
         margin-left: 30px;
-        margin-bottom: 100px;
-
         height: 50px;
     }
     .form-button:first-child{
@@ -198,14 +222,26 @@
       vertical-align: middle;
     }
     .delete-user {
-      padding: 30px;
+      text-decoration: underline;
+      margin-right: 20px;
       color: #999999;
+      text-align: right;
     }
-    .delete-user:hover{
+    .delete-user a:hover{
       cursor: pointer;
     }
     .delete-button{
-      margin-top: 100px;
+      margin-left: 20px;
+      margin-top: 60px;
+    }
+    .turn-back{
+        margin-left:10px; 
+        font-size: 50px; 
+        color: #999999;
+    }
+    .turn-back:hover {
+        color: black;
+        cursor: pointer;
     }
 
   </style>

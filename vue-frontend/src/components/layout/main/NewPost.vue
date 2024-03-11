@@ -1,9 +1,30 @@
 <template>
     <div class="container mt-4 wrap">
+      <div><span class="material-symbols-outlined turn-back" @click="returnMain">undo</span></div>
       <form @submit.prevent="submitPost">
         <div class="mb-3">
           <label for="titleInput" class="form-label">제목</label>
           <input type="text" class="form-control" id="titleInput" v-model="post.title" maxlength="80" :minlength="minLength" required placeholder="제목을 입력하세요">
+        </div>
+        <div>
+          <select v-model="post.category1">
+            <option value="chat">잡담</option>
+            <option value="game">게임</option>
+          </select>
+          <select v-if="post.category1 === 'chat'" v-model="post.category2">
+            <option value="chat">잡담</option>
+          </select>
+          <select v-if="post.category1 === 'game'" v-model="post.category2">
+            <option value="lol">리그오브레전드</option>
+            <option value ="overWatch">오버워치</option>
+            <option value="mapleStory">메이플스토리</option>
+          </select>
+          <select v-model="post.category3">
+            <option value="free">자유</option>
+            <option value ="ask">질문</option>
+            <option value="info">정보</option>
+          </select>
+
         </div>
         <div class="mb-3">
           <textarea class="form-control contents" id="contentInput" v-model="post.content" maxlength="400" :minlength="minLength" required rows="4" placeholder="내용을 입력하세요"></textarea>
@@ -20,6 +41,7 @@
   export default {
     data() {
       return {
+
         //img
       postContent: '',
       selectedFile: null,
@@ -29,6 +51,9 @@
           title: '',
           content: '',
           id : '',
+          category1 :'chat',
+          category2 : 'chat',
+          category3 : 'free',
         },
         minLength : 5
       };
@@ -40,17 +65,14 @@
       submitPost() {
         if (this.post.title.length >= this.minLength && this.post.content.length >= this.minLength ) {
             this.PostServe();
-            alert('폼 제출 성공!');
-            this.$router.push('/main')
-
         } else {
         alert(`최소 ${this.minLength} 글자를 입력해야 합니다.`);
          }
       },
        PostServe(){
         this.$axios.post('/api/board/post',this.post)
-          .then(response => {
-            console.log(response.data)
+          .then(()=>{
+            this.$router.push('/main')
           })
           .catch(error => {
             if (error.response) {
@@ -73,8 +95,18 @@
     mounted() {
         this.post.id = sessionStorage.getItem('userIdx');
     },
-    
+    watch: {
+    'post.category1'(newValue) {
+      if (newValue === 'chat') {
+        this.post.category2 = 'chat';
+        this.post.category3 = 'free';
+      } else if (newValue === 'game') {
+        this.post.category2 = 'lol';
+        this.post.category3 = 'free';
+      }
     }
+    },
+  }
 
   </script>
   <style scoped>
@@ -83,10 +115,10 @@
         width: 1000px !important;
         border: 1px solid rgba(108, 117, 125, 0.2);
         height: 800px;
-        padding-top: 50px;
         margin-bottom: 300px;
         border-radius: 10px;
         box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
     }
     .contents{
         height: 500px;
@@ -107,6 +139,15 @@
     }
     .sections button:last-child {
       width: 120px;
+    }
+    .turn-back{
+        margin-left:20px; 
+        font-size: 50px; 
+        color: #999999;
+    }
+    .turn-back:hover {
+        color: black;
+        cursor: pointer;
     }
 
   </style>

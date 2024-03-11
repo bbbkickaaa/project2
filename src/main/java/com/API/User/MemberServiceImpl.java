@@ -52,6 +52,7 @@ public class MemberServiceImpl implements MemberService {
                     .userLevel(users.getUserLevel())
                     .email(users.getEmail())
                     .createdDate(users.getCreatedDate())
+                    .picture(users.getPicture())
                     .build();
 			return ResponseEntity.ok().body(dto);
 		}

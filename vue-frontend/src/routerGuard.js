@@ -20,3 +20,29 @@ export async function checkPostOwner(to, from, next) {
     next('/main');
   }
 }
+const categories = {
+  category1: ['chat', 'game'],
+  category2: ['chat', 'lol', 'overWatch', 'mapleStory'],
+  category3: ['ask', 'info', 'free']
+};
+
+export async function validateCategoryRoute(to, from, next) {
+  try {
+    const { category1, category2, category3} = to.params;
+
+    const validCategory1 = categories.category1.includes(category1);
+    const validCategory2 = !category2 || categories.category2.includes(category2); // 카테고리 2가 없거나 유효한 경우를 고려
+    const validCategory3 = !category3 || categories.category3.includes(category3); // 카테고리 3이 없거나 유효한 경우를 고려
+
+    if (validCategory1 && validCategory2 && validCategory3) {
+      next();
+    } else {
+      next('/main'); // 유효하지 않은 경우 현재 경로 유지
+    }
+  } catch (error) {
+    console.error('라우터 가드에서 오류 발생:', error);
+    next('/error'); // 서버 오류 시 오류 페이지로 이동
+  }
+}
+
+

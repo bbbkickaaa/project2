@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.API.Board.DTO.BoardImageUploadDTO;
+import com.API.Board.DTO.BoardPostDTO;
 import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.DTO.DeleteCommentDTO;
+import com.API.Board.DTO.QueryValidateDTO;
 
 import org.springframework.data.domain.Sort;
 @Controller
@@ -27,19 +29,19 @@ public class BoardController {
 	BoardService boardService;
 
 	@GetMapping("/get-all")
-	public ResponseEntity<Page<BoardReviewDTO>> findAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
+	public ResponseEntity<Page<BoardReviewDTO>> findAll(@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
 		
 		return boardService.findAll(pageable);
 	}
 	
 	@PostMapping("/post")
-    public ResponseEntity<?> postBoard(@RequestBody Map<String, Object> requestData, BoardImageUploadDTO imageDTO) {
+    public ResponseEntity<?> postBoard(@RequestBody BoardPostDTO dto) {
 		
-       return boardService.postBoard(requestData);
+       return boardService.postBoard(dto);
     }
 	@GetMapping("/get-detail")
-	public ResponseEntity<?> findbyId(@RequestParam("id") Long id){
-		return boardService.findbyId(id);
+	public ResponseEntity<?> getDetail(@RequestParam("id") Long id){
+		return boardService.getDetail(id);
 	}
 	
 	@GetMapping("/get-detail-only-alter")
@@ -77,4 +79,5 @@ public class BoardController {
 	public ResponseEntity<?> deleteComment(@RequestBody DeleteCommentDTO dto){
 		return boardService.deleteComment(dto);
 	}
+
 }

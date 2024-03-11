@@ -44,7 +44,7 @@ public class User {
 	})
 	private UserLevel userLevel;
 	
-	private String picture;
+	private String picture = "profile/default1.png";
 	
 	private String email;
 	/*

@@ -3,6 +3,7 @@ package com.API.Board.DTO;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.API.Board.Entity.BoardCategory;
 import com.API.Board.Entity.Comment;
 
 import lombok.AllArgsConstructor;
@@ -23,4 +24,5 @@ public class BoardReviewDTO {
     private int views;
     private int likes;
     private Long commentCount;
+    private BoardCategory category;
 }

@@ -2,15 +2,14 @@
     <header>
       <div class="container">
           <div class="user-info">
-              <h4>반갑습니다. {{ userData.nickname }}님.</h4>
+              <h4><img :src="userData.picture" style="width: 40px; height: 40px; margin-right: 10px; border-radius: 50%; border: 3px solid darkolivegreen;"> <span>    반갑습니다. {{ userData.nickname }}님. </span></h4>
               <p class="level">회원 레벨: <span class="badge bg-secondary">{{userData.userLevel.level}}</span></p>
               <p class="registration-date">가입일: <span>{{userData.createdDate}}</span></p>
               <p class="posts">글 갯수: {{userData.postCount}}</p>
               <p class="comments">댓글 갯수: {{ userData.commentCount }}</p>
               <button class="btn btn-primary edit" @click="AlterIdentity" >정보수정</button>
               <button class="btn btn-secondary logout" @click="logout">로그아웃</button>
-          </div>
-          
+          </div>   
       </div>
   </header>
 </template>
@@ -28,7 +27,8 @@ data(){
         createdDate: '',
         nickname: '',
         postCount:'',
-        commentCount:''
+        commentCount:'',
+        picture:'',
       }
     }
 },
@@ -99,14 +99,21 @@ header {
   height: 130px;
   border: 1px solid rgba(108, 117, 125, 0.2);
   margin: 80px auto;
-  padding: 30px;
+  padding: 20px;
   position: relative;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
 .user-info h4 {
+  height: 50px;
   margin-bottom: 10px;
 }
+
+.user-info > span {
+  height: 50px;
+  line-height: 50px;
+}
+
 
 .user-info p { 
   display: inline-block;

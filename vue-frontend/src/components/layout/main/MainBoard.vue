@@ -5,6 +5,7 @@
                     <thead>
                         <tr>
                             <th scope="col">글번호</th>
+                            <th scope="col">카테고리</th>
                             <th scope="col">제목</th>
                             <th scope="col">작성자</th>
                             <th scope="col">조회수</th>
@@ -13,7 +14,13 @@
                     <tbody v-if="limitedBoard.length > 0" >
                         <tr  v-for="list in limitedBoard" :key="list.boardId">
                             <td>{{ list.boardId }}</td>
-                            <td><a class="title" @click="toDetails(list.boardId)">{{ list.title }} {{ '[' + list.commentCount + ']'}} <span v-if="list.likes">{{ '+' + list.likes }}</span></a></td>
+                            <td><span v-if="list.category">{{ list.category.category1 }}</span></td>
+                            <td>
+                                <a class="title" @click="toDetails(list.boardId,list.category)">{{ list.title }} 
+                                <span v-if="list.commentCount" style="font-size: 14px; font-weight: bold; color: dodgerblue; margin-left: 5px;">{{ '[' + list.commentCount + ']'}}</span> 
+                                <span style="font-size: 14px; font-weight: bold; color: palevioletred; margin: 0 5px;" v-if="list.likes">{{ '+   ' + list.likes }}</span>
+                                </a>
+                            </td>
                             <td>{{ list.nickname }}</td>
                             <td>{{ list.views }}</td>
                         </tr>
@@ -57,10 +64,10 @@ data(){
 },
 computed: {
     limitedBoard: function() {
-        return this.TheBoard.data.slice(0, 20);
+        return this.TheBoard.data.slice(0, 15);
     },
     emptyRowsCount: function() {
-      return Math.max(20 - this.limitedBoard.length, 0);
+      return Math.max(15 - this.limitedBoard.length, 0);
     },
     pageNumbers() {
         const windowSize = 5;
@@ -95,7 +102,7 @@ mounted(){
 },
 methods :{
     getBoard(page){
-        this.$axios.get('/api/board/get-all',  {params: {page: page,size: 20}})
+        this.$axios.get('/api/board/get-all',  {params: {page: page,size: 15}})
           .then(response => {
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;
@@ -119,8 +126,8 @@ methods :{
     writePost() {
         this.$router.push('/main/post')
     },
-    toDetails(id){
-        this.$router.push({ path: `/main/detail/${id}` });
+    toDetails(id,category){
+        this.$router.push({ path:`/main/${category.category1}/${category.category2}/${category.category3}/detail/${id}`});
     }
 }
 }
@@ -158,49 +165,46 @@ methods :{
 }
 
 .table th, .table td {
-
-  padding: 8px;
+  width: auto;
+  line-height: 50px;
+  height: 50px !important;
+  padding: 2px;
   text-align: left;
+  box-sizing: border-box;
 }
 
 .table th {
   background-color: #f4f4f4;
 
 }
-
-
-
-.table th, .table td {
-    height: 41px;
-    box-sizing: border-box;
-}
-
 .table th {
     border-top: 1px solid rgba(108, 117, 125, 0.2);
     text-align: center;
 }
 
 .table th:first-child, .table td:first-child{
-    width: 80px;
+    width: 100px;
     text-align: center;
     border-left: 1px solid rgba(108, 117, 125, 0.2);
-    border-right: 1px dashed rgba(108, 117, 125, 0.2);
 }
 
 .table th:nth-child(2), .table td:nth-child(2){
-    padding-left: 20px;
-    border-right: 1px dashed rgba(108, 117, 125, 0.2);
+    width: 140px;
+    text-align: center;
 }
 
 .table th:nth-child(3), .table td:nth-child(3){
-    width: 150px;
-    text-align: center;
-    border-right: 1px dashed rgba(108, 117, 125, 0.2);
+    padding-left: 20px;
 }
 .table th:nth-child(4), .table td:nth-child(4){
+    width: 120px;
+    text-align: center;
+}
+.table th:nth-child(5), .table td:nth-child(5){
     width: 100px;
     text-align: center;
 }
+
 .sections{
     width :1000px;
     margin-bottom : 100px;

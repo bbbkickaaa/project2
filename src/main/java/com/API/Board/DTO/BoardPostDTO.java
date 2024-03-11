@@ -2,8 +2,6 @@ package com.API.Board.DTO;
 
 import java.util.List;
 
-import com.API.Board.Entity.Comment;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +11,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDTO {
-	
-		Long commentId;
-		Long userid;
-		String content;
-		String nickname;
-		int level;
-		String writeDate;
-		String picture;
+public class BoardPostDTO {
+
+	String id;
+	String boardId;
+	String content;
+	String title;
+	String category1;
+	String category2;
+	String category3;
 }

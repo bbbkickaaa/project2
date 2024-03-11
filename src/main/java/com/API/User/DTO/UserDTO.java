@@ -17,6 +17,7 @@ import lombok.Setter;
 public class UserDTO {
 
 	private Long id;
+	private String picture;
 	private String userid;
 	private String nickname;
 	private UserLevel userLevel;
