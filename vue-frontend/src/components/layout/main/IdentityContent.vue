@@ -6,8 +6,9 @@
         <p>본 페이지에서 회원정보 수정이 가능합니다.</p>
       </div>
       <div class="user-image">
-        <a>
-          <img :src="userData.picture" style="border-radius: 50%; width:150px; height: 150px; border: 5px solid darkolivegreen;" alt="profile">
+        <a @click="triggerFileInput">
+        <img :src="previewImage" style="border-radius: 50%; width:150px; height: 150px; border: 5px solid darkolivegreen;" alt="profile">
+        <input type="file" @change="onFileChange" style="display: none;" ref="fileInput" accept="image/*">
           <span class="material-symbols-outlined camera">photo_camera</span>
         </a>
       </div>
@@ -37,7 +38,7 @@
           <input type="email" :disabled="true" class="form-input" id="email" v-model="userData.email">
         </div>
         <div  class="delete-button">  
-          <button type="submit" class="btn btn-primary form-button " style="color: white;"><i class="material-symbols-outlined">check</i> 변경 사항 저장</button>
+          <button type="submit" class="btn btn-success form-button " style="color: white;"><i class="material-symbols-outlined">check</i> 변경 사항 저장</button>
           <button type="submit" class="btn btn-secondary form-button" @click ="$router.push('/main')">뒤로가기</button>
 
           <div class="delete-user" >
@@ -74,6 +75,7 @@
             nickname:'',
             password : ''
         },
+        previewImage: '',
         passwordCheck : '',
         ShowModal: false,
         id : null ,
@@ -86,6 +88,7 @@
             postCount:'',
             commentCount:'',
             picture: '',
+            
       }
       }
     },
@@ -104,6 +107,15 @@
         this.$axios.post('/api/member/alter-user',this.form)
         .then(response=>{alert(response.data); this.$router.push('/main')})
     }else{ alert("패스워드가 일치하지 않습니다.")}},
+    triggerFileInput() {
+      // 히든 파일 입력을 트리거합니다
+      this.$refs.fileInput.click();
+    },
+    onFileChange(e) {
+      const file = e.target.files[0];
+      this.previewImage = URL.createObjectURL(file);
+      // 여기에서 파일 업로드 로직을 추가합니다.
+    }
 },
     watch: {
         ShowModal(newValue) {
@@ -117,6 +129,7 @@
           .then(response => {
             this.userData = response.data;
             this.form.id = response.data.userid;
+            this.previewImage = response.data.picture;
           })
           .catch(error => {
             if (error.response) {

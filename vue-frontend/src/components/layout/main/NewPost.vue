@@ -30,7 +30,7 @@
           <textarea class="form-control contents" id="contentInput" v-model="post.content" maxlength="400" :minlength="minLength" required rows="4" placeholder="내용을 입력하세요"></textarea>
         </div>
         <div class ="sections">
-            <button type="submit" class="btn btn-primary">새 글 저장하기</button>
+            <button type="submit" class="btn btn-success">새 글 저장하기</button>
             <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
         </div>    
       </form>

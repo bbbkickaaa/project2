@@ -7,7 +7,7 @@
               <p class="registration-date">가입일: <span>{{userData.createdDate}}</span></p>
               <p class="posts">글 갯수: {{userData.postCount}}</p>
               <p class="comments">댓글 갯수: {{ userData.commentCount }}</p>
-              <button class="btn btn-primary edit" @click="AlterIdentity" >정보수정</button>
+              <button class="btn btn-success edit" @click="AlterIdentity" >정보수정</button>
               <button class="btn btn-secondary logout" @click="logout">로그아웃</button>
           </div>   
       </div>

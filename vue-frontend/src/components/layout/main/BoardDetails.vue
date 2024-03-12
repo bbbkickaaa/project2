@@ -42,7 +42,7 @@
             <form @submit.prevent="PostComment">
                 <div class="comment-form mt-4" >
                     <textarea v-model="CommentForm.comment" class="form-control" maxlength="80"  placeholder="댓글을 입력하세요" rows="3"></textarea>
-                    <button class="btn btn-primary mt-2" :disabled="CommentForm.comment.length == 0" >댓글 작성</button>
+                    <button class="btn btn-success mt-2" :disabled="CommentForm.comment.length == 0" >댓글 작성</button>
                 </div>
             </form>
         </div>
@@ -221,6 +221,7 @@ methods: {
         margin-bottom: 50px;
     }
     .contents{
+        margin-left: 30px;
         padding: 20px;
         height: 400px;
     }

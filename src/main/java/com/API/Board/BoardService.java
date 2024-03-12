@@ -1,9 +1,8 @@
 package com.API.Board;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import com.API.Board.DTO.BoardAlterDTO;
 import com.API.Board.DTO.BoardDTO;
 import com.API.Board.DTO.BoardPostCountDTO;
@@ -24,14 +22,15 @@ import com.API.Board.DTO.BoardPostDTO;
 import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.DTO.CommentDTO;
 import com.API.Board.DTO.DeleteCommentDTO;
-import com.API.Board.DTO.QueryValidateDTO;
 import com.API.Board.Entity.Board;
 import com.API.Board.Entity.BoardCategory;
 import com.API.Board.Entity.Comment;
 import com.API.User.UserRepository;
 import com.API.User.Entity.User;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.TypedQuery;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -49,14 +48,116 @@ public class BoardService {
 	@Autowired
 	CommentRepository commentRepository;
 	
-	public ResponseEntity<Page<BoardReviewDTO>> findAll(Pageable pageable){
-		Page<BoardReviewDTO> paging = boardRepository.findAllBoardDTOs(pageable);
-	    if (paging.isEmpty()) {
-		return ResponseEntity.noContent().build();
-	    }
-        return ResponseEntity.ok(paging);
-	}
+	@Autowired
+	EntityManager entityManager;
+	
+	
+	public ResponseEntity<Page<BoardReviewDTO>> findAll(String category3, String category2, String category1 ,String option, String content, Pageable pageable) {
+	    String queryString = "SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) FROM Board b JOIN b.author u LEFT JOIN b.comments c";
+	    String countQueryString = "SELECT COUNT(b) FROM Board b JOIN b.author u LEFT JOIN b.comments c";
+
+	    String whereClause = "";
+	    boolean isWhereAdded = false;
+
+		    if (category3 != null && !category3.isEmpty()) {
+		        whereClause = " WHERE b.category.category1 = :category1 AND b.category.category2 = :category2 AND b.category.category3 = :category3 ";
+		        isWhereAdded = true;
+		    } else if (category2 != null && !category2.isEmpty()) {
+		        whereClause = " WHERE b.category.category1 = :category1 AND b.category.category2 = :category2 ";
+		        isWhereAdded = true;
+		    } else if (category1 != null && !category1.isEmpty()) {
+		        whereClause = " WHERE b.category.category1 = :category1 ";
+		        isWhereAdded = true;
+		    }
+
+		    if (option != null && content != null && category1 != null) {
+		        if (isWhereAdded) {
+		            whereClause += " AND ";
+		        }
+		        if ("title".equals(option)) {
+		            whereClause += "b.title LIKE :content";
+		        } else if ("index".equals(option)) {
+		            whereClause += "b.id = :indexParam";
+		        } else if ("author".equals(option)) {
+		            whereClause += "u.nickname LIKE :content";
+		        }
+		        isWhereAdded = true;
+		    }else if (option != null && content != null && category1 == null) {
+		        if (!isWhereAdded) {
+		            whereClause += " WHERE ";
+		        }
+		        if ("title".equals(option)) {
+		            whereClause += "b.title LIKE :content";
+		        } else if ("index".equals(option)) {
+		            whereClause += "b.id = :indexParam";
+		        } else if ("author".equals(option)) {
+		            whereClause += "u.nickname LIKE :content";
+		        }
+		        isWhereAdded = true;
+		    }
+
+	    queryString += isWhereAdded ? whereClause : "";
+	    countQueryString += isWhereAdded ? whereClause : "";
+
+	    queryString += " GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category";
 	    
+	    TypedQuery<Long> countQuery = entityManager.createQuery(countQueryString, Long.class);
+
+	    // 파라미터 설정
+	    if (category3 != null && !category3.isEmpty()) {
+	        countQuery.setParameter("category3", category3);
+	        countQuery.setParameter("category2", category2);
+	        countQuery.setParameter("category1", category1);
+	    } else if (category2 != null && !category2.isEmpty()) {
+	        countQuery.setParameter("category2", category2);
+	        countQuery.setParameter("category1", category1);
+	    } else if (category1 != null && !category1.isEmpty()) {
+	        countQuery.setParameter("category1", category1);
+	    }
+
+	    if (option != null && content != null) {
+	        if ("index".equals(option)) {
+	            countQuery.setParameter("indexParam", content);
+	        } else {
+	            countQuery.setParameter("content", "%" + content + "%");
+	        }
+	    }
+
+	    long totalRows = countQuery.getSingleResult();
+
+	    // 쿼리 실행
+	    TypedQuery<BoardReviewDTO> query = entityManager.createQuery(queryString, BoardReviewDTO.class);
+
+	 // BoardReviewDTO 쿼리 파라미터 설정 (Count 쿼리와 동일)
+	    if (category3 != null && !category3.isEmpty()) {
+	        query.setParameter("category3", category3);
+	        query.setParameter("category2", category2);
+	        query.setParameter("category1", category1);
+	    } else if (category2 != null && !category2.isEmpty()) {
+	        query.setParameter("category2", category2);
+	        query.setParameter("category1", category1);
+	    } else if (category1 != null && !category1.isEmpty()) {
+	        query.setParameter("category1", category1);
+	    }
+	    
+	    if (option != null && content != null ) {
+	        if ("index".equals(option)) {
+	        	query.setParameter("indexParam", content);
+	        } else {
+	        	query.setParameter("content", "%" + content + "%");
+	        }
+	    }
+	    
+
+	    query.setFirstResult((int) pageable.getOffset());
+	    query.setMaxResults(pageable.getPageSize());
+
+	    List<BoardReviewDTO> results = query.getResultList();
+
+	    Page<BoardReviewDTO> page = new PageImpl<>(results, pageable, totalRows);
+	    return ResponseEntity.ok(page);
+	}
+	
 	public ResponseEntity<String> postBoard(BoardPostDTO dto){
 		
 		Board board = new Board();
@@ -278,6 +379,7 @@ public class BoardService {
 		}
 	    
 	}
+
 	
 }
 

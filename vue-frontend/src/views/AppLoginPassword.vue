@@ -5,7 +5,7 @@
       <div class="form-group">
         <input type="text" class="form-control" placeholder="회원 아이디를 입력해 주세요." minlength="6" id="userId" v-model="userId" required>
       </div>
-      <button type="submit" class="btn btn-primary text-center password-btn">비밀번호를 찾고 싶어요.</button>
+      <button type="submit" class="btn btn-success text-center password-btn">비밀번호를 찾고 싶어요.</button>
       <a class="back mt-3 d-block" @click="turnBack" >뒤로가기</a>
     </form>
   </div>

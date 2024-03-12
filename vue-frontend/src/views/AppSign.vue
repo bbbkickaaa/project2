@@ -14,11 +14,11 @@
       <label v-if="isSendAuthenticateMail" for="authenticate-email" >인증번호</label>
       <div v-if="isSendAuthenticateMail" class = "email-form">
         <input minlength="5" id="authenticate-email"  class="form-control" style="width: 300px; float: left;" v-model="AuthenticationNumber" required>
-        <button type="button" :disabled="AuthenticationNumber.length<5 || !getResponseMailSend" @click="CheckMailCorrect($event)" class="btn btn-primary send-mail"> 확인</button>
+        <button type="button" :disabled="AuthenticationNumber.length<5 || !getResponseMailSend" @click="CheckMailCorrect($event)" class="btn btn-success send-mail"> 확인</button>
       </div>
     </div>
     <div class="create-wrap">
-      <button id="submit" type="submit" class="btn btn-primary create-user" :disabled="!isPossible">회원가입</button>
+      <button id="submit" type="submit" class="btn btn-success create-user" :disabled="!isPossible">회원가입</button>
     </div>
 
 

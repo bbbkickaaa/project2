@@ -33,7 +33,7 @@
       <div class="mb-2 login-form">
         <input id="login-password" placeholder="비밀번호를 입력해 주세요." type="password" class="form-control" v-model="loginForm.password" required>
       </div>
-      <button type="submit" class="btn btn-primary submit-login">이메일 계정 로그인</button>
+      <button type="submit" class="btn btn-success submit-login">이메일 계정 로그인</button>
       <a class="forgot-password" @click="forgotPassword">비밀번호를 잊으셨나요?</a>
     </div>
   </form>

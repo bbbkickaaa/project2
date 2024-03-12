@@ -21,6 +21,7 @@ import com.API.Board.DTO.DeleteCommentDTO;
 import com.API.Board.DTO.QueryValidateDTO;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 @Controller
 @RequestMapping("/api/board")
 public class BoardController {
@@ -29,9 +30,17 @@ public class BoardController {
 	BoardService boardService;
 
 	@GetMapping("/get-all")
-	public ResponseEntity<Page<BoardReviewDTO>> findAll(@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
-		
-		return boardService.findAll(pageable);
+	public ResponseEntity<Page<BoardReviewDTO>> findAll(
+		   @RequestParam(name = "category1", required = false) String category1,
+		   @RequestParam(name = "category2", required = false) String category2,
+		   @RequestParam(name = "category3", required = false) String category3,
+		   @RequestParam(name = "option", required = false) String option, //검색 타입
+		   @RequestParam(name = "content", required = false) String content, //검색 내용 
+	    @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+
+		ResponseEntity<Page<BoardReviewDTO>> results = boardService.findAll(category3,category2,category1,option,content,pageable);
+	    return results;
 	}
 	
 	@PostMapping("/post")

@@ -1,6 +1,9 @@
 <template>
     <div class="all-wrap">
       <div class="all-bgc">
+        <div class="app-logo" style="text-align: center; padding-top: 50px;">
+          <a class= "main-logo" @click="$router.push('/main')"><img src="/MainLogo.png" style="width:150px" alt="logo"></a>
+        </div>
         <AppHeader @Alter-identity="handleAlterIdentity"></AppHeader>
         <div class="wraps">
           <router-view></router-view>
@@ -21,12 +24,12 @@
     },
     methods:{
       handleAlterIdentity() {
-        this.$router.push('main/identity')
+        this.$router.push('/main/identity')
     }
   }
   };
   </script>
-  <style>
+  <style >
     .wraps{
           position : relative;
           width: 1100px;
@@ -52,5 +55,9 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     margin: 50px auto;
+  }
+  .main-logo:hover{
+    cursor: pointer;
+    opacity: 0.7;
   }
   </style>
