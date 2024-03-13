@@ -8,17 +8,47 @@
         </div>
         <div>
           <select v-model="post.category1">
-            <option value="chat">잡담</option>
-            <option value="game">게임</option>
+              <option value="chat">잡담</option>
+              <option value="game">게임</option>
+              <option value="beauty">뷰티</option>
+              <option value="study">공부</option>
+              <option value="travel">여행</option>
           </select>
           <select v-if="post.category1 === 'chat'" v-model="post.category2">
             <option value="chat">잡담</option>
+            <option value="common">일상</option>
+            <option value="star">연예</option>
+            <option value="love">사랑</option>
+            <option value="food">음식</option>
           </select>
           <select v-if="post.category1 === 'game'" v-model="post.category2">
             <option value="lol">리그오브레전드</option>
-            <option value ="overWatch">오버워치</option>
-            <option value="mapleStory">메이플스토리</option>
+            <option value ="overwatch">오버워치</option>
+            <option value="maplestory">메이플스토리</option>
+            <option value="varolant">발로란트</option>
+            <option value="mabinogi">마비노기</option>
           </select>
+          <select v-if="post.category1 === 'beauty'" v-model="post.category2">
+            <option value="makeup">화장</option>
+            <option value ="fashion">패션</option>
+            <option value="skin">피부</option>
+            <option value="diet">다이어트</option>
+            <option value="hairstyle">헤어스타일</option>
+          </select>
+          <select v-if="post.category1 === 'study'" v-model="post.category2">
+            <option value="certification">자격증</option>
+            <option value ="suneung">수능</option>
+            <option value="toeic">토익</option>
+            <option value="hobby">취미</option>
+            <option value="interview">면접</option>
+          </select>
+          <select v-if="post.category1 === 'travel'" v-model="post.category2">
+            <option value="oversea">해외</option>
+            <option value ="domestic">국내</option>
+            <option value="festival">축제</option>
+            <option value="event">이벤트</option>
+          </select>
+
           <select v-model="post.category3">
             <option value="free">자유</option>
             <option value ="ask">질문</option>
@@ -103,9 +133,17 @@
       } else if (newValue === 'game') {
         this.post.category2 = 'lol';
         this.post.category3 = 'free';
-      }
-    }
-    },
+      } else if (newValue === 'beauty') {
+        this.post.category2 = 'makeup';
+        this.post.category3 = 'free';
+      }else if (newValue === 'study') {
+        this.post.category2 = 'toeic';
+        this.post.category3 = 'free';
+      }else if (newValue === 'travel') {
+        this.post.category2 = 'oversea';
+        this.post.category3 = 'free';}
+  }
+}
   }
 
   </script>

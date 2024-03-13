@@ -5,6 +5,7 @@
           <a class= "main-logo" @click="$router.push('/main')"><img src="/MainLogo.png" style="width:150px" alt="logo"></a>
         </div>
         <AppHeader @Alter-identity="handleAlterIdentity"></AppHeader>
+        <AppCategory @category-selected="setCategory1"></AppCategory>
         <div class="wraps">
           <router-view></router-view>
         </div>
@@ -13,18 +14,24 @@
   </template>
   
   <script>
+  import AppCategory from './main/AppCategory.vue';
   import AppHeader from './main/AppHeader.vue';
   export default {
     components: {
         AppHeader,
+        AppCategory,
     },
     data() {
       return {
+        Category1 : '',
       }
     },
     methods:{
       handleAlterIdentity() {
         this.$router.push('/main/identity')
+    },
+    setCategory1(selectedCategory){
+      this.Category1 = selectedCategory;
     }
   }
   };

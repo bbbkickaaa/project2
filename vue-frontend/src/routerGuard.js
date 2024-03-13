@@ -21,8 +21,8 @@ export async function checkPostOwner(to, from, next) {
   }
 }
 const categories = {
-  category1: ['chat', 'game'],
-  category2: ['chat', 'lol', 'overWatch', 'mapleStory'],
+  category1: ['chat', 'game', 'beauty', 'study', 'travel'],
+  category2: ['chat', 'lol', 'overWatch', 'mapleStory', 'valorant', 'mabinogi', 'makeup', 'fashion', 'skin', 'diet', 'hairstyle', 'certification', 'suneung', 'toeic', 'hobby', 'interview', 'oversea', 'domestic', 'festival', 'event'],
   category3: ['ask', 'info', 'free']
 };
 

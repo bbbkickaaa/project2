@@ -122,7 +122,7 @@ public class BoardService {
 	            countQuery.setParameter("content", "%" + content + "%");
 	        }
 	    }
-
+	    queryString += " ORDER BY b.id DESC";
 	    long totalRows = countQuery.getSingleResult();
 
 	    // 쿼리 실행

@@ -221,6 +221,7 @@ methods :{
             selectedOption : 'title',
             content : '',
         }
+        this.$router.push({path: '/main'});
         this.setPage(0);
     },
 

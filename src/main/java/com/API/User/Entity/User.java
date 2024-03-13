@@ -1,13 +1,9 @@
 package com.API.User.Entity;
 
 import java.time.LocalDate; 
-import java.util.HashSet; 
 import java.util.Set;
-
 import com.API.User.Etc.IdxToStringCoverter;
 import com.API.User.Etc.RandomNicknameGenerator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -76,6 +72,10 @@ public class User {
 	
 	@Column(name="account_type", nullable = false)
 	private String accountType;
+	
+	@Convert(converter = IdxToStringCoverter.class)
+	@Column(name="like_board_id")
+	private Set<Integer> likeBoardId;
 	
 	@Builder
 	public User(String name, String email, String picture, UserRole role, String password, UserLevel userlevel , String nickname, String accountType) {
