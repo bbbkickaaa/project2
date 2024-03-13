@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -225,6 +227,7 @@ public class BoardService {
 	    boardDTO.setAlterDate(board.getAlterDate());
 	    boardDTO.setPicture(board.getAuthor().getPicture());
 	    boardDTO.setLevel(board.getAuthor().getUserLevel().getLevel());
+	    boardDTO.setLikesUser(board.getLikesUsers());
 	    List<CommentDTO> listDto = new ArrayList<>();
 	    List<Comment> list = board.getComments();
 	    list.stream().forEach(comment -> {
@@ -306,9 +309,17 @@ public class BoardService {
 		    set.add(userId);
 		    board.get().setLikesUsers(set);
 		    boardRepository.save(board.get());
-		    return ResponseEntity.ok().body("추천되었습니다.");
-		} else {
-		    return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 추천되었습니다.");
+		    return ResponseEntity.ok().body("추천 되었습니다.");
+		}else if(board.get().getLikesUsers().stream().anyMatch(user->user.equals(userId))){
+			board.get().setLikes(board.get().getLikes() - 1 );
+			Set<Integer> updatedLikesUsers = board.get().getLikesUsers().stream()
+			        .filter(user -> !user.equals(userId)).collect(Collectors.toSet());
+			board.get().setLikesUsers(updatedLikesUsers);
+			boardRepository.save(board.get());
+			return ResponseEntity.ok().body("추천 취소되었습니다.");
+		}
+		else {
+		    return ResponseEntity.status(HttpStatus.CONFLICT).body("오류가 발생했습니.");
 		}
 	}
 	

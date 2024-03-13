@@ -2,7 +2,8 @@
     <div class="wrap">
         <div class="symbol">
             <span class="material-symbols-outlined symbols turn-back" @click="ToMain">undo</span>
-            <span class="material-symbols-outlined symbols heart" :disabled="IsRecommended" @click="PostRecommend">favorite</span>
+            <span class="material-symbols-outlined symbols heart" v-if="!IsRecommended" @click="PostRecommend">favorite</span>
+            <span class="material-symbols-outlined symbols heart fill-heart" v-if="IsRecommended" @click="PostRecommend">favorite</span>
             <span class="material-symbols-outlined symbols star">star</span>
             <span class="material-symbols-outlined symbols airplane ">near_me</span>
         </div>
@@ -87,7 +88,7 @@ import ModalComponent from '../ModalComponent.vue';
                 userIdx : '',
                 comment : '',
             },
-            IsRecommended : false,
+            IsRecommended : null,
             ShowModal: false,
             userIdx : '',
             id: null,
@@ -105,6 +106,7 @@ import ModalComponent from '../ModalComponent.vue';
                 comments:[],
                 level:null,
                 category:[],
+                likesUser:{},
             }
         }
     },
@@ -115,7 +117,7 @@ mounted(){
             this.BoardInfo = response.data;
             this.CommentForm.BoardId = response.data.id;
             this.PlusViews();
-
+            this.checkRecommend();
             if(this.BoardInfo.writeDate){
             this.formWriteDate = this.formatDate(this.BoardInfo.writeDate);}
             if(this.BoardInfo.alterDate){
@@ -166,7 +168,7 @@ methods: {
         },
   PostRecommend (){
     this.$axios.post('/api/board/post-recommend', this.BoardInfo)
-    .then(()=>{this.BoardInfo.likes += 1, this.IsRecommended = true})
+    .then(()=>{this.IsRecommended = !this.IsRecommended;})
     .catch((response)=>{alert(response.response.data);})
   },
   PostComment(){
@@ -194,6 +196,12 @@ methods: {
       const second = dateStr.slice(12, 14);
       return `${year}년 ${month}월 ${day}일 ${hour}:${minute}:${second}`;
     },
+    checkRecommend() {
+    this.IsRecommended = this.BoardInfo.likesUser.some(userId => 
+        userId === Number.parseInt(this.userIdx)
+    );
+}
+    
 }
 
   }
@@ -403,5 +411,8 @@ methods: {
     }
     .category a:hover {
         cursor: pointer;
+    }
+    .fill-heart{
+        font-variation-settings: 'FILL' 1
     }
 </style>

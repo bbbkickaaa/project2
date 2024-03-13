@@ -39,7 +39,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setMaxAge(259200); 
         refreshTokenCookie.setDomain("localhost");
-        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setPath("/api/public/refresh");
         response.addCookie(refreshTokenCookie);
         String targetUrl = determineTargetUrl(request, response, authentication);
         clearAuthenticationAttributes(request, response);

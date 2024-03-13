@@ -1,11 +1,8 @@
 package com.API.Board.DTO;
 
 import java.util.List;
-
+import java.util.Set;
 import com.API.Board.Entity.BoardCategory;
-import com.API.Board.Entity.Comment;
-import com.API.User.Entity.UserLevel;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +26,7 @@ public class BoardDTO {
     private String alterDate;
     private String picture;
     private BoardCategory category;
+    private Set<Integer> likesUser;
     private List<CommentDTO> comments;
     private List<String> imageUrls;
 

@@ -49,7 +49,7 @@ public class LoginServiceImpl implements LoginService{
 	        refreshTokenCookie.setHttpOnly(true);
 	        refreshTokenCookie.setMaxAge(259200);
 	        refreshTokenCookie.setDomain("localhost");
-	        refreshTokenCookie.setPath("/");
+	        refreshTokenCookie.setPath("/api/public/refresh");
 	        response.addCookie(refreshTokenCookie);
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.set("Authorization", "Bearer " + accessToken);
