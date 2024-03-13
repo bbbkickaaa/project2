@@ -14,10 +14,10 @@
                     <tbody v-if="limitedBoard.length > 0" >
                         <tr  v-for="list in limitedBoard" :key="list.boardId">
                             <td>{{ list.boardId }}</td>
-                            <td v-if="list.category && categoryType===0"><a class="category" @click="toCategory1(list.category)" >{{ list.category.category1 }}</a></td>
-                            <td v-if="list.category && categoryType===1"><a class="category" @click="toCategory2(list.category)" >{{ list.category.category2 }}</a></td>
-                            <td v-if="list.category && categoryType===2"><a class="category" @click="toCategory3(list.category)" > {{ list.category.category3 }}</a></td>
-                            <td v-if="list.category && categoryType===3"><a class="category" > {{ list.category.category3 }}</a></td>
+                            <td v-if="list.category && categoryType===0"><a class="category" @click="toCategory1(list.category)" >{{ getKoreanCategoryName(list.category.category1,1) }}</a></td>
+                            <td v-if="list.category && categoryType===1"><a class="category" @click="toCategory2(list.category)" >{{ getKoreanCategoryName(list.category.category2,2) }}</a></td>
+                            <td v-if="list.category && categoryType===2"><a class="category" @click="toCategory3(list.category)" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
+                            <td v-if="list.category && categoryType===3"><a class="category" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
                             <td>
                                 <a class="title" @click="toDetails(list.boardId,list.category)">{{ list.title }} 
                                 <span v-if="list.commentCount" style="font-size: 14px; font-weight: bold; color: darkgreen; margin-left: 5px;">{{ '[' + list.commentCount + ']'}}</span> 
@@ -69,6 +69,7 @@
 
 
 <script>
+import { toRaw } from 'vue';
 export default {
 data(){
     return{
@@ -87,7 +88,45 @@ data(){
             selectedOption : '',
             content : '',
         },
-    }
+        category1Mapping: {
+            'chat': '잡담',
+            'game': '게임',
+            'beauty': '뷰티',
+            'study': '공부',
+            'travel': '여행',
+        },
+        category2Mapping:{
+            'chat' : '잡담',            
+            'common': '일상',
+            'star': '연예',
+            'love': '사랑',
+            'food': '음식',
+            'lol': '리그오브레전드',
+            'overwatch': '오버워치',
+            'maplestory': '메이플스토리',
+            'valorant': '발로란트',
+            'mabinogi': '마비노기',
+            'makeup': '화장',
+            'fashion': '패션',
+            'skin': '피부',
+            'diet': '다이어트',
+            'hairstyle': '헤어스타일',
+            'certification': '자격증',
+            'suneung': '수능',
+            'toeic': '토익',
+            'hobby': '취미',
+            'interview': '면접',
+            'oversea': '해외',
+            'domestic': '국내',
+            'festival': '축제',
+            'event': '이벤트'
+        },
+        category3Mapping:{
+            'ask' : '질문',
+            'info' :'정보',
+            'free' : '자유',
+        }
+        }
 },
 props:['category1','category2','category3'],
 computed: {
@@ -126,7 +165,7 @@ computed: {
         pages.push(i);
         }
         return pages;
-}
+    },
 }
 ,
 
@@ -238,7 +277,31 @@ methods :{
     else{
         this.categoryType = 0;
     }
-    }
+    },
+    getKoreanCategoryName(category, type) {
+        const rawCategory = toRaw(category);
+        if (!rawCategory) {
+            return '';
+        }
+        let categoryName = '';
+        if (type === 1) {
+            categoryName = rawCategory;
+        } else if (type === 2) {
+            categoryName = rawCategory;
+        } else if (type === 3) {
+            categoryName = rawCategory;
+        }
+
+        let mapping = {};
+        if (type === 1) {
+            mapping = this.category1Mapping;
+        } else if (type === 2) {
+            mapping = this.category2Mapping;
+        } else if (type === 3) {
+            mapping = this.category3Mapping;
+        }
+        return mapping[categoryName] || categoryName;
+    },
 }
 }
 </script>
