@@ -123,4 +123,18 @@ public class UserController {
     	return memberService.getAnotherUser(id);
     }
     
+    @PostMapping("member/block-user")
+	public ResponseEntity<String> blockUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String Id){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return memberService.blockUser(authentication,Id);
+	}
+    
+    @PostMapping("member/add-friend-user")
+	public ResponseEntity<String> addFriendUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String Id){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return memberService.addFriendUser(authentication,Id);
+	}
+    
 }

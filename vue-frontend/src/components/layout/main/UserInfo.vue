@@ -14,8 +14,8 @@
         </div>
         <div class="bottom-button">
             <button class="btn btn-success" @click="toMessage">쪽지 보내기</button>
-            <button class="btn btn-primary">친구 추가</button>
-            <button class="btn btn-danger">차단 하기</button>
+            <button class="btn btn-primary" @click="addFriend">친구 추가</button>
+            <button class="btn btn-danger" @click="addBlock">차단 하기</button>
         </div>
     </div>
 </template>
@@ -39,6 +39,14 @@ methods :{
   },
   toMessage(){
     this.$emit('switchModal','message')
+  },
+  addFriend(){
+    this.$axios.post('/api/member/add-friend-user', this.id)
+    .then(response=>{alert(response.data)}).catch(error=>{alert(error.response.data)})
+  },
+  addBlock(){
+    this.$axios.post('/api/member/block-user', this.id)
+    .then(response=>{alert(response.data)}).catch(error=>{alert(error.response.data)})
   },
 },
 mounted(){

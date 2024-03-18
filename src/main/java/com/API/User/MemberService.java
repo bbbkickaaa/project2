@@ -19,4 +19,6 @@ public interface MemberService  {
 	public ResponseEntity<?> checkUserIdToEmail(String userId);
 	public ResponseEntity<?> setPasswordToEmail(SendPasswordDTO dto);
 	public ResponseEntity<?> getAnotherUser(Long id);
+	public ResponseEntity<String> addFriendUser(Authentication authentication, String id);
+	public ResponseEntity<String> blockUser(Authentication authentication, String id);
 }

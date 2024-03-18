@@ -184,5 +184,47 @@ public class MemberServiceImpl implements MemberService {
 		else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("해당하는 정보가 없습니다.");
 		}
+	}
+
+	@Override
+	public ResponseEntity<String> addFriendUser(Authentication authentication, String id) {
+		String userid = authentication.getName();
+		Optional<User> user = userRepository.findByUserid(userid);
+		int LongId = Integer.parseInt(id);
+		if(user.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("예상치 못한 오류가 발생했습니다.");
+		}
+		if(user.get().getId() == LongId) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("자기 자신을 대상으론 불가합니다.");
+		}
+		Set<Integer> list = user.get().getFriend_Ids();
+		if(list.contains(LongId)) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 추가 되었습니다.");
+		}
+		list.add(LongId);
+		user.get().setFriend_Ids(list);
+		userRepository.save(user.get());
+		return ResponseEntity.ok("추가 되었습니다.");
+	}
+
+	@Override
+	public ResponseEntity<String> blockUser(Authentication authentication, String id) {
+		String userid = authentication.getName();
+		Optional<User> user = userRepository.findByUserid(userid);
+		int LongId = Integer.parseInt(id);
+		if(user.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("예상치 못한 오류가 발생했습니다.");
+		}
+		if(user.get().getId() == LongId) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("자기 자신을 대상으론 불가합니다.");
+		}
+		Set<Integer> list = user.get().getBlockIds();
+		if(list.contains(LongId)) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 추가 되었습니다.");
+		}
+		list.add(LongId);
+		user.get().setBlockIds(list);
+		userRepository.save(user.get());
+		return ResponseEntity.ok("추가 되었습니다.");
 	};
 }
