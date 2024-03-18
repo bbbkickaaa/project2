@@ -70,6 +70,10 @@ public class User {
 	@Column(name="block_id")
 	private Set<Integer> blockIds;
 	
+	@Convert(converter = IdxToStringCoverter.class)
+	@Column(name="friend_id")
+	private Set<Integer> friend_Ids;
+	
 	@Column(name="account_type", nullable = false)
 	private String accountType;
 	

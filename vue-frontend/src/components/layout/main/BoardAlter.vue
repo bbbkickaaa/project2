@@ -37,7 +37,7 @@ export default {
         },
         AlterBoard(id){
         if (this.post.title.length >= this.minLength && this.post.content.length >= this.minLength ) {
-            this.$axios.post('/api/board/post',this.post).then(()=>
+            this.$axios.put('/api/board/alter',this.post).then(()=>
                 {this.$router.push(`/main/detail/${id}`)})
         }
         },

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,7 +63,7 @@ public class UserController {
 		return loginService.loginUser(user,response);
 	}
 	
-	@PostMapping("/public/logout")
+	@DeleteMapping("/public/logout")
 	public ResponseEntity<?> logoutUser(HttpServletRequest request ,HttpServletResponse response){
 	    CookieUtils.deleteCookie(request, response, "refreshToken");
         return ResponseEntity.ok().body("삭제되었습니다.");
@@ -115,6 +116,11 @@ public class UserController {
     @PostMapping("/public/send-password")
     public ResponseEntity<?> setPasswordToEmail(@RequestBody SendPasswordDTO dto){
         return memberService.setPasswordToEmail(dto);
+    }
+    
+    @GetMapping("member/get-another-user")
+    public ResponseEntity<?> getAnotherUser(@RequestParam("id") Long id){
+    	return memberService.getAnotherUser(id);
     }
     
 }

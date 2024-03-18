@@ -67,4 +67,5 @@
     cursor: pointer;
     opacity: 0.7;
   }
+  a:hover {cursor: pointer;}
   </style>

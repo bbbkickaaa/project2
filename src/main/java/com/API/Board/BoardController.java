@@ -1,7 +1,6 @@
 package com.API.Board;
 
 import java.util.Map; 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,15 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.API.Board.DTO.BoardImageUploadDTO;
 import com.API.Board.DTO.BoardPostDTO;
 import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.DTO.DeleteCommentDTO;
-import com.API.Board.DTO.QueryValidateDTO;
-
 import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.Param;
+
 @Controller
 @RequestMapping("/api/board")
 public class BoardController {
@@ -48,6 +43,13 @@ public class BoardController {
 		
        return boardService.postBoard(dto);
     }
+	
+	@PostMapping("/alter")
+    public ResponseEntity<?> alterBoard(@RequestBody BoardPostDTO dto) {
+		
+       return boardService.postBoard(dto);
+    }
+	
 	@GetMapping("/get-detail")
 	public ResponseEntity<?> getDetail(@RequestParam("id") Long id){
 		return boardService.getDetail(id);

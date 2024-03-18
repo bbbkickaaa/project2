@@ -1,12 +1,17 @@
 package com.API.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,11 +22,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.API.Board.BoardRepository;
 import com.API.Board.Entity.Board;
+import com.API.User.DTO.AnotherUserDTO;
 import com.API.User.DTO.SendPasswordDTO;
+import com.API.User.DTO.TitleAndCategoryDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
 import com.API.User.Etc.PasswordGenerator;
-import com.API.User.Etc.RandomNicknameGenerator;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -141,6 +147,41 @@ public class MemberServiceImpl implements MemberService {
 			
 			
 		}else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("해당하는 정보가 없습니다.");
+		}
+	};
+	
+	public ResponseEntity<?> getAnotherUser(Long id){
+		Optional<User> user = userRepository.findById(id);
+		if(user.isPresent()) {
+			AnotherUserDTO dto = new AnotherUserDTO();
+			dto.setId(id);
+			dto.setCreatedDate(user.get().getCreatedDate());
+			dto.setNickname(user.get().getNickname());
+			dto.setPicture(user.get().getPicture());
+			List<Board> board = boardRepository.findByauthor(user.get(),Sort.by(Sort.Direction.DESC, "id"));
+			List<TitleAndCategoryDTO> listdto = new ArrayList<>();
+
+			if (!board.isEmpty()) {
+			    int limit = Math.min(5, board.size());
+			    for (int i = 0; i < limit; i++) {
+			        Board b = board.get(i);
+			        TitleAndCategoryDTO categoryDTO = new TitleAndCategoryDTO();
+			        categoryDTO.setTitle(b.getTitle());
+			        categoryDTO.setCategory1(b.getCategory().getCategory1());
+			        categoryDTO.setCategory2(b.getCategory().getCategory2());
+			        categoryDTO.setCategory3(b.getCategory().getCategory3());
+			        categoryDTO.setDate(b.getWriteDate());
+			        categoryDTO.setView(b.getViews());
+			        categoryDTO.setId(b.getId());
+			        listdto.add(categoryDTO);
+			    }
+			}
+
+			dto.setDto(listdto);
+			return ResponseEntity.ok(dto);
+		}
+		else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("해당하는 정보가 없습니다.");
 		}
 	};

@@ -9,6 +9,7 @@
                 {{ category.name }}
             </li>
         </ul>
+        <p v-if="menuCategory1===''" style="color: #999999; text-align: center; padding-top: 10px; font-size: 16px;">해당 카테고리를 통해 검색이 가능합니다.</p>
 
 
         <ul class="category2" v-if="menuCategory1==='chat'">

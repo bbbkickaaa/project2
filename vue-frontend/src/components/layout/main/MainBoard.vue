@@ -24,7 +24,9 @@
                                 <span style="font-size: 14px; font-weight: bold; color: palevioletred; margin: 0 5px;" v-if="list.likes">{{ '+   ' + list.likes }}</span>
                                 </a>
                             </td>
-                            <td>{{ list.nickname }}</td>
+                            <td>
+                                <a @click="clickUserInfo(list.userId)" @close = "showUserInfo = false">{{ list.nickname }}</a>
+                            </td>
                             <td>{{ list.views }}</td>
                         </tr>
                         <!-- 추가 게시글들 -->
@@ -64,15 +66,27 @@
                     </ul>
                 </nav>
             </div>
+            <modal-component :show="showUserInfo"  @close="showUserInfo = false">
+                <user-form :id="clickedUserIdx" @close-modal="showUserInfo = false"></user-form>
+            </modal-component>
         </div>
 </template>
 
 
 <script>
 import { toRaw } from 'vue';
+import ModalComponent from '../ModalComponent.vue';
+import UserForm from '../main/UserInfo.vue';
 export default {
+components : {
+    ModalComponent,
+    UserForm
+}
+,
 data(){
     return{
+        showUserInfo : false,
+        clickedUserIdx : null,
         categoryType : null,
         TheBoard :{data : []},
         GetPageInfo : [],
@@ -207,7 +221,6 @@ methods :{
           .then(response => {
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;
-            console.log("sdada");
           })
           .catch(error => {
             // 오류 처리
@@ -301,6 +314,10 @@ methods :{
             mapping = this.category3Mapping;
         }
         return mapping[categoryName] || categoryName;
+    },
+    clickUserInfo(userIdx){
+        this.showUserInfo= true;
+        this.clickedUserIdx=userIdx;
     },
 }
 }

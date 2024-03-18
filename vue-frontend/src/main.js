@@ -43,7 +43,7 @@ let isRefreshing = false;
 let refreshPromise = null;
 // 로그아웃 함수 정의
 const logout = () => {
-  axios.post('http://localhost:8080/api/public/logout', null, { withCredentials: true })
+  axios.delete('http://localhost:8080/api/public/logout', null, { withCredentials: true })
     .then(() => {
       sessionStorage.clear(); 
       store.commit('clearState');
