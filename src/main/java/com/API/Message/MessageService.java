@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class MessageService {
 		Optional<User> user2 = userRepository.findById(messageDTO.getReceiveId());
 		if(user.isEmpty() || user2.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		if(user.get().getId().equals(user2.get().getId())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("자기에겐 보낼 수 없습니다.");
 		}
 		Message message = new Message();
 		message.setForwardId(user.get());

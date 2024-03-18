@@ -72,7 +72,7 @@ mounted(){
  margin-bottom: 0px;
 }
 .bottom-button {
-    height: 50px;
+    height: 70px;
     text-align: center;
 
 }
@@ -80,6 +80,7 @@ mounted(){
     margin: 0 10px;
     margin-bottom: 20px;
     width: 150px;
+    height: 50px;
     vertical-align: bottom;
 }
 .recent-write li {

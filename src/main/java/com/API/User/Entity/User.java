@@ -40,7 +40,7 @@ public class User {
 	})
 	private UserLevel userLevel;
 	
-	private String picture = "profile/default1.png";
+	private String picture = "/profile/default1.png";
 	
 	private String email;
 	/*

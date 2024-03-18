@@ -130,6 +130,7 @@
             this.userData = response.data;
             this.form.id = response.data.userid;
             this.previewImage = response.data.picture;
+            console.log(this.previewImage);
           })
           .catch(error => {
             if (error.response) {

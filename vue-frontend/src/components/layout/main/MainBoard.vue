@@ -25,7 +25,7 @@
                                 </a>
                             </td>
                             <td>
-                                <a @click="clickUserInfo(list.userId)" @close = "showUserInfo = false">{{ list.nickname }}</a>
+                                <a @click="clickUserInfo(list.userId,list.nickname)" @close = "showUserInfo = false">{{ list.nickname }}</a>
                             </td>
                             <td>{{ list.views }}</td>
                         </tr>
@@ -66,8 +66,9 @@
                     </ul>
                 </nav>
             </div>
-            <modal-component :show="showUserInfo"  @close="showUserInfo = false">
-                <user-form :id="clickedUserIdx" @close-modal="showUserInfo = false"></user-form>
+            <modal-component :show="showUserInfo"  @close="showUserInfo = false,recentModal='userInfo'">
+                <user-form v-if="recentModal === 'userInfo'" :id="clickedUserIdx" @close-modal="showUserInfo = false" @switch-modal="handleSwitchModal"></user-form>
+                <user-message @close-modal="showUserInfo = false" :receiveId="clickedUserIdx" :nickname="clickedNickname" v-if="recentModal === 'message'" @switch-modal="handleSwitchModal" ></user-message>
             </modal-component>
         </div>
 </template>
@@ -77,16 +78,20 @@
 import { toRaw } from 'vue';
 import ModalComponent from '../ModalComponent.vue';
 import UserForm from '../main/UserInfo.vue';
+import UserMessage from '../main/UserMessage.vue'
 export default {
 components : {
     ModalComponent,
-    UserForm
+    UserForm,
+    UserMessage
 }
 ,
 data(){
     return{
+        recentModal : 'userInfo',
         showUserInfo : false,
         clickedUserIdx : null,
+        clickedNickname : '',
         categoryType : null,
         TheBoard :{data : []},
         GetPageInfo : [],
@@ -315,10 +320,14 @@ methods :{
         }
         return mapping[categoryName] || categoryName;
     },
-    clickUserInfo(userIdx){
+    clickUserInfo(userIdx,nickname){
         this.showUserInfo= true;
         this.clickedUserIdx=userIdx;
+        this.clickedNickname = nickname;
     },
+    handleSwitchModal(newModal) {
+      this.recentModal = newModal;
+    }
 }
 }
 </script>
