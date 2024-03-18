@@ -167,7 +167,7 @@ methods: {
             }})
         },
   PostRecommend (){
-    this.$axios.post('/api/board/post-recommend', this.BoardInfo)
+    this.$axios.post('/api/board/post-recommend', this.CommentForm)
     .then(()=>{this.IsRecommended = !this.IsRecommended;})
     .catch((response)=>{alert(response.response.data);})
   },

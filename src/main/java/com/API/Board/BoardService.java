@@ -293,35 +293,32 @@ public class BoardService {
 		
 		return ResponseEntity.ok().body("삭제 되었습니다.");
 	}
-	public ResponseEntity<?> postRecommend(Map<String, Object> requestData){
-		int userIdAsString = (Integer) requestData.get("userIdx");
-		int userId = Integer.valueOf(userIdAsString);
-		int boardidAsString = (Integer) requestData.get("id");
-		Long boardLong = Long.valueOf(boardidAsString);
-		
-		Optional<Board> board = boardRepository.findById(boardLong);
-		if(board.isEmpty()) {
-			return ResponseEntity.badRequest().build();
-		}
-		if (board.get().getLikesUsers() == null || !board.get().getLikesUsers().stream().anyMatch(user -> user.equals(userId))) {
-		    board.get().setLikes(board.get().getLikes() + 1);
-		    Set<Integer> set = new HashSet<>();
-		    set.add(userId);
-		    board.get().setLikesUsers(set);
-		    boardRepository.save(board.get());
-		    return ResponseEntity.ok().body("추천 되었습니다.");
-		}else if(board.get().getLikesUsers().stream().anyMatch(user->user.equals(userId))){
-			board.get().setLikes(board.get().getLikes() - 1 );
-			Set<Integer> updatedLikesUsers = board.get().getLikesUsers().stream()
-			        .filter(user -> !user.equals(userId)).collect(Collectors.toSet());
-			board.get().setLikesUsers(updatedLikesUsers);
-			boardRepository.save(board.get());
-			return ResponseEntity.ok().body("추천 취소되었습니다.");
-		}
-		else {
-		    return ResponseEntity.status(HttpStatus.CONFLICT).body("오류가 발생했습니.");
-		}
+	public ResponseEntity<?> postRecommend(Map<String, Object> requestData) {
+		int userId = Integer.parseInt(requestData.get("userIdx").toString());
+		long boardId = Long.parseLong(requestData.get("BoardId").toString());
+
+	    Optional<Board> board = boardRepository.findById(boardId);
+	    return board.map(b -> {
+	        Set<Integer> likesUsers = b.getLikesUsers();
+	        if (likesUsers == null) {
+	            likesUsers = new HashSet<>();
+	            b.setLikesUsers(likesUsers);
+	        }
+	        if (likesUsers.contains(userId)) {
+	            likesUsers.remove(userId);
+	            b.setLikes(b.getLikes() - 1);
+	            boardRepository.save(b);
+	            return ResponseEntity.ok().body("추천 취소되었습니다.");
+	        } else {
+	            likesUsers.add(userId);
+	            b.setLikes(b.getLikes() + 1);
+	            boardRepository.save(b);
+	            return ResponseEntity.ok().body("추천 되었습니다.");
+	        }
+	    }).orElseGet(() -> ResponseEntity.badRequest().build());
 	}
+
+
 	
 	
 	public ResponseEntity<?> postComment(Map<String, Object> requestData){
