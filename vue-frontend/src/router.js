@@ -35,6 +35,7 @@ const router = createRouter({
       children: [
         { path: '', component: MainBoard },
         { path: ':category1/:category2?/:category3?',props:true, component: MainBoard, beforeEnter:validateCategoryRoute},
+        { path:'favorite', component:MainBoard},
         { path: 'identity', component: Identity },
         { path: 'post', component: NewPost }, 
         { 

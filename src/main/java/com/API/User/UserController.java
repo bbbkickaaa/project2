@@ -4,7 +4,11 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;    
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -75,14 +79,14 @@ public class UserController {
         Authentication authentication =  tokenProvider.getAuthentication(token);
         return memberService.getUser(authentication);
 	}
-	@GetMapping("member/check-post-owner/{id}")
+	@GetMapping("/member/check-post-owner/{id}")
 	public ResponseEntity<?> checkPostOwner(@RequestHeader("Authorization") String authorizationHeader , @PathVariable("id") Long id){
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
 		return memberService.checkPostOwner(authentication,id);
 	}
 	
-	@PostMapping("member/delete-user")
+	@PostMapping("/member/delete-user")
 	public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String id){
 		Long userId = Long.valueOf(id);
 		String token = tokenProvider.resolveToken(authorizationHeader);
@@ -90,7 +94,7 @@ public class UserController {
 		return memberService.deleteUser(authentication,userId);
 	}
 	
-	@PostMapping("member/alter-user")
+	@PostMapping("/member/alter-user")
 	public ResponseEntity<String> alterUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Object> requestData){
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
@@ -118,23 +122,59 @@ public class UserController {
         return memberService.setPasswordToEmail(dto);
     }
     
-    @GetMapping("member/get-another-user")
+    @GetMapping("/member/get-another-user")
     public ResponseEntity<?> getAnotherUser(@RequestParam("id") Long id){
     	return memberService.getAnotherUser(id);
     }
     
-    @PostMapping("member/block-user")
+    @PostMapping("/member/block-user")
 	public ResponseEntity<String> blockUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String Id){
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
 		return memberService.blockUser(authentication,Id);
 	}
     
-    @PostMapping("member/add-friend-user")
+    @PostMapping("/member/add-friend-user")
 	public ResponseEntity<String> addFriendUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody String Id){
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
 		return memberService.addFriendUser(authentication,Id);
 	}
+    
+    @GetMapping("/member/get-friend")
+	public ResponseEntity<?> getFriend(
+			@RequestHeader("Authorization") String authorizationHeader,
+			@PageableDefault(size = 7, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+			){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		ResponseEntity<Page<?>> results = memberService.getFriend(authentication,pageable);
+	    return results;
+	}
+    
+    @DeleteMapping("/member/delete-friend/{id}")
+    public ResponseEntity<?> deleteFriend(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Integer id){
+    	String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return memberService.deleteFriend(authentication,id);
+    }
+    
+    @GetMapping("/member/get-block")
+	public ResponseEntity<?> getBlock(
+			@RequestHeader("Authorization") String authorizationHeader,
+			@PageableDefault(size = 7, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+			){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		ResponseEntity<Page<?>> results = memberService.getBlock(authentication,pageable);
+	    return results;
+	}
+    
+    @DeleteMapping("/member/delete-block/{id}")
+    public ResponseEntity<?> deleteBlock(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Integer id){
+    	String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return memberService.deleteBlock(authentication,id);
+    }
     
 }

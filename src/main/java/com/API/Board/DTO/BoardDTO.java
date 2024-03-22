@@ -29,5 +29,6 @@ public class BoardDTO {
     private Set<Integer> likesUser;
     private List<CommentDTO> comments;
     private List<String> imageUrls;
+    private boolean isFavorite;
 
 }

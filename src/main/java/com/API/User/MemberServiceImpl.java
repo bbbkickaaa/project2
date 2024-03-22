@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -226,5 +228,73 @@ public class MemberServiceImpl implements MemberService {
 		user.get().setBlockIds(list);
 		userRepository.save(user.get());
 		return ResponseEntity.ok("추가 되었습니다.");
-	};
+	}
+
+	@Override
+	public ResponseEntity<Page<?>> getFriend(Authentication authentication, Pageable pageable) {
+		String userID = authentication.getName();
+	    Optional<User> userWrap = userRepository.findByUserid(userID);
+
+	    if (userWrap.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+	    }
+	    User user = userWrap.get();
+	    Set<Long> userFriendIds = user.getFriend_Ids().stream()
+	                                  .map(Integer::longValue)
+	                                  .collect(Collectors.toSet());
+
+	    Page<User> friendPage = userRepository.findByIdIn(userFriendIds, pageable);
+	    Page<UserDTO> friendDtoPage = friendPage.map(UserDTO::fromUser);
+	    return ResponseEntity.ok(friendDtoPage);
+	}
+
+	@Override
+	public ResponseEntity<?> deleteFriend(Authentication authentication, Integer id) {
+		String userID = authentication.getName();
+	    Optional<User> userWrap = userRepository.findByUserid(userID);
+
+	    if (userWrap.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+	    }
+	    User user = userWrap.get();
+	    Set<Integer> userFriendIds = user.getFriend_Ids();
+	    userFriendIds.remove(id);
+	    user.setFriend_Ids(userFriendIds);
+	    userRepository.save(user);
+	    return ResponseEntity.ok("삭제 되었습니다.");
+	}
+	
+	@Override
+	public ResponseEntity<Page<?>> getBlock(Authentication authentication, Pageable pageable) {
+		String userID = authentication.getName();
+	    Optional<User> userWrap = userRepository.findByUserid(userID);
+
+	    if (userWrap.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+	    }
+	    User user = userWrap.get();
+	    Set<Long> userBlockIds = user.getBlockIds().stream()
+	                                  .map(Integer::longValue)
+	                                  .collect(Collectors.toSet());
+
+	    Page<User> friendPage = userRepository.findByIdIn(userBlockIds, pageable);
+	    Page<UserDTO> blockDtoPage = friendPage.map(UserDTO::fromUser);
+	    return ResponseEntity.ok(blockDtoPage);
+	}
+
+	@Override
+	public ResponseEntity<?> deleteBlock(Authentication authentication, Integer id) {
+		String userID = authentication.getName();
+	    Optional<User> userWrap = userRepository.findByUserid(userID);
+
+	    if (userWrap.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+	    }
+	    User user = userWrap.get();
+	    Set<Integer> userFriendIds = user.getBlockIds();
+	    userFriendIds.remove(id);
+	    user.setBlockIds(userFriendIds);
+	    userRepository.save(user);
+	    return ResponseEntity.ok("삭제 되었습니다.");
+	}
 }

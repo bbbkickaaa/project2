@@ -88,6 +88,7 @@ components : {
 ,
 data(){
     return{
+        friendWithMessageId:null,
         recentModal : 'userInfo',
         showUserInfo : false,
         clickedUserIdx : null,
@@ -160,6 +161,9 @@ computed: {
       return Math.max(15 - this.limitedBoard.length, 0);
     },
     pageNumbers() {
+        if (this.totalPages <= 1) {
+        return [1];
+    }
         const windowSize = 5;
         let startPage, endPage;
 

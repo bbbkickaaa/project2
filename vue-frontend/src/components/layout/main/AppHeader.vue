@@ -2,7 +2,10 @@
     <header>
       <div class="container">
           <div class="user-info">
-              <h4><img :src="userData.picture" style="width: 40px; height: 40px; margin-right: 10px; border-radius: 50%; border: 3px solid darkolivegreen;"> <span>    반갑습니다. {{ userData.nickname }}님. </span></h4>
+              <h4><img :src="userData.picture" style="width: 40px; height: 40px; margin-right: 10px; border-radius: 50%; border: 3px solid darkolivegreen;"> <span>    반갑습니다. {{ userData.nickname }}님. </span>
+            <span class="material-symbols-outlined symbols star" v-if="!IsFavorite" @click="toFavorite">star</span>
+            <span class="material-symbols-outlined symbols star fill-star" v-if="IsFavorite" @click="toMain">star</span>
+              </h4>
               <p class="level">회원 레벨: <span class="badge bg-secondary">{{userData.userLevel.level}}</span></p>
               <p class="registration-date">가입일: <span>{{userData.createdDate}}</span></p>
               <p class="posts">글 갯수: {{userData.postCount}}</p>
@@ -13,22 +16,36 @@
                     <span class="material-symbols-outlined plus" style="position: absolute; border-radius: 50%; background-color:#FFF455; color: brown;">add</span>
                  </div>
                  <div> 
-                    <a><span class="material-symbols-outlined">groups</span></a>
+                    <a @click="showGroupModal"><span class="material-symbols-outlined">groups</span></a>
                 </div>
                 <button class="btn btn-success edit" @click="AlterIdentity" >정보수정</button>
                 <button class="btn btn-secondary logout" @click="logout">로그아웃</button>
               </div>
           </div>   
       </div>
+      <modal-component :show="ShowModal" @close="ShowModal = false"  class="">
+        <app-friend @show-message="setMessageId" v-if="!friendWithMessageId"></app-friend>
+        <user-message @switch-modal="backModal" v-if="friendWithMessageId"></user-message>
+      </modal-component>
   </header>
 </template>
 <script>
 import axios from 'axios';
 import router from '@/router';
 import store from '@/store';
+import ModalComponent from '../ModalComponent.vue';
+import AppFriend from '../main/AppFriend.vue'
+import UserMessage from './UserMessage.vue';
 export default {
+  components :{
+    ModalComponent,AppFriend
+    ,UserMessage
+  },
 data(){
     return{
+      IsFavorite:null,
+      friendWithMessageId:null,
+      ShowModal : false,
       userData: {
         id : '' ,
         userid: '',
@@ -56,7 +73,8 @@ mounted(){
             } else {
               alert("토큰이 만료되었습니다.");
             }
-        })
+        });
+        this.TestFavorite();
 },
 
 methods:{
@@ -88,7 +106,31 @@ methods:{
     },
     AlterIdentity(){
       this.$emit('Alter-identity');
-    }
+    },
+    showGroupModal(){
+      this.ShowModal = !this.ShowModal
+    },
+    setMessageId(id){
+      this.friendWithMessageId = id;
+    },
+    backModal(){
+      this.friendWithMessageId = null;
+      this.ShowModal = false;
+    },
+    toFavorite() {
+    this.$router.push(`/main/favorite`).then(() => {
+    this.TestFavorite();
+    });
+    },
+    TestFavorite() {
+    this.IsFavorite = this.$route.path.includes('/favorite');
+    },
+    toMain() {
+    this.$router.push(`/main`).then(() => {
+      this.TestFavorite();
+    });
+  },
+
 }
 }
 </script>
@@ -164,5 +206,18 @@ header {
     width: 120px;
     height: 50px;
 }
-
+.star {
+  font-size: 40px;
+  opacity: 0.8;
+  color: navy;
+  vertical-align: middle;
+  margin-bottom: 9px;
+  font-weight: 300;
+}
+.star:hover {
+  cursor: pointer;
+}
+.fill-star{
+  font-variation-settings: 'FILL' 1
+}
 </style>

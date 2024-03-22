@@ -4,7 +4,8 @@
             <span class="material-symbols-outlined symbols turn-back" @click="ToMain">undo</span>
             <span class="material-symbols-outlined symbols heart" v-if="!IsRecommended" @click="PostRecommend">favorite</span>
             <span class="material-symbols-outlined symbols heart fill-heart" v-if="IsRecommended" @click="PostRecommend">favorite</span>
-            <span class="material-symbols-outlined symbols star">star</span>
+            <span class="material-symbols-outlined symbols star" v-if="!IsFavorite" @click="PostFavorite">star</span>
+            <span class="material-symbols-outlined symbols star fill-star" v-if="IsFavorite" @click="PostFavorite">star</span>
             <span class="material-symbols-outlined symbols airplane ">near_me</span>
         </div>
         <div class="container mt-4 content-wrap">
@@ -88,6 +89,7 @@ import ModalComponent from '../ModalComponent.vue';
                 userIdx : '',
                 comment : '',
             },
+            IsFavorite : null,
             IsRecommended : null,
             ShowModal: false,
             userIdx : '',
@@ -107,17 +109,20 @@ import ModalComponent from '../ModalComponent.vue';
                 level:null,
                 category:[],
                 likesUser:{},
+                favorite:null,
             }
         }
     },
 mounted(){
     const id = parseInt(this.$route.params.id, 10);
-    this.$axios.get('/api/board/get-detail', { params: { id: id }})
+    this.$axios.get('/api/board/get-detail', { params: { id: id }, withCredentials: true})
     .then(response => {
             this.BoardInfo = response.data;
             this.CommentForm.BoardId = response.data.id;
             this.PlusViews();
             this.checkRecommend();
+            console.log(this.BoardInfo);
+            this.checkFavorite();
             if(this.BoardInfo.writeDate){
             this.formWriteDate = this.formatDate(this.BoardInfo.writeDate);}
             if(this.BoardInfo.alterDate){
@@ -171,6 +176,11 @@ methods: {
     .then(()=>{this.IsRecommended = !this.IsRecommended;})
     .catch((response)=>{alert(response.response.data);})
   },
+  PostFavorite(){
+    this.$axios.post('/api/board/post-favorite', this.CommentForm)
+    .then(()=>{this.IsFavorite = !this.IsFavorite;})
+    .catch((response)=>{alert(response.response.data);})
+  },
   PostComment(){
     this.$axios.post('/api/board/post-comment', this.CommentForm)
     .then(response => {
@@ -199,10 +209,14 @@ methods: {
     checkRecommend() {
     this.IsRecommended = this.BoardInfo.likesUser.some(userId => 
         userId === Number.parseInt(this.userIdx)
-    );
-}
-    
-}
+    )},
+    checkFavorite() {
+        if(this.BoardInfo.favorite){
+            this.IsFavorite = true;
+
+        }
+    },
+} 
 
   }
 
@@ -413,6 +427,9 @@ methods: {
         cursor: pointer;
     }
     .fill-heart{
+        font-variation-settings: 'FILL' 1
+    }
+    .fill-star {
         font-variation-settings: 'FILL' 1
     }
 </style>

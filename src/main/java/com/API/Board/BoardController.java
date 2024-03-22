@@ -6,16 +6,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.API.Board.DTO.BoardPostDTO;
 import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.DTO.DeleteCommentDTO;
+import com.API.User.DTO.UserDTO;
+import com.API.User.Jwt.JwtTokenProvider;
+
 import org.springframework.data.domain.Sort;
 
 @Controller
@@ -24,6 +29,9 @@ public class BoardController {
 	
 	@Autowired
 	BoardService boardService;
+	
+	@Autowired
+	JwtTokenProvider tokenProvider;
 
 	@GetMapping("/get-all")
 	public ResponseEntity<Page<BoardReviewDTO>> findAll(
@@ -39,6 +47,16 @@ public class BoardController {
 	    return results;
 	}
 	
+	
+	@GetMapping("/favorite")
+	public ResponseEntity<Page<BoardReviewDTO>> favorite(
+			@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+			@RequestHeader("Authorization") String authorizationHeader){
+			String token = tokenProvider.resolveToken(authorizationHeader);
+			Authentication authentication =  tokenProvider.getAuthentication(token);
+			return boardService.favorite(pageable,authentication);
+	}
+	
 	@PostMapping("/post")
     public ResponseEntity<?> postBoard(@RequestBody BoardPostDTO dto) {
 		
@@ -52,8 +70,10 @@ public class BoardController {
     }
 	
 	@GetMapping("/get-detail")
-	public ResponseEntity<?> getDetail(@RequestParam("id") Long id){
-		return boardService.getDetail(id);
+	public ResponseEntity<?> getDetail(@RequestHeader("Authorization") String authorizationHeader,@RequestParam("id") Long id){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+		return boardService.getDetail(id,authentication);
 	}
 	
 	@GetMapping("/get-detail-only-alter")
@@ -82,6 +102,11 @@ public class BoardController {
 		return boardService.postRecommend(requestData);
 	}
 	
+	@PostMapping("/post-favorite")
+	public ResponseEntity<?> postFavorite(@RequestBody Map<String, Object> requestData){
+		return boardService.postFavorite(requestData);
+	}
+	
 	@PostMapping("/post-comment")
 	public ResponseEntity<?> postComment(@RequestBody Map<String, Object> requestData){
 		return boardService.postComment(requestData);
@@ -91,5 +116,7 @@ public class BoardController {
 	public ResponseEntity<?> deleteComment(@RequestBody DeleteCommentDTO dto){
 		return boardService.deleteComment(dto);
 	}
+	
+	
 
 }

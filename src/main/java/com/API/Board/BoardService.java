@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import com.API.Board.DTO.BoardAlterDTO;
 import com.API.Board.DTO.BoardDTO;
@@ -28,6 +29,7 @@ import com.API.Board.Entity.Board;
 import com.API.Board.Entity.BoardCategory;
 import com.API.Board.Entity.Comment;
 import com.API.User.UserRepository;
+import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
 
 import jakarta.persistence.EntityManager;
@@ -193,7 +195,7 @@ public class BoardService {
 					board2.setContent(content);
 					board2.setTitle(title);
 					boardRepository.save(board2);
-					return ResponseEntity.status(HttpStatus.OK).body("정상 수 되었습니다.");
+					return ResponseEntity.status(HttpStatus.OK).body("정상 수정 되었습니다.");
 				}
 				
 			}catch (ClassCastException e) {
@@ -209,13 +211,20 @@ public class BoardService {
 	}
 		
 	
-	public ResponseEntity<?> getDetail(Long id){
+	public ResponseEntity<?> getDetail(Long id, Authentication authentication){
+		String userid = authentication.getName();
 		Optional<Board> wrapBoard = boardRepository.findById(id);
-		if(wrapBoard.isEmpty()) {
+		Optional<User> wrapUser = userRepository.findByUserid(userid);
+		if(wrapBoard.isEmpty() || wrapUser.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
+		User user = wrapUser.get();
 		Board board = wrapBoard.get();
+		int boardIdInt = board.getId().intValue();
 		BoardDTO boardDTO = new BoardDTO();
+		if(user.getLikeBoardId().contains(boardIdInt)) {
+			boardDTO.setFavorite(true);
+		}
 		boardDTO.setId(board.getId());
 	    boardDTO.setTitle(board.getTitle());
 	    boardDTO.setContent(board.getContent());
@@ -388,6 +397,34 @@ public class BoardService {
 	    
 	}
 
-	
+	public ResponseEntity<?> postFavorite(Map<String, Object> requestData) {
+		long userId = Long.parseLong(requestData.get("userIdx").toString());
+		long boardId = Long.parseLong(requestData.get("BoardId").toString());
+		Integer boardInt = (int)boardId;
+	    Optional<User> user = userRepository.findById(userId);
+	    return user.map(u -> {
+	        Set<Integer> likesUsers = u.getLikeBoardId();
+	        if (likesUsers == null) {
+	            likesUsers = new HashSet<>();
+	            u.setLikeBoardId(likesUsers);
+	        }
+	        if (likesUsers.contains(boardInt)) {
+	            likesUsers.remove(boardInt);
+	            u.setLikeBoardId(likesUsers);
+	            userRepository.save(u);
+	            return ResponseEntity.ok().body("추천 취소되었습니다.");
+	        } else {
+	            likesUsers.add((int) boardId);
+	            userRepository.save(u);
+	            return ResponseEntity.ok().body("추천 되었습니다.");
+	        }
+	    }).orElseGet(() -> ResponseEntity.badRequest().build());
+	}
+
+	public void favorite(Pageable pageable, Authentication authentication) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
