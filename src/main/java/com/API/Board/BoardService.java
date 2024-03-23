@@ -18,6 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import com.API.Alarm.AlarmRepository;
+import com.API.Alarm.Entity.Alarm;
+import com.API.Alarm.Entity.Alarm.AlarmType;
 import com.API.Board.DTO.BoardAlterDTO;
 import com.API.Board.DTO.BoardDTO;
 import com.API.Board.DTO.BoardPostCountDTO;
@@ -53,10 +57,22 @@ public class BoardService {
 	CommentRepository commentRepository;
 	
 	@Autowired
+	AlarmRepository alarmRepository;
+	
+	@Autowired
 	EntityManager entityManager;
 	
 	
-	public ResponseEntity<Page<BoardReviewDTO>> findAll(String category3, String category2, String category1 ,String option, String content, Pageable pageable) {
+	public ResponseEntity<Page<BoardReviewDTO>> findAll(String category3, String category2, String category1 ,String option, String content, Pageable pageable,Authentication authentication) {
+		String userId = authentication.getName();
+		Optional<User> userWrap = userRepository.findByUserid(userId);
+		if(userWrap.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		User user = userWrap.get();
+		Set<Integer> blockUsers = user.getBlockIds();
+		
+		
 	    String queryString = "SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) FROM Board b JOIN b.author u LEFT JOIN b.comments c";
 	    String countQueryString = "SELECT COUNT(b) FROM Board b JOIN b.author u LEFT JOIN b.comments c";
 
@@ -99,6 +115,16 @@ public class BoardService {
 		        }
 		        isWhereAdded = true;
 		    }
+		    
+		    if (!blockUsers.isEmpty()) {
+		        if (isWhereAdded) {
+		            whereClause += " AND ";
+		        } else {
+		            whereClause += " WHERE ";
+		            isWhereAdded = true;
+		        }
+		        whereClause += "u.id NOT IN :blockUsers";
+		    }
 
 	    queryString += isWhereAdded ? whereClause : "";
 	    countQueryString += isWhereAdded ? whereClause : "";
@@ -118,6 +144,10 @@ public class BoardService {
 	    } else if (category1 != null && !category1.isEmpty()) {
 	        countQuery.setParameter("category1", category1);
 	    }
+        if (!blockUsers.isEmpty()) {
+        	countQuery.setParameter("blockUsers", blockUsers);
+        }
+	    
 
 	    if (option != null && content != null) {
 	        if ("index".equals(option)) {
@@ -151,6 +181,10 @@ public class BoardService {
 	        	query.setParameter("content", "%" + content + "%");
 	        }
 	    }
+	    // 매개변수 바인딩
+	    if (!blockUsers.isEmpty()) {
+            query.setParameter("blockUsers", blockUsers);
+        }
 	    
 
 	    query.setFirstResult((int) pageable.getOffset());
@@ -332,6 +366,7 @@ public class BoardService {
 	
 	public ResponseEntity<?> postComment(Map<String, Object> requestData){
 		try {
+			String url = (String) requestData.get("whereParam");
 			String userIdAsString = (String) requestData.get("userIdx");
 			Long userid = Long.valueOf(userIdAsString);
 			int boardidAsInt = (Integer) requestData.get("BoardId");
@@ -364,7 +399,17 @@ public class BoardService {
 				dto.setWriteDate(list.getWriteDate());
 				comments2.add(dto);
 			}
-);
+			);
+			Alarm alarm = new Alarm();
+			alarm.setContent("새로운 댓글이 달렸습니다.");
+			alarm.setForwardNickname(author.getNickname());
+			alarm.setForwarduserId(author.getId());
+			alarm.setRecipientId(board.getAuthor().getId());
+			alarm.setType(AlarmType.COMMENT);
+			alarm.setReferencedId(boardid);
+			alarm.setUrl(url);
+			alarmRepository.save(alarm);
+			
 			return ResponseEntity.status(HttpStatus.OK).body(comments2);
 			}
 				catch (ClassCastException e) {
@@ -421,10 +466,19 @@ public class BoardService {
 	    }).orElseGet(() -> ResponseEntity.badRequest().build());
 	}
 
-	public void favorite(Pageable pageable, Authentication authentication) {
-		// TODO Auto-generated method stub
-		
+	public ResponseEntity<Page<BoardReviewDTO>> favorite(Pageable pageable, Authentication authentication) {
+		String userid = authentication.getName();
+		Optional<User> wrapUser = userRepository.findByUserid(userid);
+		if(wrapUser.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		User user = wrapUser.get();
+		Long userID = user.getId();
+		Page<BoardReviewDTO> dto = boardRepository.findAllByUserId(userID, pageable);
+		return ResponseEntity.ok(dto);
 	}
+	
+	
 
 }
 

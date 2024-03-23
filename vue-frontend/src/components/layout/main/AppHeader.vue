@@ -1,5 +1,5 @@
 <template>
-    <header>
+    <header v-if="!isLoading">
       <div class="container">
           <div class="user-info">
               <h4><img :src="userData.picture" style="width: 40px; height: 40px; margin-right: 10px; border-radius: 50%; border: 3px solid darkolivegreen;"> <span>    반갑습니다. {{ userData.nickname }}님. </span>
@@ -12,8 +12,8 @@
               <p class="comments">댓글 갯수: {{ userData.commentCount }}</p>
               <div class="header-button">
                  <div> 
-                    <a><span class="material-symbols-outlined">notifications</span></a>
-                    <span class="material-symbols-outlined plus" style="position: absolute; border-radius: 50%; background-color:#FFF455; color: brown;">add</span>
+                    <a><span @click="showAlarm" class="material-symbols-outlined">notifications</span></a>
+                    <span v-if="alarmCount>=1" class="material-symbols-outlined plus" style="position: absolute; border-radius: 50%; background-color:#FFF455; color: brown;">add</span>
                  </div>
                  <div> 
                     <a @click="showGroupModal"><span class="material-symbols-outlined">groups</span></a>
@@ -23,10 +23,18 @@
               </div>
           </div>   
       </div>
-      <modal-component :show="ShowModal" @close="ShowModal = false"  class="">
+      <modal-component :show="ShowFriendModal" @close="ShowFriendModal = false"  class="">
         <app-friend @show-message="setMessageId" v-if="!friendWithMessageId"></app-friend>
         <user-message @switch-modal="backModal" v-if="friendWithMessageId"></user-message>
       </modal-component>
+      <modal-component  :show="ShowAlarmModal" @close="ShowAlarmModal = false, alarmForm='list'" class="">
+        <user-alarm @ToMessage="toMessage" @to-close="ShowAlarmModal = false" v-if="alarmForm=='list'"></user-alarm>
+        <message-view @submit-form="ToMessageForm" @close-modal="ShowAlarmModal = false,alarmForm='list'" :id="messageId" v-if="alarmForm=='message'"></message-view>
+        <user-message :receiveId="receiveId" :nickname="receivedNickname" @switch-modal="backModal" v-if="alarmForm=='send'"></user-message>
+      </modal-component>
+  </header>
+  <header v-else>
+
   </header>
 </template>
 <script>
@@ -36,16 +44,28 @@ import store from '@/store';
 import ModalComponent from '../ModalComponent.vue';
 import AppFriend from '../main/AppFriend.vue'
 import UserMessage from './UserMessage.vue';
+import UserAlarm from '../main/UserAlarm.vue';
+import MessageView from '../main/MessageView.vue';
 export default {
   components :{
-    ModalComponent,AppFriend
-    ,UserMessage
+    ModalComponent,
+    AppFriend,
+    UserMessage,
+    UserAlarm,
+    MessageView
   },
 data(){
     return{
+      receivedNickname:'',
+      receiveId:null,
+      messageId : null,
+      alarmForm : 'list',
+      alarmCount : 0,
+      isLoading: true,
       IsFavorite:null,
       friendWithMessageId:null,
-      ShowModal : false,
+      ShowFriendModal : false,
+      ShowAlarmModal : false,
       userData: {
         id : '' ,
         userid: '',
@@ -58,14 +78,31 @@ data(){
       }
     }
 },
+watch: {
+    '$route.path': function() {
+      this.checkFavoritePath();
+    }
+  },
 mounted(){
-  this.$axios.get('/api/member/get-user')
+  this.getLoad();
+  this.checkFavoritePath();
+  this.getAlarm();
+},
+
+methods:{
+    getLoad(){
+      let loader = this.$loading.show();
+      this.$axios.get('/api/member/get-user')
           .then(response => {
             this.userData = response.data;
             this.getUserPostCount(this.userData.id)
             sessionStorage.setItem('userIdx',this.userData.id)
+            this.isLoading = false;
+            loader.hide();
           })
           .catch(error => {
+            loader.hide();
+            this.isLoading = false;
             if (error.response) {
               alert("Error: 오류가 발생했습니다.");
             } else if (error.request) {
@@ -74,10 +111,16 @@ mounted(){
               alert("토큰이 만료되었습니다.");
             }
         });
-        this.TestFavorite();
-},
-
-methods:{
+    },
+    getAlarm(){
+        this.$axios.get('/api/alarm/new',  {withCredentials: true})
+        .then((response =>{
+            this.alarmCount = response.data;
+        }))
+    },
+    checkFavoritePath() {
+      this.IsFavorite = this.$route.path.includes('/favorite');
+    },
     logout(){
       axios.delete('http://localhost:8080/api/public/logout', null, {withCredentials: true})
       sessionStorage.clear(); 
@@ -108,29 +151,40 @@ methods:{
       this.$emit('Alter-identity');
     },
     showGroupModal(){
-      this.ShowModal = !this.ShowModal
+      this.ShowFriendModal = !this.ShowFriendModal
     },
     setMessageId(id){
       this.friendWithMessageId = id;
     },
     backModal(){
       this.friendWithMessageId = null;
-      this.ShowModal = false;
+      this.ShowFriendModal = false;
+      this.ShowAlarmModal = false;
+      this.alarmForm='list';
     },
     toFavorite() {
     this.$router.push(`/main/favorite`).then(() => {
-    this.TestFavorite();
     });
-    },
-    TestFavorite() {
-    this.IsFavorite = this.$route.path.includes('/favorite');
     },
     toMain() {
     this.$router.push(`/main`).then(() => {
-      this.TestFavorite();
     });
   },
-
+    showAlarm(){
+      this.ShowAlarmModal = !this.ShowAlarmModal;
+      this.alarmCount = 0;
+    },
+    toMessage(id){
+      this.messageId = id;
+      this.alarmForm="message";
+    },
+    ToMessageForm(data) {
+    const { receivedNickname, receiveId } = data;
+    this.alarmForm = 'send';
+      this.receivedNickname = receivedNickname;
+      this.receiveId = receiveId;
+      console.log(receivedNickname);
+    },
 }
 }
 </script>
@@ -219,5 +273,13 @@ header {
 }
 .fill-star{
   font-variation-settings: 'FILL' 1
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  30% { opacity: 0; }
+}
+
+.plus {
+  animation: blink 1s ease-in infinite;
 }
 </style>

@@ -20,4 +20,6 @@ public class MessageDTO {
 	Long forwardId;
 	Long receiveId;
 	String content;
+	String forwardNickname;
+	String receivedNickname;
 }

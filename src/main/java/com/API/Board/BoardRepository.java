@@ -3,10 +3,14 @@ package com.API.Board;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
+
+import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.Entity.Board;
 import com.API.User.Entity.User;
 
@@ -22,5 +26,12 @@ public interface BoardRepository extends Repository<Board, Long> {
 	    Long countPostsByAuthorId(@Param("id") Long id);
 	    
 	    void deleteById(Long id);
+	    
+	    
+	    @Query("SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) " +
+	            "FROM Board b JOIN b.author u LEFT JOIN b.comments c " +
+	            "WHERE u.id = :userId " +
+	            "GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category")
+	     Page<BoardReviewDTO> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
 	}

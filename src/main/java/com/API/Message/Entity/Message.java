@@ -40,9 +40,6 @@ public class Message {
 	@Column(nullable = false,length = 200)
 	String content;
 	
-	@Column(nullable = false)
-	Boolean isRead = false;
-	
 	@Column(name = "write_date", length = 14)
     private String writeDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 	

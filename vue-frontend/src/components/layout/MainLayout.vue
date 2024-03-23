@@ -2,12 +2,12 @@
     <div class="all-wrap">
       <div class="all-bgc">
         <div class="app-logo" style="text-align: center; padding-top: 50px;">
-          <a class= "main-logo" @click="$router.push('/main')"><img src="/MainLogo.png" style="width:150px" alt="logo"></a>
+          <a class="main-logo" @click="refreshView"><img src="/MainLogo.png" style="width:150px" alt="logo"></a>
         </div>
         <AppHeader @Alter-identity="handleAlterIdentity"></AppHeader>
         <AppCategory @category-selected="setCategory1"></AppCategory>
         <div class="wraps">
-          <router-view></router-view>
+         <router-view :key="refreshKey"></router-view>
         </div>
       </div>
     </div>
@@ -23,6 +23,7 @@
     },
     data() {
       return {
+        refreshKey: 0,
         Category1 : '',
       }
     },
@@ -32,8 +33,12 @@
     },
     setCategory1(selectedCategory){
       this.Category1 = selectedCategory;
-    }
-  }
+    },
+    refreshView() {
+      this.refreshKey++;
+      this.$router.push('/main');
+    },
+  },
   };
   </script>
   <style >

@@ -15,9 +15,10 @@
                         <tr  v-for="list in limitedBoard" :key="list.boardId">
                             <td>{{ list.boardId }}</td>
                             <td v-if="list.category && categoryType===0"><a class="category" @click="toCategory1(list.category)" >{{ getKoreanCategoryName(list.category.category1,1) }}</a></td>
-                            <td v-if="list.category && categoryType===1"><a class="category" @click="toCategory2(list.category)" >{{ getKoreanCategoryName(list.category.category2,2) }}</a></td>
-                            <td v-if="list.category && categoryType===2"><a class="category" @click="toCategory3(list.category)" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
-                            <td v-if="list.category && categoryType===3"><a class="category" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
+                            <td v-else-if="list.category && categoryType===1"><a class="category" @click="toCategory2(list.category)" >{{ getKoreanCategoryName(list.category.category2,2) }}</a></td>
+                            <td v-else-if="list.category && categoryType===2"><a class="category" @click="toCategory3(list.category)" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
+                            <td v-else-if="list.category && categoryType===3"><a class="category" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
+                            <td v-else-if="list.category && (categoryType === undefined || categoryType === null || categoryType === 0)"> <a class="category" @click="toCategory1(list.category)">        {{ getKoreanCategoryName(list.category.category1,1) }}    </a></td>
                             <td>
                                 <a class="title" @click="toDetails(list.boardId,list.category)">{{ list.title }} 
                                 <span v-if="list.commentCount" style="font-size: 14px; font-weight: bold; color: darkgreen; margin-left: 5px;">{{ '[' + list.commentCount + ']'}}</span> 
@@ -51,8 +52,8 @@
                                 <option value="index">글 번호</option>
                                 <option value="author">작성자</option>
                             </select>
-                            <input v-if="searchData.selectedOption !== 'index'" type="text" placeholder="Search" v-model="searchData.content" minlength="2">
-                            <input v-else type="number" :min="1" placeholder="Search" v-model="searchData.content" minlength="2" class="number-input">
+                            <input :disabled="isFavorite" v-if="searchData.selectedOption !== 'index'" type="text" placeholder="Search" v-model="searchData.content" minlength="2">
+                            <input :disabled="isFavorite" v-else type="number" :min="1" placeholder="Search" v-model="searchData.content" minlength="2" class="number-input">
                             <button class="btn btn-danger"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">search</span></button>
                             <button v-if="isSearched" @click="resetSearch" style=" margin-left: 5px;" class="btn btn-secondary"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">close</span></button>
                         </form>
@@ -61,7 +62,7 @@
                 <nav aria-label="Page navigation" class="paging mt-4">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" v-for="n in pageNumbers" :key="n">
-                            <a class="page-link" @click="setPage(n-1)">{{ n }}</a>
+                            <a class="page-link" @click="handleRouteChange(n-1)">{{ n }}</a>
                         </li>
                     </ul>
                 </nav>
@@ -88,7 +89,7 @@ components : {
 ,
 data(){
     return{
-        friendWithMessageId:null,
+        isFavorite: false,
         recentModal : 'userInfo',
         showUserInfo : false,
         clickedUserIdx : null,
@@ -189,23 +190,30 @@ computed: {
         }
         return pages;
     },
-}
-,
+},
 
 mounted(){
-    this.countQuery();
-    this.setPage(0);
+    this.handleRouteChange(0);
 },
+
 watch: {
     '$route'(newRoute, oldRoute) {
-        if (newRoute && oldRoute && newRoute.path !== oldRoute.path) {
-            this.countQuery();
-            this.setPage(0);
-        }
+      if (newRoute && oldRoute && newRoute.path !== oldRoute.path) {
+        this.handleRouteChange();
+      }
     },
-}
-,
+  },
 methods :{
+    handleRouteChange(page) {
+      if (this.$route.path.includes('/favorite')) {
+        this.isFavorite = true;
+        this.setPageFavorite(page);
+      } else {
+        this.isFavorite = false;
+        this.countQuery();
+        this.setPage(page);
+      }
+    },
     getBoard(page) {
         let params = {
             page: page,
@@ -226,7 +234,7 @@ methods :{
         } else if (this.categoryType === 1) {
             params.category1 = this.category1;
         }
-        this.$axios.get('/api/board/get-all', { params: params })
+        this.$axios.get('/api/board/get-all', { params: params,withCredentials: true  })
           .then(response => {
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;
@@ -242,10 +250,35 @@ methods :{
             }
           });
     },
+    getFavorite(page) {
+        let params = {
+            page: page,
+            size: 15
+        };
+        this.$axios.get('/api/board/favorite', { params: params })
+          .then(response => {
+            this.TheBoard.data = response.data.content;
+            this.totalPages = response.data.totalPages;
+            console.log(response.data.content);
+          })
+          .catch(error => {
+            // 오류 처리
+            if (error.response) {
+              alert("Error: 오류가 발생했습니다.");
+            } else if (error.request) {
+              alert("Error: 서버로부터 응답이 없습니다.");
+            } else {
+              alert(`${error.message}`);
+            }
+          });
+    },
     setPage(page){
         this.currentPage = page;
         this.getBoard(page);
-
+    },
+    setPageFavorite(page){
+        this.currentPage = page;
+        this.getFavorite(page);
     },
     
     writePost() {

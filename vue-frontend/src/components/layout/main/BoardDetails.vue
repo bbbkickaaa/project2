@@ -6,7 +6,7 @@
             <span class="material-symbols-outlined symbols heart fill-heart" v-if="IsRecommended" @click="PostRecommend">favorite</span>
             <span class="material-symbols-outlined symbols star" v-if="!IsFavorite" @click="PostFavorite">star</span>
             <span class="material-symbols-outlined symbols star fill-star" v-if="IsFavorite" @click="PostFavorite">star</span>
-            <span class="material-symbols-outlined symbols airplane ">near_me</span>
+            <span @click="URLModalOpen" class="material-symbols-outlined symbols airplane ">near_me</span>
         </div>
         <div class="container mt-4 content-wrap">
             <div class="post-detail inner-box">
@@ -48,16 +48,6 @@
                 </div>
             </form>
         </div>
-            
-            <modal-component :show="ShowModal" @close="ShowModal = false" class="">
-                <div class="modal-inner">
-                <h4 style="text-align: center; padding-top: 50px;">정말 삭제하시겠습니까?</h4>
-                    <div class="button-outer">
-                        <button class="btn btn-secondary modal-button" @click="DeleteBoard">네</button>
-                        <button class="btn btn-secondary modal-button" @click="ShowModal = false">취소</button>
-                    </div>
-                </div>
-            </modal-component>
         </div>  
     <!-- 댓글 리스트 -->
     <div class="comment-list mt-4" v-if="BoardInfo.comments.length>0">
@@ -72,15 +62,31 @@
             </div>
         </div>
     </div>
+
+    <modal-component :show="ShowModal" @close="ShowModal = false" class="">
+                <div class="modal-inner">
+                <h4 style="text-align: center; padding-top: 50px;">정말 삭제하시겠습니까?</h4>
+                    <div class="button-outer">
+                        <button class="btn btn-secondary modal-button" @click="DeleteBoard">네</button>
+                        <button class="btn btn-secondary modal-button" @click="ShowModal = false">취소</button>
+                    </div>
+                </div>
+    </modal-component>
+    <modal-component :show="ShowModalURL" @close="ShowModalURL=false">
+        <share-url></share-url>
+    </modal-component>
   </template>
   <script>
 import ModalComponent from '../ModalComponent.vue';
+import ShareUrl from '../main/ShareComponent';
   export default {
     components: {
-         ModalComponent
+         ModalComponent,
+         ShareUrl
         },
     data(){
         return{
+            ShowModalURL : false,
             formWriteDate : '',
             formAlterDate : '',
             formContentDate : '',
@@ -88,6 +94,7 @@ import ModalComponent from '../ModalComponent.vue';
                 BoardId : '',
                 userIdx : '',
                 comment : '',
+                whereParam :'',
             },
             IsFavorite : null,
             IsRecommended : null,
@@ -114,6 +121,7 @@ import ModalComponent from '../ModalComponent.vue';
         }
     },
 mounted(){
+    this.CommentForm.whereParam = this.$route.path;
     const id = parseInt(this.$route.params.id, 10);
     this.$axios.get('/api/board/get-detail', { params: { id: id }, withCredentials: true})
     .then(response => {
@@ -121,7 +129,6 @@ mounted(){
             this.CommentForm.BoardId = response.data.id;
             this.PlusViews();
             this.checkRecommend();
-            console.log(this.BoardInfo);
             this.checkFavorite();
             if(this.BoardInfo.writeDate){
             this.formWriteDate = this.formatDate(this.BoardInfo.writeDate);}
@@ -215,6 +222,9 @@ methods: {
             this.IsFavorite = true;
 
         }
+    },
+    URLModalOpen(){
+        this.ShowModalURL = !this.ShowModalURL
     },
 } 
 

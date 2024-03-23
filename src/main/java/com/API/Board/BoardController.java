@@ -40,10 +40,12 @@ public class BoardController {
 		   @RequestParam(name = "category3", required = false) String category3,
 		   @RequestParam(name = "option", required = false) String option, //검색 타입
 		   @RequestParam(name = "content", required = false) String content, //검색 내용 
-	    @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
-	) {
-
-		ResponseEntity<Page<BoardReviewDTO>> results = boardService.findAll(category3,category2,category1,option,content,pageable);
+	    @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+	    @RequestHeader("Authorization") String authorizationHeader) {
+		String token = tokenProvider.resolveToken(authorizationHeader);
+		Authentication authentication =  tokenProvider.getAuthentication(token);
+		
+		ResponseEntity<Page<BoardReviewDTO>> results = boardService.findAll(category3,category2,category1,option,content,pageable,authentication);
 	    return results;
 	}
 	

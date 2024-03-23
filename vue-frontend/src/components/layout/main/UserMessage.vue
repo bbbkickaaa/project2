@@ -18,7 +18,7 @@
   </template>
   
   <script>
-  export default {
+ export default {
     props :['nickname','receiveId'],
     data() {
       return {
@@ -30,9 +30,6 @@
     },
     methods: {
       submitMessage() {
-        // 메시지 제출 로직
-        console.log("보낸 사람:", this.message.receiveId);
-        console.log("메시지 내용:", this.message.content);
         this.$axios.post('/api/message/post-message',this.message,{withCredentials: true})
         .then(response=>{alert(response.data); this.toMain(); this.$emit('closeModal',true); }).catch(error=>{alert(error.response.data);})
       },

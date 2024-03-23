@@ -109,7 +109,6 @@ methods : {
           .then(response => {
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;
-            console.log(this.TheBoard.data.length);
           })
           .catch(error => {
             // 오류 처리
@@ -131,7 +130,6 @@ methods : {
           .then(response => {
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;
-            console.log(response.data)
           })
           .catch(error => {
             // 오류 처리
