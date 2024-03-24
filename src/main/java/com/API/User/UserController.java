@@ -67,7 +67,7 @@ public class UserController {
 		return loginService.loginUser(user,response);
 	}
 	
-	@DeleteMapping("/public/logout")
+	@PostMapping("/public/logout")
 	public ResponseEntity<?> logoutUser(HttpServletRequest request ,HttpServletResponse response){
 	    CookieUtils.deleteCookie(request, response, "refreshToken");
         return ResponseEntity.ok().body("삭제되었습니다.");

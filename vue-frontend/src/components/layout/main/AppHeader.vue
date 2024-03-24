@@ -11,13 +11,16 @@
               <p class="posts">글 갯수: {{userData.postCount}}</p>
               <p class="comments">댓글 갯수: {{ userData.commentCount }}</p>
               <div class="header-button">
+                <div> 
+                   <a @click="showGroupModal"><span class="material-symbols-outlined">priority_high</span></a>
+               </div>
                  <div> 
                     <a><span @click="showAlarm" class="material-symbols-outlined">notifications</span></a>
                     <span v-if="alarmCount>=1" class="material-symbols-outlined plus" style="position: absolute; border-radius: 50%; background-color:#FFF455; color: brown;">add</span>
                  </div>
                  <div> 
-                    <a @click="showGroupModal"><span class="material-symbols-outlined">groups</span></a>
-                </div>
+                   <a @click="showGroupModal"><span class="material-symbols-outlined">groups</span></a>
+                  </div>
                 <button class="btn btn-success edit" @click="AlterIdentity" >정보수정</button>
                 <button class="btn btn-secondary logout" @click="logout">로그아웃</button>
               </div>
@@ -69,7 +72,7 @@ data(){
       userData: {
         id : '' ,
         userid: '',
-        userLevel:{level : '', points: ''},
+        userLevel:{level : 0, points: 0},
         createdDate: '',
         nickname: '',
         postCount:'',
@@ -126,7 +129,7 @@ methods:{
       this.IsFavorite = this.$route.path.includes('/favorite');
     },
     logout(){
-      axios.delete('http://localhost:8080/api/public/logout', null, {withCredentials: true})
+      axios.post('http://localhost:8080/api/public/logout', null, {withCredentials: true})
       sessionStorage.clear(); 
       store.commit('clearState');
       router.push({path:'/intro'})
@@ -245,8 +248,12 @@ header {
   background-color: #dc3545;
   border-radius: 50%;
 }
-.header-button > div:first-child {
+.header-button > div:nth-child(2) {
   background-color: #5F374B;
+}
+
+.header-button > div:nth-child(1) {
+  background-color: yellow;
 }
 
 

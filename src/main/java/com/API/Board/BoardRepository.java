@@ -2,6 +2,7 @@ package com.API.Board;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +30,10 @@ public interface BoardRepository extends Repository<Board, Long> {
 	    
 	    
 	    @Query("SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) " +
-	            "FROM Board b JOIN b.author u LEFT JOIN b.comments c " +
-	            "WHERE u.id = :userId " +
-	            "GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category")
-	     Page<BoardReviewDTO> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+	    	       "FROM Board b JOIN b.author u LEFT JOIN b.comments c " +
+	    	       "WHERE b.id IN (:list) " +
+	    	       "GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category")
+	    Page<BoardReviewDTO> findAllByUserId(Pageable pageable, @Param("list") Set<Integer> list);
+
 
 	}

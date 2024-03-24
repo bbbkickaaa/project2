@@ -46,6 +46,7 @@ public class BoardDTO {
 	    boardDTO.setUserIdx(board.getAuthor().getId());
 	    boardDTO.setLikes(board.getLikes());
 	    boardDTO.setViews(board.getViews());
+	    boardDTO.setFavorite(false);
 	    boardDTO.setCategory(board.getCategory());
 	    boardDTO.setWriteDate(board.getWriteDate());
 	    boardDTO.setAlterDate(board.getAlterDate());

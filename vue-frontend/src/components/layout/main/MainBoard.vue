@@ -259,8 +259,9 @@ methods :{
             page: page,
             size: 15
         };
-        this.$axios.get('/api/board/favorite', { params: params })
+        this.$axios.get('/api/board/favorite', { params: params,withCredentials: true })
           .then(response => {
+            console.log(response);
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;
             console.log(response.data.content);

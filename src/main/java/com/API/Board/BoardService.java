@@ -453,9 +453,10 @@ public class BoardService {
 		if(wrapUser.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
+		
 		User user = wrapUser.get();
-		Long userID = user.getId();
-		Page<BoardReviewDTO> dto = boardRepository.findAllByUserId(userID, pageable);
+		Set<Integer> list = user.getLikeBoardId();
+		Page<BoardReviewDTO> dto = boardRepository.findAllByUserId(pageable,list);
 		return ResponseEntity.ok(dto);
 	}
 	
