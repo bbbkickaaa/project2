@@ -25,19 +25,19 @@
                         <p style="color: #999999;" class="content-count"><span style="vertical-align: bottom;"  class="material-symbols-outlined">chat</span> {{ BoardInfo.comments.length }}</p>
                     </div>
                     <p class ="category" v-if="BoardInfo.category"> 
-                        <a> {{ BoardInfo.category.category1 }} </a>
+                        <a> {{ getKoreanCategoryName(BoardInfo.category.category1,1) }} </a>
                         <span style="vertical-align: bottom;" class="material-symbols-outlined">arrow_right_alt</span>
-                        <a> {{ BoardInfo.category.category2 }} </a>
+                        <a> {{ getKoreanCategoryName(BoardInfo.category.category2,2) }} </a>
                         <span style="vertical-align: bottom;"  class="material-symbols-outlined">arrow_right_alt</span>
-                        <a> {{ BoardInfo.category.category3 }} </a>
+                        <a> {{ getKoreanCategoryName(BoardInfo.category.category3,3) }} </a>
                     </p>
                  </div>
                 <p class="post-content contents">{{ BoardInfo.content }}</p>
             </div>
                 
             <div class="actions">
-                <button class="btn btn-secondary" v-if="CompareWithUsers()" @click="AlterBoard(id)">수정</button>
-                <button class="btn btn-secondary" v-if="CompareWithUsers()" @click="ShowModal = true" @close="closeModal">삭제</button>
+                <button class="btn btn-secondary" v-if="CompareWithUsersAlter()" @click="AlterBoard(id)">수정</button>
+                <button class="btn btn-secondary" v-if="CompareWithUsersDelete()" @click="ShowModal = true" @close="closeModal">삭제</button>
             </div>
         
         <!-- 댓글 입력 폼 -->
@@ -79,13 +79,54 @@
   <script>
 import ModalComponent from '../ModalComponent.vue';
 import ShareUrl from '../main/ShareComponent';
+import { toRaw } from 'vue';
   export default {
     components: {
          ModalComponent,
          ShareUrl
         },
+    props:['role'],
     data(){
         return{
+            category1Mapping: {
+            'chat': '잡담',
+            'game': '게임',
+            'beauty': '뷰티',
+            'study': '공부',
+            'travel': '여행',
+        },
+        category2Mapping:{
+            'chat' : '잡담',            
+            'common': '일상',
+            'star': '연예',
+            'love': '사랑',
+            'food': '음식',
+            'lol': '리그오브레전드',
+            'overwatch': '오버워치',
+            'maplestory': '메이플스토리',
+            'valorant': '발로란트',
+            'mabinogi': '마비노기',
+            'makeup': '화장',
+            'fashion': '패션',
+            'skin': '피부',
+            'diet': '다이어트',
+            'hairstyle': '헤어스타일',
+            'certification': '자격증',
+            'suneung': '수능',
+            'toeic': '토익',
+            'hobby': '취미',
+            'interview': '면접',
+            'oversea': '해외',
+            'domestic': '국내',
+            'festival': '축제',
+            'event': '이벤트'
+        },
+        category3Mapping:{
+            'ask' : '질문',
+            'info' :'정보',
+            'free' : '자유',
+        },
+
             ShowModalURL : false,
             formWriteDate : '',
             formAlterDate : '',
@@ -117,6 +158,7 @@ import ShareUrl from '../main/ShareComponent';
                 category:[],
                 likesUser:{},
                 favorite:null,
+                role:'',
             }
         }
     },
@@ -148,20 +190,15 @@ mounted(){
     this.userIdx = sessionStorage.getItem('userIdx');
     this.CommentForm.userIdx = this.userIdx;
     },
-    
-watch: {
-    ShowModal(newValue) {
-        if (newValue) {
-        this.ShowModal = false;
-        }
-    }
-},
 methods: {
   ToMain(){
     this.$router.push('/main');
   },
-  CompareWithUsers(){
-    return this.userIdx == this.BoardInfo.userIdx;
+  CompareWithUsersAlter(){
+    return this.userIdx == this.BoardInfo.userIdx
+  },
+  CompareWithUsersDelete(){
+    return this.userIdx == this.BoardInfo.userIdx || this.role =="ADMIN";
   },
   PlusViews(){
     this.$axios.post('/api/board/post-views', this.BoardInfo.id)
@@ -226,6 +263,31 @@ methods: {
     URLModalOpen(){
         this.ShowModalURL = !this.ShowModalURL
     },
+    getKoreanCategoryName(category, type) {
+        const rawCategory = toRaw(category);
+        if (!rawCategory) {
+            return '';
+        }
+        let categoryName = '';
+        if (type === 1) {
+            categoryName = rawCategory;
+        } else if (type === 2) {
+            categoryName = rawCategory;
+        } else if (type === 3) {
+            categoryName = rawCategory;
+        }
+
+        let mapping = {};
+        if (type === 1) {
+            mapping = this.category1Mapping;
+        } else if (type === 2) {
+            mapping = this.category2Mapping;
+        } else if (type === 3) {
+            mapping = this.category3Mapping;
+        }
+        return mapping[categoryName] || categoryName;
+    },
+    
 } 
 
   }
@@ -294,12 +356,11 @@ methods: {
     .button-outer{
         box-sizing: border-box;
         border-top: 1px dashed rgba(108, 117, 125, 0.2);
-        margin-left: 100px;
         margin: 0 auto;
-        padding-top: 30px;
         margin-top: 180px;
-        height: 150px;
-        padding-left: 130px;
+        height: 40px;
+        padding-top: 40px;
+        text-align: center;
     }
     .infos {
  
@@ -441,5 +502,10 @@ methods: {
     }
     .fill-star {
         font-variation-settings: 'FILL' 1
+    }
+    .modal-button{
+        width: 120px;
+        height: 40px;
+        margin: 0 10px;
     }
 </style>

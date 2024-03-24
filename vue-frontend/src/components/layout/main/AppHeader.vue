@@ -69,12 +69,13 @@ data(){
       userData: {
         id : '' ,
         userid: '',
-        userLevel:{level : null, points: null},
+        userLevel:{level : '', points: ''},
         createdDate: '',
         nickname: '',
         postCount:'',
         commentCount:'',
         picture:'',
+        role :'',
       }
     }
 },
@@ -87,6 +88,7 @@ mounted(){
   this.getLoad();
   this.checkFavoritePath();
   this.getAlarm();
+
 },
 
 methods:{
@@ -94,10 +96,12 @@ methods:{
       let loader = this.$loading.show();
       this.$axios.get('/api/member/get-user')
           .then(response => {
+            console.log(response.data);
             this.userData = response.data;
             this.getUserPostCount(this.userData.id)
             sessionStorage.setItem('userIdx',this.userData.id)
             this.isLoading = false;
+            this.sendRole();
             loader.hide();
           })
           .catch(error => {
@@ -183,7 +187,9 @@ methods:{
     this.alarmForm = 'send';
       this.receivedNickname = receivedNickname;
       this.receiveId = receiveId;
-      console.log(receivedNickname);
+    },
+    sendRole(){
+      this.$emit('send-role',this.userData.role);
     },
 }
 }

@@ -68,8 +68,9 @@
                 </nav>
             </div>
             <modal-component :show="showUserInfo"  @close="showUserInfo = false,recentModal='userInfo'">
-                <user-form v-if="recentModal === 'userInfo'" :id="clickedUserIdx" @close-modal="showUserInfo = false" @switch-modal="handleSwitchModal"></user-form>
+                <user-form  :role="role" v-if="recentModal === 'userInfo'" :id="clickedUserIdx" @close-modal="showUserInfo = false" @switch-modal="handleSwitchModal"></user-form>
                 <user-message @close-modal="showUserInfo = false" :receiveId="clickedUserIdx" :nickname="clickedNickname" v-if="recentModal === 'message'" @switch-modal="handleSwitchModal" ></user-message>
+                <admin-block :id="clickedUserIdx" v-if="recentModal === 'admin'" @close-modal="showUserInfo = false"></admin-block>
             </modal-component>
         </div>
 </template>
@@ -80,13 +81,15 @@ import { toRaw } from 'vue';
 import ModalComponent from '../ModalComponent.vue';
 import UserForm from '../main/UserInfo.vue';
 import UserMessage from '../main/UserMessage.vue'
+import AdminBlock from '../main/AdminBlock.vue'
 export default {
 components : {
     ModalComponent,
     UserForm,
-    UserMessage
-}
-,
+    UserMessage,
+    AdminBlock,
+},
+
 data(){
     return{
         isFavorite: false,
@@ -149,7 +152,7 @@ data(){
         }
         }
 },
-props:['category1','category2','category3'],
+props:['category1','category2','category3','role'],
 computed: {
     limitedBoard: function() {
         // this.TheBoard.data가 배열인지 확인하고, 그렇지 않으면 빈 배열을 사용
@@ -194,6 +197,7 @@ computed: {
 
 mounted(){
     this.handleRouteChange(0);
+
 },
 
 watch: {

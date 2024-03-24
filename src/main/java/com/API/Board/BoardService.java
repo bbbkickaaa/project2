@@ -74,7 +74,7 @@ public class BoardService {
 		
 		
 	    String queryString = "SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) FROM Board b JOIN b.author u LEFT JOIN b.comments c";
-	    String countQueryString = "SELECT COUNT(b) FROM Board b JOIN b.author u LEFT JOIN b.comments c";
+	    String countQueryString = "SELECT COUNT(b) FROM Board b JOIN b.author u";
 
 	    String whereClause = "";
 	    boolean isWhereAdded = false;
@@ -127,9 +127,9 @@ public class BoardService {
 		    }
 
 	    queryString += isWhereAdded ? whereClause : "";
+	    queryString += " GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category";
 	    countQueryString += isWhereAdded ? whereClause : "";
 
-	    queryString += " GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category";
 	    
 	    TypedQuery<Long> countQuery = entityManager.createQuery(countQueryString, Long.class);
 
@@ -255,33 +255,14 @@ public class BoardService {
 		User user = wrapUser.get();
 		Board board = wrapBoard.get();
 		int boardIdInt = board.getId().intValue();
-		BoardDTO boardDTO = new BoardDTO();
+		BoardDTO boardDTO = BoardDTO.fromBoard(board);
 		if(user.getLikeBoardId().contains(boardIdInt)) {
 			boardDTO.setFavorite(true);
 		}
-		boardDTO.setId(board.getId());
-	    boardDTO.setTitle(board.getTitle());
-	    boardDTO.setContent(board.getContent());
-	    boardDTO.setUserIdx(board.getAuthor().getId());
-	    boardDTO.setLikes(board.getLikes());
-	    boardDTO.setViews(board.getViews());
-	    boardDTO.setCategory(board.getCategory());
-	    boardDTO.setWriteDate(board.getWriteDate());
-	    boardDTO.setAlterDate(board.getAlterDate());
-	    boardDTO.setPicture(board.getAuthor().getPicture());
-	    boardDTO.setLevel(board.getAuthor().getUserLevel().getLevel());
-	    boardDTO.setLikesUser(board.getLikesUsers());
 	    List<CommentDTO> listDto = new ArrayList<>();
 	    List<Comment> list = board.getComments();
 	    list.stream().forEach(comment -> {
-	    	CommentDTO dto = new CommentDTO();
-	    	dto.setContent(comment.getContent());
-	    	dto.setNickname(comment.getAuthor().getNickname());
-	    	dto.setUserid(comment.getAuthor().getId());
-	    	dto.setWriteDate(comment.getWriteDate());
-	    	dto.setCommentId(comment.getId());
-	    	dto.setPicture(comment.getAuthor().getPicture());
-	    	dto.setLevel(board.getAuthor().getUserLevel().getLevel());
+	    	CommentDTO dto = CommentDTO.fromCommentAndBoard(comment, board);
 	    	listDto.add(dto);
 	    });
 	    boardDTO.setComments(listDto);

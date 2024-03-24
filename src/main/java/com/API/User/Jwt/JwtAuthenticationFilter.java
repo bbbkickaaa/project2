@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (request.getRequestURI().startsWith("/api/public/")) {
 	        filterChain.doFilter(request, response);
 	        return;
+	        
 	    }
 		String token = resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {

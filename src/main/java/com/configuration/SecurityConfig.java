@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -33,6 +34,7 @@ import com.API.User.Oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.API.User.Oauth2.OAuth2AuthenticationFailureHandler;
 import com.API.User.Oauth2.OAuth2AuthenticationSuccessHandler;
 import com.API.User.Security.Custom2AuthenticationProvider;
+import com.API.User.Security.CustomAuthenticationEntryPoint;
 
 import jakarta.servlet.DispatcherType;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +64,11 @@ public class SecurityConfig {
 	    @Bean
 	    public Custom2AuthenticationProvider custom2AuthenticationProvider() {
 	    	return new Custom2AuthenticationProvider();
+	    }
+	    
+	    @Bean
+	    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+	        return new CustomAuthenticationEntryPoint();
 	    }
 	    
 	    @Bean
@@ -99,10 +106,14 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
+		}
+		
+		
+		
 	
 	@Bean
 	protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		
 		
 		 CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
 		 requestHandler.setCsrfRequestAttributeName("_csrf");
@@ -123,7 +134,7 @@ public class SecurityConfig {
 	 
 	    http
 	    	.exceptionHandling(exception -> exception
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN)));
+	    			.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 	
 	  http
 	    .oauth2Login(oauth2Login -> oauth2Login

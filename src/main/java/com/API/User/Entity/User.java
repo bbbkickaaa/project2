@@ -62,6 +62,13 @@ public class User {
 	@Column(name="deleted_date" ,length = 8)
 	private String deletedDate;
 	
+	@Column(nullable = true , length = 12)
+	private String bannedDate;
+	
+	@Column(nullable = true , length = 12)
+	private String endBannedDate;
+	
+	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserRole role;

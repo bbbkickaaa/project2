@@ -7,6 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.API.User.Entity.User;
 import com.API.User.Entity.UserRole;
 
+import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -42,8 +45,13 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+		if(user.getBannedDate() == null) {
+			return true;
+		} else {
+		LocalDateTime endBannedDate = LocalDateTime.parse(user.getEndBannedDate(), DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+	    LocalDateTime now = LocalDateTime.now();
+		return endBannedDate.isBefore(now);
+	}
 	}
 
 	@Override

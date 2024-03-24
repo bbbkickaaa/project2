@@ -38,7 +38,6 @@ public class LoginServiceImpl implements LoginService{
 	@Override
 	@Transactional
 	public ResponseEntity<?> loginUser(User user, HttpServletResponse response) {
-	    try {
 	        Authentication authentication = authenticationProvider.authenticate(
 	            new UsernamePasswordAuthenticationToken(user.getUserid(), user.getPassword())
 	        );
@@ -55,9 +54,6 @@ public class LoginServiceImpl implements LoginService{
 	        headers.set("Authorization", "Bearer " + accessToken);
 	        System.out.println(accessToken);
 	        return ResponseEntity.ok().headers(headers).body("로그인 성공.");
-	    } catch (AuthenticationException e) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패.");
-	    }
 	}
 	
 }

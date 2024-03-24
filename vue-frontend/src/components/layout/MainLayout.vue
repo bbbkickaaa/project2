@@ -4,10 +4,10 @@
         <div class="app-logo" style="text-align: center; padding-top: 50px;">
           <a class="main-logo" @click="refreshView"><img src="/MainLogo.png" style="width:150px" alt="logo"></a>
         </div>
-        <AppHeader @Alter-identity="handleAlterIdentity"></AppHeader>
+        <AppHeader @send-role="saveRole" @Alter-identity="handleAlterIdentity"></AppHeader>
         <AppCategory @category-selected="setCategory1"></AppCategory>
         <div class="wraps">
-         <router-view :key="refreshKey"></router-view>
+         <router-view :role="role" :key="refreshKey"></router-view>
         </div>
       </div>
     </div>
@@ -23,6 +23,7 @@
     },
     data() {
       return {
+        role : '',
         refreshKey: 0,
         Category1 : '',
       }
@@ -37,6 +38,9 @@
     refreshView() {
       this.refreshKey++;
       this.$router.push('/main');
+    },
+    saveRole(role){
+      this.role = role;
     },
   },
   };

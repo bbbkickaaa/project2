@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +32,12 @@ public class Custom2AuthenticationProvider implements AuthenticationProvider {
             if (!customUserDetails.isEnabled()) {
                 throw new DisabledException("탈퇴된 계정입니다.");
             }
+            if(!customUserDetails.isAccountNonExpired()) {
+            	throw new LockedException("밴 되었습니다.");
+            }
         }
+        
+        
         if (passwordEncoder.matches(password, userDetails.getPassword())) {
             return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         } else {

@@ -66,9 +66,8 @@
           throw new Error('Authorization 토큰이 없습니다.');
         }
       })
-      .catch(error => {
-        alert("로그인에 실패했습니다.")
-        console.log(error);
+      .catch((e) => {
+        alert(e.response.data);
       });
   },
   forgotPassword(){

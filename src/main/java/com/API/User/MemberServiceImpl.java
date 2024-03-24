@@ -53,15 +53,7 @@ public class MemberServiceImpl implements MemberService {
 		Optional<User> user = userRepository.findByUserid(userid);
 		if(user.isPresent()) {
 			User users = user.get();
-			UserDTO dto = UserDTO.builder()
-                    .id(users.getId())
-                    .userid(users.getUserid())
-                    .nickname(users.getNickname())
-                    .userLevel(users.getUserLevel())
-                    .email(users.getEmail())
-                    .createdDate(users.getCreatedDate())
-                    .picture(users.getPicture())
-                    .build();
+			UserDTO dto = UserDTO.fromUser(users);
 			return ResponseEntity.ok().body(dto);
 		}
 		

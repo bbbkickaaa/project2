@@ -2,6 +2,7 @@ package com.API.User.DTO;
 
 import com.API.User.Entity.User;
 import com.API.User.Entity.UserLevel;
+import com.API.User.Entity.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class UserDTO {
 	private UserLevel userLevel;
 	private String email;
 	private String createdDate;
+	private UserRole role;
 	
 	public static UserDTO fromUser(User user) {
         UserDTO dto = new UserDTO();
@@ -33,6 +35,7 @@ public class UserDTO {
         dto.setNickname(user.getNickname());
         dto.setPicture(user.getPicture());
         dto.setUserid(user.getUserid());
+        dto.setRole(user.getRole());
         dto.setUserLevel(user.getUserLevel());
         return dto;
     }
