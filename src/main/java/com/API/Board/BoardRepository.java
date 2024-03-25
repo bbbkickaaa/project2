@@ -33,7 +33,8 @@ public interface BoardRepository extends Repository<Board, Long> {
 	    	       "FROM Board b JOIN b.author u LEFT JOIN b.comments c " +
 	    	       "WHERE b.id IN (:list) " +
 	    	       "GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category")
-	    Page<BoardReviewDTO> findAllByUserId(Pageable pageable, @Param("list") Set<Integer> list);
+	    Page<BoardReviewDTO> findAllBylist(Pageable pageable, @Param("list") Set<Integer> list);
+
 
 
 	}

@@ -61,7 +61,7 @@
   </template>
   
   <script>
-  import ModalComponent from '../ModalComponent.vue';
+  import ModalComponent from '@/components/layout/ModalComponent.vue';
   import axios from 'axios';
   import store from '@/store';
   export default {

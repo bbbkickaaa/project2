@@ -1,20 +1,19 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import App from './App.vue';
+import App from '@/App.vue';
 //
 
-import AppIntro from './views/AppIntro.vue';
-import MainBoard from './components/layout/main/MainBoard.vue';
-import ReDirect from "./views/ReDirect.vue";
-import NewPost from "./components/layout/main/NewPost.vue";
-import BoardDetails from "./components/layout/main/BoardDetails.vue"
-import BoardAlter from "./components/layout/main/BoardAlter.vue"
-import MainLayout from './components/layout/MainLayout.vue';
-
-import { checkPostOwner } from './routerGuard';
-import {validateCategoryRoute} from './routerGuard';
-import Identity from './components/layout/main/IdentityContent.vue'
-
+import AppIntro from '@/views/intro/AppIntro.vue';
+import MainBoard from '@/views/main/mainRouter/MainBoard.vue';
+import ReDirect from '@/views/intro/ReDirect.vue'
+import NewPost from '@/views/main/mainRouter/NewPost.vue'
+import BoardDetails from '@/views/main/mainRouter/BoardDetails.vue'
+import BoardAlter from  '@/views/main/mainRouter/BoardAlter.vue';
+import MainLayout from '@/components/layout/MainLayout.vue';
+import { checkPostOwner } from '@/routerGuard';
+import {validateCategoryRoute} from '@/routerGuard';
+import Identity from '@/views/main/mainRouter/IdentityContent.vue'
+import { validateYourRoleRoute } from '@/routerGuard';
 const router = createRouter({
   history: createWebHistory(),
   routes : [
@@ -34,10 +33,11 @@ const router = createRouter({
       props: true,
       children: [
         { path: '', component: MainBoard },
-        { path: ':category1/:category2?/:category3?',props:true, component: MainBoard, beforeEnter:validateCategoryRoute},
         { path:'favorite', component:MainBoard},
+        { path: 'report-list/:id', component:MainBoard , beforeEnter:validateYourRoleRoute},
         { path: 'identity', component: Identity },
         { path: 'post', component: NewPost }, 
+        { path: ':category1/:category2?/:category3?',props:true, component: MainBoard, beforeEnter:validateCategoryRoute},
         { 
           path: ':category1/:category2/:category3/detail/:id', 
           component: BoardDetails,

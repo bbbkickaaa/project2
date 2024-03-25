@@ -24,7 +24,7 @@ const categories = {
   category1: ['chat', 'game', 'beauty', 'study', 'travel'],
   category2: ['chat','common','star','love','food', 'lol', 'overwatch', 'maplestory', 'valorant', 'mabinogi', 'makeup', 'fashion', 'skin', 'diet', 'hairstyle', 'certification', 'suneung', 'toeic', 'hobby', 'interview', 'oversea', 'domestic', 'festival', 'event'],
   category3: ['ask', 'info', 'free']
-};
+}
 
 export async function validateCategoryRoute(to, from, next) {
   try {
@@ -42,6 +42,22 @@ export async function validateCategoryRoute(to, from, next) {
   } catch (error) {
     console.error('라우터 가드에서 오류 발생:', error);
     next('/error'); // 서버 오류 시 오류 페이지로 이동
+  }
+}
+export async function validateYourRoleRoute(to, from, next){
+  try {
+    const id = to.params.id;
+    const accessToken = sessionStorage.getItem('accessToken');
+    const response = await axios.get(`http://localhost:8080/api/member/get-role/${id}`,{headers: {
+      Authorization: `Bearer ${accessToken}`}
+    });
+    if(response.data == 'ADMIN') {
+      next();
+    } else {
+      next('/main');
+    }
+  } catch (error) {
+    next('/main');
   }
 }
 

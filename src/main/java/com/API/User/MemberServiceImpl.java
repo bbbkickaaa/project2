@@ -29,6 +29,7 @@ import com.API.User.DTO.SendPasswordDTO;
 import com.API.User.DTO.TitleAndCategoryDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
+import com.API.User.Entity.UserRole;
 import com.API.User.Etc.PasswordGenerator;
 
 @Service
@@ -288,5 +289,17 @@ public class MemberServiceImpl implements MemberService {
 	    user.setBlockIds(userFriendIds);
 	    userRepository.save(user);
 	    return ResponseEntity.ok("삭제 되었습니다.");
+	}
+
+	@Override
+	public ResponseEntity<?> getRole(Long id) {
+	    Optional<User> userWrap = userRepository.findById(id);
+
+	    if (userWrap.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+	    }
+	    User user = userWrap.get();
+	    UserRole role = user.getRole();
+		return ResponseEntity.ok(role);
 	}
 }

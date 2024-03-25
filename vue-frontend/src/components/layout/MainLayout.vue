@@ -14,8 +14,8 @@
   </template>
   
   <script>
-  import AppCategory from './main/AppCategory.vue';
-  import AppHeader from './main/AppHeader.vue';
+  import AppCategory from '@/views/main/AppCategory.vue';
+  import AppHeader from '@/views/main/header/AppHeader.vue';
   export default {
     components: {
         AppHeader,

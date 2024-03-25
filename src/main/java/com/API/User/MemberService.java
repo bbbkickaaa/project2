@@ -27,4 +27,5 @@ public interface MemberService  {
 	ResponseEntity<?> deleteFriend(Authentication authentication, Integer id);
 	public ResponseEntity<Page<?>> getBlock(Authentication authentication, Pageable pageable);
 	public ResponseEntity<?> deleteBlock(Authentication authentication, Integer id);
+	public ResponseEntity<?> getRole(Long id);
 }

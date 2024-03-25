@@ -18,9 +18,11 @@
                             <td v-else-if="list.category && categoryType===1"><a class="category" @click="toCategory2(list.category)" >{{ getKoreanCategoryName(list.category.category2,2) }}</a></td>
                             <td v-else-if="list.category && categoryType===2"><a class="category" @click="toCategory3(list.category)" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
                             <td v-else-if="list.category && categoryType===3"><a class="category" > {{ getKoreanCategoryName(list.category.category3,3) }}</a></td>
-                            <td v-else-if="list.category && (categoryType === undefined || categoryType === null || categoryType === 0)"> <a class="category" @click="toCategory1(list.category)">        {{ getKoreanCategoryName(list.category.category1,1) }}    </a></td>
+                            <td v-else-if="isReport"> {{ list.type }}</td>
+                            <td v-else-if="list.category && (categoryType === undefined || categoryType === null || categoryType === 0)"> <a class="category" @click="toCategory1(list.category)">{{ getKoreanCategoryName(list.category.category1,1) }}    </a></td>
                             <td>
-                                <a class="title" @click="toDetails(list.boardId,list.category)">{{ list.title }} 
+                                <a class="title" @click="toReportDetails(list.boardId)" v-if="isReport">{{ subStringContent(list.content)}}</a>
+                                <a class="title" v-else @click="toDetails(list.boardId,list.category)">{{ list.title }} 
                                 <span v-if="list.commentCount" style="font-size: 14px; font-weight: bold; color: darkgreen; margin-left: 5px;">{{ '[' + list.commentCount + ']'}}</span> 
                                 <span style="font-size: 14px; font-weight: bold; color: palevioletred; margin: 0 5px;" v-if="list.likes">{{ '+   ' + list.likes }}</span>
                                 </a>
@@ -46,18 +48,18 @@
             </div> 
                 <div class ="sections">
                     <div class="bottom-button">
-                        <form class = "search" @submit.prevent="searchContent">
+                        <form class = "search" @submit.prevent="searchContent" v-if="!isReport && !isFavorite">
                             <select class="search-select" v-model="searchData.selectedOption">
                                 <option value="title">제목</option>
                                 <option value="index">글 번호</option>
                                 <option value="author">작성자</option>
                             </select>
-                            <input :disabled="isFavorite" v-if="searchData.selectedOption !== 'index'" type="text" placeholder="Search" v-model="searchData.content" minlength="2">
-                            <input :disabled="isFavorite" v-else type="number" :min="1" placeholder="Search" v-model="searchData.content" minlength="2" class="number-input">
-                            <button class="btn btn-danger"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">search</span></button>
-                            <button v-if="isSearched" @click="resetSearch" style=" margin-left: 5px;" class="btn btn-secondary"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">close</span></button>
+                            <input :disabled="isFavorite || isReport"  v-if="searchData.selectedOption !== 'index'" type="text" placeholder="Search" v-model="searchData.content" minlength="2">
+                            <input :disabled="isFavorite || isReport" v-else type="number" :min="1" placeholder="Search" v-model="searchData.content" minlength="2" class="number-input">
+                            <button  class="btn btn-danger"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">search</span></button>
+                            <button v-if="isSearched"  @click="resetSearch" style=" margin-left: 5px;" class="btn btn-secondary"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">close</span></button>
                         </form>
-                        <button @click="writePost" class="btn btn-success write-board">새 글 작성하기</button>
+                        <button v-if="!isReport && !isFavorite" @click="writePost" class="btn btn-success write-board">새 글 작성하기</button>
                     </div>
                 <nav aria-label="Page navigation" class="paging mt-4">
                     <ul class="pagination justify-content-center">
@@ -78,10 +80,10 @@
 
 <script>
 import { toRaw } from 'vue';
-import ModalComponent from '../ModalComponent.vue';
-import UserForm from '../main/UserInfo.vue';
-import UserMessage from '../main/UserMessage.vue'
-import AdminBlock from '../main/AdminBlock.vue'
+import ModalComponent from '@/components/layout/ModalComponent.vue';
+import UserForm from '@/views/main/UserInfo.vue';
+import UserMessage from '@/views/main/alarm/UserMessage.vue';
+import AdminBlock from '@/views/main/admin/AdminBlock.vue';
 export default {
 components : {
     ModalComponent,
@@ -92,6 +94,7 @@ components : {
 
 data(){
     return{
+        isReport : false,
         isFavorite: false,
         recentModal : 'userInfo',
         showUserInfo : false,
@@ -197,7 +200,6 @@ computed: {
 
 mounted(){
     this.handleRouteChange(0);
-
 },
 
 watch: {
@@ -209,9 +211,13 @@ watch: {
   },
 methods :{
     handleRouteChange(page) {
+        this.TheBoard = [];
       if (this.$route.path.includes('/favorite')) {
         this.isFavorite = true;
-        this.setPageFavorite(page);
+        this.setPageFavorite(page);}
+      else if(this.$route.path.includes('/report-list')) {
+        this.isReport = true;
+        this.setPageReport(page);
       } else {
         this.isFavorite = false;
         this.countQuery();
@@ -261,10 +267,8 @@ methods :{
         };
         this.$axios.get('/api/board/favorite', { params: params,withCredentials: true })
           .then(response => {
-            console.log(response);
             this.TheBoard.data = response.data.content;
             this.totalPages = response.data.totalPages;
-            console.log(response.data.content);
           })
           .catch(error => {
             // 오류 처리
@@ -277,6 +281,30 @@ methods :{
             }
           });
     },
+    getReport(page){
+
+    let params = {
+            page: page,
+            size: 15
+        };
+        this.$axios.get('/api/board/report', { params: params,withCredentials: true })
+          .then(response => {
+            
+            this.TheBoard.data = response.data.content;
+            this.totalPages = response.data.totalPages;
+          })
+          .catch(error => {
+            // 오류 처리
+            if (error.response) {
+              alert("Error: 오류가 발생했습니다.");
+            } else if (error.request) {
+              alert("Error: 서버로부터 응답이 없습니다.");
+            } else {
+              alert(`${error.message}`);
+            }
+          });
+    },
+
     setPage(page){
         this.currentPage = page;
         this.getBoard(page);
@@ -284,6 +312,10 @@ methods :{
     setPageFavorite(page){
         this.currentPage = page;
         this.getFavorite(page);
+    },
+    setPageReport(page){
+        this.currentPage = page;
+        this.getReport(page);
     },
     
     writePost() {
@@ -369,7 +401,16 @@ methods :{
     },
     handleSwitchModal(newModal) {
       this.recentModal = newModal;
-    }
+    },
+    subStringContent(content){
+        if(content){
+        return content.substr(0,30) + "  ..."}
+        else{return content}
+    },
+    toReportDetails(boardId){
+        this.$router.push(`/report-list/:id/${boardId}`)
+    },
+
 }
 }
 </script>

@@ -12,7 +12,7 @@
               <p class="comments">댓글 갯수: {{ userData.commentCount }}</p>
               <div class="header-button">
                 <div> 
-                   <a @click="showGroupModal"><span class="material-symbols-outlined">priority_high</span></a>
+                   <a @click="showReport"><span class="material-symbols-outlined">priority_high</span></a>
                </div>
                  <div> 
                     <a><span @click="showAlarm" class="material-symbols-outlined">notifications</span></a>
@@ -35,6 +35,10 @@
         <message-view @submit-form="ToMessageForm" @close-modal="ShowAlarmModal = false,alarmForm='list'" :id="messageId" v-if="alarmForm=='message'"></message-view>
         <user-message :receiveId="receiveId" :nickname="receivedNickname" @switch-modal="backModal" v-if="alarmForm=='send'"></user-message>
       </modal-component>
+
+      <modal-component :show="showReportModal" @close="showReportModal = false">
+        <report-by-user @admin-list="toAdminList" :role="userData.role" @close ="showReportModal = false"></report-by-user>
+      </modal-component>
   </header>
   <header v-else>
 
@@ -44,18 +48,20 @@
 import axios from 'axios';
 import router from '@/router';
 import store from '@/store';
-import ModalComponent from '../ModalComponent.vue';
-import AppFriend from '../main/AppFriend.vue'
-import UserMessage from './UserMessage.vue';
-import UserAlarm from '../main/UserAlarm.vue';
-import MessageView from '../main/MessageView.vue';
+import ModalComponent from '@/components/layout/ModalComponent.vue';
+import AppFriend from '@/views/main/header/AppFriend.vue';
+import UserMessage from '@/views/main/alarm/UserMessage.vue';
+import UserAlarm from '@/views/main/alarm/UserAlarm.vue';
+import MessageView from '@/views/main/alarm/MessageView.vue';
+import ReportByUser from '@/views/main/header/ReportByuser.vue';
 export default {
   components :{
     ModalComponent,
     AppFriend,
     UserMessage,
     UserAlarm,
-    MessageView
+    MessageView,
+    ReportByUser
   },
 data(){
     return{
@@ -67,6 +73,7 @@ data(){
       isLoading: true,
       IsFavorite:null,
       friendWithMessageId:null,
+      showReportModal : false,
       ShowFriendModal : false,
       ShowAlarmModal : false,
       userData: {
@@ -99,7 +106,6 @@ methods:{
       let loader = this.$loading.show();
       this.$axios.get('/api/member/get-user')
           .then(response => {
-            console.log(response.data);
             this.userData = response.data;
             this.getUserPostCount(this.userData.id)
             sessionStorage.setItem('userIdx',this.userData.id)
@@ -194,6 +200,13 @@ methods:{
     sendRole(){
       this.$emit('send-role',this.userData.role);
     },
+    showReport(){
+      this.showReportModal = true;
+    },
+    toAdminList(){
+      const id = this.userData.id;
+      this.$router.push(`/main/report-list/${id}`);
+    },
 }
 }
 </script>
@@ -253,9 +266,11 @@ header {
 }
 
 .header-button > div:nth-child(1) {
-  background-color: yellow;
+  background-color: #FFD23F;
 }
-
+.header-button > div:nth-child(1) > a span {
+  color: black;
+}
 
 .header-button div a span {
   display: inline;
@@ -267,7 +282,7 @@ header {
 
 
 .header-button > * {
-  margin-left: 30px;
+  margin-left: 25px;
 }
 .user-info .btn {
     width: 120px;

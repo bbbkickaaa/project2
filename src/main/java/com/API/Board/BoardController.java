@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.API.Board.DTO.BoardPostDTO;
 import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.DTO.DeleteCommentDTO;
+import com.API.Report.DTO.ReportDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Jwt.JwtTokenProvider;
 
@@ -57,6 +58,13 @@ public class BoardController {
 			String token = tokenProvider.resolveToken(authorizationHeader);
 			Authentication authentication =  tokenProvider.getAuthentication(token);
 			return boardService.favorite(pageable,authentication);
+	}
+	
+	@GetMapping("/report")
+	public ResponseEntity<Page<ReportDTO>> report(
+			@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
+			
+	return boardService.report(pageable);
 	}
 	
 	@PostMapping("/post")

@@ -32,6 +32,8 @@ import com.API.Board.DTO.DeleteCommentDTO;
 import com.API.Board.Entity.Board;
 import com.API.Board.Entity.BoardCategory;
 import com.API.Board.Entity.Comment;
+import com.API.Report.ReportRepository;
+import com.API.Report.DTO.ReportDTO;
 import com.API.User.UserRepository;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Entity.User;
@@ -62,6 +64,8 @@ public class BoardService {
 	@Autowired
 	EntityManager entityManager;
 	
+	@Autowired
+	ReportRepository reportRepository;
 	
 	public ResponseEntity<Page<BoardReviewDTO>> findAll(String category3, String category2, String category1 ,String option, String content, Pageable pageable,Authentication authentication) {
 		String userId = authentication.getName();
@@ -456,7 +460,12 @@ public class BoardService {
 		
 		User user = wrapUser.get();
 		Set<Integer> list = user.getLikeBoardId();
-		Page<BoardReviewDTO> dto = boardRepository.findAllByUserId(pageable,list);
+		Page<BoardReviewDTO> dto = boardRepository.findAllBylist(pageable,list);
+		return ResponseEntity.ok(dto);
+	}
+
+	public ResponseEntity<Page<ReportDTO>> report(Pageable pageable) {
+		Page<ReportDTO> dto = reportRepository.findAllReports(pageable);
 		return ResponseEntity.ok(dto);
 	}
 	

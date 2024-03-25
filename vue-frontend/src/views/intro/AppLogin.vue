@@ -4,7 +4,7 @@
       <a  href="http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000/oauth2/redirect">
       <div class="img-form" style="background-color: white;" >
         <div>
-           <img src="../assets/img/oauth/web_dark_sq_SU@3x.png" id="login-google" alt="" class="img-fluid">
+           <img src="@/assets/img/oauth/web_dark_sq_SU@3x.png" id="login-google" alt="" class="img-fluid">
            <label class="img-label">구글 계정 로그인</label>
           </div>
         </div>
@@ -12,7 +12,7 @@
       <a  href="http://localhost:8080/oauth2/authorization/naver?redirect_uri=http://localhost:3000/oauth2/redirect">
       <div class="img-form" style="background-color: #03C75A; color: #f2f2f2;">
         <div>
-            <img src="../assets/img/oauth/btnW_complete.png"  id="login-naver" alt="" class="img-fluid">
+            <img src="@/assets/img/oauth/btnW_complete.png"  id="login-naver" alt="" class="img-fluid">
             <label class="img-label">네이버 계정 로그인</label>
           </div>
         </div>
@@ -20,7 +20,7 @@
       <a href="http://localhost:8080/oauth2/authorization/kakao?redirect_uri=http://localhost:3000/oauth2/redirect">
         <div class="img-form" style="background-color: #FEE500;">
           <div>
-            <img src="../assets/img/oauth/kakao_login_medium_narrow.png" id="login-kakao" alt="" class="img-fluid">
+            <img src="@/assets/img/oauth/kakao_login_medium_narrow.png" id="login-kakao" alt="" class="img-fluid">
             <label class="img-label">카카오 계정 로그인</label>
           </div>
         </div>

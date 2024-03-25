@@ -19,7 +19,7 @@
             <div class="container px-5">
                 <div class="row gx-5 align-items-center">
                     <div class="col-lg-6 order-lg-2">
-                        <div class="p-5"><img class="img-fluid rounded-circle" src="../assets/img/03.png" alt="..." /></div>
+                        <div class="p-5"><img class="img-fluid rounded-circle" src="@/assets/img/03.png" alt="..." /></div>
                     </div>
                     <div class="col-lg-6 order-lg-1">
                         <div class="p-5">
@@ -35,7 +35,7 @@
             <div class="container px-5">
                 <div class="row gx-5 align-items-center">
                     <div class="col-lg-6">
-                        <div class="p-5"><img class="img-fluid rounded-circle" src="../assets/img/02.png" alt="..." /></div>
+                        <div class="p-5"><img class="img-fluid rounded-circle" src="@/assets/img/02.png" alt="..." /></div>
                     </div>
                     <div class="col-lg-6">
                         <div class="p-5">
@@ -52,7 +52,7 @@
             <div class="container px-5">
                 <div class="row gx-5 align-items-center">
                     <div class="col-lg-6 order-lg-2">
-                        <div class="p-5"><img class="img-fluid rounded-circle" src="../assets/img/01.png" alt="..." /></div>
+                        <div class="p-5"><img class="img-fluid rounded-circle" src="@/assets/img/01.png" alt="..." /></div>
                     </div>
                     <div class="col-lg-6 order-lg-1">
                         <div class="p-5">
@@ -84,11 +84,11 @@
   
 
   <script>
-  import ModalComponent from '../components/layout/ModalComponent.vue';
-  import LoginForm from './AppLogin.vue';
-  import SignupForm from './AppSign.vue';
-  import AppLoginPassword from './AppLoginPassword.vue';
-  import AppLoginEmail from './AppLoginEmail.vue';
+  import ModalComponent from '@/components/layout/ModalComponent.vue';
+  import LoginForm from '@/views/intro/AppLogin.vue';
+  import SignupForm from '@/views/intro/AppSign.vue';
+  import AppLoginPassword from '@/views/intro/AppLoginPassword.vue';
+  import AppLoginEmail from '@/views/intro/AppLoginEmail.vue';
 
   export default {
     name : "AppIntro",
