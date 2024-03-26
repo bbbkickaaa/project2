@@ -1,38 +1,36 @@
-package com.API.Report;
+package com.API.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.API.Report.DTO.ReportDTO;
 import com.API.User.Jwt.JwtTokenProvider;
 
 @Controller
 @RequestMapping("/api")
-public class ReportController {
+public class FileController {
 	
-	@Autowired
-	ReportService reportService;
-
 	@Autowired
 	JwtTokenProvider tokenProvider;
 	
-	@PostMapping("/report/submit")
-	public ResponseEntity<?> reportSubmit (@RequestBody ReportDTO dto, @RequestHeader("Authorization") String authorizationHeader){
+	@Autowired
+	FileService fileSerivce;
+
+	@PostMapping("/upload-profile")
+    public ResponseEntity<?> uploadProfile(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("file") MultipartFile file) {
+		if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("파일이 제공되지 않았습니다.");
+        }
 		String token = tokenProvider.resolveToken(authorizationHeader);
         Authentication authentication =  tokenProvider.getAuthentication(token);
-		 return reportService.reportSubmit(dto,authentication);
-	}
-	
-	@GetMapping("/report/get-report")
-	public ResponseEntity<?> getReport (@RequestParam("id") Long id){
-		 return reportService.getReport(id);
-	}
+		
+        return fileSerivce.updateProfilePicture(file,authentication);
+    }
 }

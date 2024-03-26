@@ -9,17 +9,19 @@
                 {{ category.name }}
             </li>
         </ul>
-        <p v-if="menuCategory1===''" style="color: #999999; text-align: center; padding-top: 10px; font-size: 16px;">해당 카테고리를 통해 검색이 가능합니다.</p>
+        <p v-if="menuCategory1===''" style="color: #999999; text-align: center; padding-top: 10px; font-size: 16px;">해당 카테고리를 통해 분류가 가능합니다.</p>
 
+        <transition name="fade">
+            <ul class="category2" v-if="menuCategory1==='chat'">
+                <li v-for="subcategory in subCategories.chat" :key="subcategory.value"
+                    :class="{ 'active-category2': selectedSubCategory === subcategory.value }"
+                    @click="selectCategory2(subcategory.value)">
+                    {{ subcategory.name }}
+                </li>
+            </ul>
+         </transition>
 
-        <ul class="category2" v-if="menuCategory1==='chat'">
-            <li v-for="subcategory in subCategories.chat" :key="subcategory.value"
-                :class="{ 'active-category2': selectedSubCategory === subcategory.value }"
-                @click="selectCategory2(subcategory.value)">
-                {{ subcategory.name }}
-            </li>
-        </ul>
-
+         <transition name="fade">
         <ul class="category2" v-if="menuCategory1==='game'">
             <li v-for="subcategory in subCategories.game" :key="subcategory.value"
                 :class="{ 'active-category2': selectedSubCategory === subcategory.value }"
@@ -27,34 +29,38 @@
                 {{ subcategory.name }}
             </li>
         </ul>
+    </transition>
 
 
-        <ul class="category2" v-if="menuCategory1==='beauty'">
+        <transition name="fade">
+        <ul class="category2" v-if="menuCategory1==='beauty'" >
             <li v-for="subcategory in subCategories.beauty" :key="subcategory.value"
                 :class="{ 'active-category2': selectedSubCategory === subcategory.value }"
                 @click="selectCategory2(subcategory.value)">
                 {{ subcategory.name }}
             </li>
         </ul>
+    </transition>
 
-
-        <ul class="category2" v-if="menuCategory1==='study'">
+        <transition name="fade">
+        <ul class="category2" v-if="menuCategory1==='study'" >
             <li v-for="subcategory in subCategories.study" :key="subcategory.value"
                 :class="{ 'active-category2': selectedSubCategory === subcategory.value }"
                 @click="selectCategory2(subcategory.value)">
                 {{ subcategory.name }}
             </li>
         </ul>
+    </transition>
 
-
-        <ul class="category2" v-if="menuCategory1==='travel'">
+        <transition name="fade">
+        <ul class="category2" v-if="menuCategory1==='travel'" >
             <li v-for="subcategory in subCategories.travel" :key="subcategory.value"
                 :class="{ 'active-category2': selectedSubCategory === subcategory.value }"
                 @click="selectCategory2(subcategory.value)">
                 {{ subcategory.name }}
             </li>
         </ul>
-
+    </transition>
 
     </div>
     
@@ -157,6 +163,7 @@ export default {
 }
 }
 .category1 li {
+    position: relative;
     color: #198754;
     border-right: 1px solid #198754;
     list-style: none;
@@ -172,7 +179,7 @@ export default {
 .category1 li:hover {
     cursor: pointer;
 }
-.category2{
+.category2{ 
     margin: 0 auto;
     margin-top: 10px;
     padding-left: 0;
@@ -180,6 +187,7 @@ export default {
     text-align: center;
 }
 .category2 li {
+    position: relative;
     color: #6c757d;
     list-style: none;
     display: inline-block;
@@ -191,34 +199,44 @@ export default {
     cursor: pointer;
     
 }
-.active-category {
-  position: relative;
-  display: inline-block;
-}
 
-.active-category::after {
+.category1 li::after {
   content: '';
   position: absolute;
   bottom: -2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60%;
-  border-bottom: 1px solid #198754;
-}
-
-.active-category2 {
-  position: relative;
-  display: inline-block;
-}
-
-.active-category2::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
+  width: 0;
   border-bottom: 1px solid #6c757d;
+  transition: width 0.5s ease;
 }
+
+.category1 li.active-category::after {
+  width: 60%;
+}
+
+.fade-enter-active {
+  transition: opacity 1s ;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 20%;
+}
+
+
+.category2 li::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  border-bottom: 1px solid #6c757d;
+  transition: width 0.5s ease;
+}
+
+.category2 li.active-category2::after {
+  width: 40%;
+}
+
 </style>
 

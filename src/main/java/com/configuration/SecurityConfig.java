@@ -128,7 +128,7 @@ public class SecurityConfig {
 
 	    http
 	    	.authorizeHttpRequests(auth -> auth
-	    	.requestMatchers("/webjars/**", "/js/**", "/image/**", "/","/oauth2/**", "/login/oauth2/**","/auth/**","/api/public/**").permitAll()
+	    	.requestMatchers("/webjars/**","/resources/**", "/js/**", "/image/**", "/","/oauth2/**", "/login/oauth2/**","/auth/**","/api/public/**").permitAll()
             .anyRequest().authenticated()
         );
 	 

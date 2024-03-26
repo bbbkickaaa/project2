@@ -78,7 +78,7 @@
   </template>
   <script>
 import ModalComponent from '@/components/layout/ModalComponent.vue';
-import ShareUrl from '@/views/main/ShareComponent.vue';
+import ShareUrl from '@/views/main/mainRouter/Details/ShareComponent.vue';
 import { toRaw } from 'vue';
   export default {
     components: {

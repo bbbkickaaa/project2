@@ -176,9 +176,11 @@ public class UserController {
         Authentication authentication =  tokenProvider.getAuthentication(token);
 		return memberService.deleteBlock(authentication,id);
     }
-    @GetMapping("/member/get-role/{id}")
-    public ResponseEntity<?> getRole(@PathVariable("id") Long id){
-    	System.out.println("Asdada");
+    @GetMapping("/member/get-role")
+    public ResponseEntity<?> getRole(@RequestHeader("Authorization") String authorizationHeader){
+    	String token = tokenProvider.resolveToken(authorizationHeader);
+        Authentication authentication =  tokenProvider.getAuthentication(token);
+        String id = authentication.getName();
 		return memberService.getRole(id);
     }
     

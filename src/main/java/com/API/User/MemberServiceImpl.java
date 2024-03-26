@@ -292,8 +292,8 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public ResponseEntity<?> getRole(Long id) {
-	    Optional<User> userWrap = userRepository.findById(id);
+	public ResponseEntity<?> getRole(String id) {
+	    Optional<User> userWrap = userRepository.findByUserid(id);
 
 	    if (userWrap.isEmpty()) {
 	        return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -302,4 +302,5 @@ public class MemberServiceImpl implements MemberService {
 	    UserRole role = user.getRole();
 		return ResponseEntity.ok(role);
 	}
+
 }

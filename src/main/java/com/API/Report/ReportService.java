@@ -34,8 +34,25 @@ public class ReportService {
 		report.setUserId(user);
 		report.setCategory(dto.getType());
 		report.setContent(dto.getContent());
+		report.setWriteDate(dto.getWriteDay());
 		reportRepository.save(report);
 		return ResponseEntity.ok("저장 되었습니다.");
+	}
+
+	public ResponseEntity<?> getReport(Long id) {
+		Optional<Report> reportWrap = reportRepository.findById(id);
+		if(reportWrap.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		Report report = reportWrap.get();
+		ReportDTO dto = new ReportDTO();
+		dto.setBoardId(id);
+		dto.setContent(report.getContent());
+		dto.setNickname(report.getUserId().getNickname());
+		dto.setType(report.getCategory());
+		dto.setUserId(report.getUserId().getId());
+		dto.setWriteDay(report.getWriteDate());
+		return ResponseEntity.ok(dto);
 	}
 
 }

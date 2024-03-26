@@ -5,15 +5,16 @@ import App from '@/App.vue';
 
 import AppIntro from '@/views/intro/AppIntro.vue';
 import MainBoard from '@/views/main/mainRouter/MainBoard.vue';
-import ReDirect from '@/views/intro/ReDirect.vue'
-import NewPost from '@/views/main/mainRouter/NewPost.vue'
-import BoardDetails from '@/views/main/mainRouter/BoardDetails.vue'
+import ReDirect from '@/views/intro/ReDirect.vue';
+import NewPost from '@/views/main/mainRouter/NewPost.vue';
+import BoardDetails from '@/views/main/mainRouter/Details/BoardDetails.vue';
 import BoardAlter from  '@/views/main/mainRouter/BoardAlter.vue';
 import MainLayout from '@/components/layout/MainLayout.vue';
 import { checkPostOwner } from '@/routerGuard';
 import {validateCategoryRoute} from '@/routerGuard';
-import Identity from '@/views/main/mainRouter/IdentityContent.vue'
+import Identity from '@/views/main/mainRouter/IdentityContent.vue';
 import { validateYourRoleRoute } from '@/routerGuard';
+import ReportBoard from '@/views/main/mainRouter/ReportBoard.vue';
 const router = createRouter({
   history: createWebHistory(),
   routes : [
@@ -34,7 +35,7 @@ const router = createRouter({
       children: [
         { path: '', component: MainBoard },
         { path:'favorite', component:MainBoard},
-        { path: 'report-list/:id', component:MainBoard , beforeEnter:validateYourRoleRoute},
+        { path: 'report-list', component:ReportBoard , beforeEnter:validateYourRoleRoute},
         { path: 'identity', component: Identity },
         { path: 'post', component: NewPost }, 
         { path: ':category1/:category2?/:category3?',props:true, component: MainBoard, beforeEnter:validateCategoryRoute},

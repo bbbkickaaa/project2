@@ -19,4 +19,5 @@ public class ReportDTO {
 	String content;
 	Long userId;
 	String nickname;
+	String writeDay;
 }

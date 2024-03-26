@@ -204,8 +204,7 @@ methods:{
       this.showReportModal = true;
     },
     toAdminList(){
-      const id = this.userData.id;
-      this.$router.push(`/main/report-list/${id}`);
+      this.$router.push(`/main/report-list`);
     },
 }
 }

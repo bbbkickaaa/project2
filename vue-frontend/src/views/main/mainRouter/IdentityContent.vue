@@ -70,12 +70,13 @@
         },
     data() {
       return {
+        selectedFile: null,
+        previewImage: '',
         form:{
             id : '',
             nickname:'',
             password : ''
         },
-        previewImage: '',
         passwordCheck : '',
         ShowModal: false,
         id : null ,
@@ -107,30 +108,40 @@
         this.$axios.post('/api/member/alter-user',this.form)
         .then(response=>{alert(response.data); this.$router.push('/main')})
     }else{ alert("패스워드가 일치하지 않습니다.")}},
+
+
     triggerFileInput() {
-      // 히든 파일 입력을 트리거합니다
-      this.$refs.fileInput.click();
+      this.$refs.fileInput.click(); // 숨겨진 파일 입력을 트리거
     },
-    onFileChange(e) {
-      const file = e.target.files[0];
-      this.previewImage = URL.createObjectURL(file);
-      // 여기에서 파일 업로드 로직을 추가합니다.
-    }
-},
-    watch: {
-        ShowModal(newValue) {
-            if (newValue) {
-            this.showModal = false;
-            }
-        }
-},
-    mounted(){
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file && file.size > (1024 * 1024 * 5)) {
+      alert('파일 크기가 너무 큽니다. 5MB 이하의 파일만 업로드 가능합니다.');
+      return;
+  }
+      this.selectedFile = file;
+      this.setImg(this.selectedFile);
+    },
+    setImg(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    this.$axios.post('/api/upload-profile', formData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then((response) => {
+      this.userData.picture = response.data;
+      this.previewImage = response.data;
+    }).catch(() => {
+    });
+  },
+  getUser(){
     this.$axios.get('/api/member/get-user')
           .then(response => {
             this.userData = response.data;
             this.form.id = response.data.userid;
             this.previewImage = response.data.picture;
-            console.log(this.previewImage);
           })
           .catch(error => {
             if (error.response) {
@@ -142,7 +153,25 @@
             }
         }),
         this.id = sessionStorage.getItem('userIdx');
-}}
+}
+
+},
+  watch: {
+        ShowModal(newValue) {
+            if (newValue) {
+            this.showModal = false;
+          }
+        },
+        previewImage(newValue){
+          if(newValue){
+            this.previewImage = newValue;
+          }
+        },
+},
+mounted(){
+  this.getUser();
+},
+    }
   </script>
   
   <style scoped>

@@ -48,11 +48,9 @@
   </script>
 <style>
 .report-box {
-  border: 1px solid #ddd;
   padding: 20px;
   margin: 20px;
   border-radius: 10px;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
   width: 500px;
   min-height: 400px;
 }

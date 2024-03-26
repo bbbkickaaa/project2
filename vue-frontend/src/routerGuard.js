@@ -46,9 +46,8 @@ export async function validateCategoryRoute(to, from, next) {
 }
 export async function validateYourRoleRoute(to, from, next){
   try {
-    const id = to.params.id;
     const accessToken = sessionStorage.getItem('accessToken');
-    const response = await axios.get(`http://localhost:8080/api/member/get-role/${id}`,{headers: {
+    const response = await axios.get(`http://localhost:8080/api/member/get-role`,{headers: {
       Authorization: `Bearer ${accessToken}`}
     });
     if(response.data == 'ADMIN') {
