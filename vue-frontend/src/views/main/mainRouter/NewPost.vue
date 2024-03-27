@@ -3,62 +3,58 @@
       <div><span class="material-symbols-outlined turn-back" @click="returnMain">undo</span></div>
       <form @submit.prevent="submitPost">
         <div class="mb-3">
-          <label for="titleInput" class="form-label">제목</label>
           <input type="text" class="form-control" id="titleInput" v-model="post.title" maxlength="80" :minlength="minLength" required placeholder="제목을 입력하세요">
         </div>
         <div>
-          <select v-model="post.category1">
+          <select v-model="post.category1" class="editor-select">
               <option value="chat">잡담</option>
               <option value="game">게임</option>
               <option value="beauty">뷰티</option>
               <option value="study">공부</option>
               <option value="travel">여행</option>
           </select>
-          <select v-if="post.category1 === 'chat'" v-model="post.category2">
+          <select v-if="post.category1 === 'chat'" v-model="post.category2" class="editor-select">
             <option value="chat">잡담</option>
             <option value="common">일상</option>
             <option value="star">연예</option>
             <option value="love">사랑</option>
             <option value="food">음식</option>
           </select>
-          <select v-if="post.category1 === 'game'" v-model="post.category2">
+          <select v-if="post.category1 === 'game'" v-model="post.category2" class="editor-select">
             <option value="lol">리그오브레전드</option>
             <option value ="overwatch">오버워치</option>
             <option value="maplestory">메이플스토리</option>
             <option value="varolant">발로란트</option>
             <option value="mabinogi">마비노기</option>
           </select>
-          <select v-if="post.category1 === 'beauty'" v-model="post.category2">
+          <select v-if="post.category1 === 'beauty'" v-model="post.category2" class="editor-select">
             <option value="makeup">화장</option>
             <option value ="fashion">패션</option>
             <option value="skin">피부</option>
             <option value="diet">다이어트</option>
             <option value="hairstyle">헤어스타일</option>
           </select>
-          <select v-if="post.category1 === 'study'" v-model="post.category2">
+          <select v-if="post.category1 === 'study'" v-model="post.category2" class="editor-select">
             <option value="certification">자격증</option>
             <option value ="suneung">수능</option>
             <option value="toeic">토익</option>
             <option value="hobby">취미</option>
             <option value="interview">면접</option>
           </select>
-          <select v-if="post.category1 === 'travel'" v-model="post.category2">
+          <select v-if="post.category1 === 'travel'" v-model="post.category2" class="editor-select">
             <option value="oversea">해외</option>
             <option value ="domestic">국내</option>
             <option value="festival">축제</option>
             <option value="event">이벤트</option>
           </select>
 
-          <select v-model="post.category3">
+          <select v-model="post.category3" class="editor-select">
             <option value="free">자유</option>
             <option value ="ask">질문</option>
             <option value="info">정보</option>
           </select>
-
         </div>
-        <div class="mb-3">
-          <textarea class="form-control contents" id="contentInput" v-model="post.content" maxlength="400" :minlength="minLength" required rows="4" placeholder="내용을 입력하세요"></textarea>
-        </div>
+        <tip-tap v-model="post.content" @value="handleUpdate" class="tip-tap"/>
         <div class ="sections">
             <button type="submit" class="btn btn-success">새 글 저장하기</button>
             <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
@@ -68,7 +64,12 @@
   </template>
   
   <script>
+import DOMPurify from 'dompurify';
+import TipTap from '@/components/TipTap.vue';
   export default {
+    components :{
+      TipTap,
+    },
     data() {
       return {
 
@@ -89,17 +90,22 @@
       };
     },
     methods: {
+      handleUpdate(newVal){
+        console.log(newVal);
+        this.post.content = newVal;
+      },
       returnMain(){
         this.$router.push('/main')
         },
       submitPost() {
-        if (this.post.title.length >= this.minLength && this.post.content.length >= this.minLength ) {
+        if (this.post.title.length >= this.minLength && this.post.content.length >= this.minLength + 6 ) {
             this.PostServe();
         } else {
         alert(`최소 ${this.minLength} 글자를 입력해야 합니다.`);
          }
       },
        PostServe(){
+        this.post.content = DOMPurify.sanitize(this.post.content);
         this.$axios.post('/api/board/post',this.post)
           .then(()=>{
             this.$router.push('/main')
@@ -147,16 +153,16 @@
   }
 
   </script>
-  <style scoped>
+  <style scoped lang="scss">
     .wrap {
         margin: 0 auto;
         width: 1000px !important;
         border: 1px solid rgba(108, 117, 125, 0.2);
-        height: 800px;
+        min-height: 1100px;
         margin-bottom: 300px;
         border-radius: 10px;
         box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
+        padding: 50px;
     }
     .contents{
         height: 500px;
@@ -164,9 +170,12 @@
     .form-label {
         padding-left: 10px;
     }
+    #titleInput{
+      height: 43px;
+      margin-top : 30px;
+    }
 
     .sections{
-        padding-top: 20px;
         width :1000px;
         display: flex;
     }
@@ -179,7 +188,6 @@
       width: 120px;
     }
     .turn-back{
-        margin-left:20px; 
         font-size: 50px; 
         color: #999999;
     }
@@ -187,5 +195,61 @@
         color: black;
         cursor: pointer;
     }
+    .tip-tap {
+      margin-top: 20px;
+      min-height:700px;
+    }
+
+    
+    .tiptap {
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  code {
+    background-color: rgba(#616161, 0.1);
+    color: #616161;
+  }
+}
+
+.editor-select {
+  color : white;
+  height : 43px;
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #198754;
+  cursor: pointer;
+}
+
+.editor-select:hover {
+  opacity: 0.9;
+  background-color: green;
+  color : red;
+}
+.content {
+  padding: 1rem 0 0;
+
+  h3 {
+    margin: 1rem 0 0.5rem;
+  }
+
+  pre {
+    border-radius: 5px;
+    color: #333;
+  }
+
+  code {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+    padding: 0.75rem 1rem;
+    background-color:#e9ecef;
+    color: #495057;
+  }
+}
+
+    
 
   </style>

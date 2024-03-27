@@ -1,5 +1,5 @@
     <template>
-    <div class="report-box">
+    <div class="report-box2">
       <h4>신고게시판</h4>
       <form @submit.prevent="submitReport">
         <select v-model="report.reportType">
@@ -46,8 +46,8 @@
     }
   }
   </script>
-<style>
-.report-box {
+<style scoped>
+.report-box2 {
   padding: 20px;
   margin: 20px;
   border-radius: 10px;
@@ -55,23 +55,23 @@
   min-height: 400px;
 }
 
-.report-box h3 {
+.report-box2 h3 {
   margin-top: 0;
 }
 
-.report-box form {
+.report-box2 form {
   display: flex;
   flex-direction: column;
 }
 
-.report-box select {
+.report-box2 select {
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.report-box textarea {
+.report-box2 textarea {
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
@@ -79,7 +79,7 @@
   height: 200px;
 }
 
-.report-box button {
+.report-box2 button {
   padding: 10px;
   background-color: blue;
   color: white;
@@ -88,7 +88,7 @@
   cursor: pointer;
 }
 
-.report-box button:hover {
+.report-box2 button:hover {
   background-color: darkblue;
 }
 </style>

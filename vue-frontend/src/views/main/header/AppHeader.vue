@@ -79,7 +79,7 @@ data(){
       userData: {
         id : '' ,
         userid: '',
-        userLevel:{level : 0, points: 0},
+        userLevel:{level : 1, points: 0},
         createdDate: '',
         nickname: '',
         postCount:'',

@@ -32,7 +32,7 @@
                         <a> {{ getKoreanCategoryName(BoardInfo.category.category3,3) }} </a>
                     </p>
                  </div>
-                <p class="post-content contents">{{ BoardInfo.content }}</p>
+                <p class="post-content contents" v-html="BoardInfo.content"></p>
             </div>
                 
             <div class="actions">
@@ -80,6 +80,7 @@
 import ModalComponent from '@/components/layout/ModalComponent.vue';
 import ShareUrl from '@/views/main/mainRouter/Details/ShareComponent.vue';
 import { toRaw } from 'vue';
+import DOMPurify from 'dompurify';
   export default {
     components: {
          ModalComponent,
@@ -165,10 +166,18 @@ import { toRaw } from 'vue';
 mounted(){
     this.CommentForm.whereParam = this.$route.path;
     const id = parseInt(this.$route.params.id, 10);
+    this.id = id;
+    this.getDetail(id);
+    this.userIdx = sessionStorage.getItem('userIdx');
+    this.CommentForm.userIdx = this.userIdx;
+    },
+methods: {
+  getDetail(id){
     this.$axios.get('/api/board/get-detail', { params: { id: id }, withCredentials: true})
     .then(response => {
             this.BoardInfo = response.data;
             this.CommentForm.BoardId = response.data.id;
+            this.BoardInfo.content = DOMPurify.sanitize(response.data.content);
             this.PlusViews();
             this.checkRecommend();
             this.checkFavorite();
@@ -186,11 +195,7 @@ mounted(){
               alert(`${error.message}`);
             }
         });
-    this.id = id;
-    this.userIdx = sessionStorage.getItem('userIdx');
-    this.CommentForm.userIdx = this.userIdx;
-    },
-methods: {
+  },
   ToMain(){
     this.$router.push('/main');
   },
@@ -317,7 +322,7 @@ methods: {
     .contents{
         margin-left: 30px;
         padding: 20px;
-        height: 400px;
+        min-height: 600px;
     }
     .actions {
         text-align: right;

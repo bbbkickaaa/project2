@@ -16,7 +16,7 @@
             <button class="btn btn-success" @click="toMessage">쪽지 보내기</button>
             <button class="btn btn-primary" @click="addFriend">친구 추가</button>
             <button class="btn btn-danger" @click="addBlock">차단 하기</button>
-            <button class="btn btn-secondary" @click="addBlockByAdmin" v-if="whatRole">계정 정지</button>
+            <button class="btn btn-secondary" @click="addBlockByAdmin" v-if="role === 'ADMIN'">계정 정지</button>
         </div>
     </div>
 </template>
@@ -48,9 +48,6 @@ methods :{
   addBlock(){
     this.$axios.post('/api/member/block-user', this.id)
     .then(response=>{alert(response.data)}).catch(error=>{alert(error.response.data)})
-  },
-  whatRole(){
-    return this.role == "ADMIN";
   },
   addBlockByAdmin(){
     this.$emit('switchModal' , 'admin')

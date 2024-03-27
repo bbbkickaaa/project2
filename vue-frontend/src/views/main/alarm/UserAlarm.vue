@@ -63,7 +63,7 @@
         },
         ToMessage(id){
             this.ReadComment(id);
-            this.$emit('ToMessage',id)
+            this.$emit('ToMessage',id);
         },
         ReadComment(id){
             this.$axios.put(`/api/alarm/read/${id}`)

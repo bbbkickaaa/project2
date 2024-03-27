@@ -54,8 +54,8 @@
                             </select>
                             <input :disabled="isFavorite"  v-if="searchData.selectedOption !== 'index'" type="text" placeholder="Search" v-model="searchData.content" minlength="2">
                             <input :disabled="isFavorite"  v-else type="number" :min="1" placeholder="Search" v-model="searchData.content" minlength="2" class="number-input">
-                            <button  class="btn btn-danger"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">search</span></button>
-                            <button v-if="isSearched"  @click="resetSearch" style=" margin-left: 5px;" class="btn btn-secondary"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px;">close</span></button>
+                            <button  class="btn btn-danger"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px; color:white;">search</span></button>
+                            <button v-if="isSearched"  @click="resetSearch" style=" margin-left: 5px;" class="btn btn-secondary"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px; color:white">close</span></button>
                         </form>
                         <button v-if="!isFavorite" @click="writePost" class="btn btn-success write-board">새 글 작성하기</button>
                     </div>
