@@ -1,5 +1,8 @@
 package com.API.Board;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,18 +12,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.API.Board.DTO.BoardDTO;
 import com.API.Board.DTO.BoardPostDTO;
 import com.API.Board.DTO.BoardReviewDTO;
 import com.API.Board.DTO.DeleteCommentDTO;
+import com.API.Board.Entity.Board;
+import com.API.File.FileService;
 import com.API.Report.DTO.ReportDTO;
 import com.API.User.DTO.UserDTO;
 import com.API.User.Jwt.JwtTokenProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.data.domain.Sort;
 
@@ -68,16 +78,24 @@ public class BoardController {
 	}
 	
 	@PostMapping("/post")
-    public ResponseEntity<?> postBoard(@RequestBody BoardPostDTO dto) {
-		
-       return boardService.postBoard(dto);
-    }
+	public ResponseEntity<?> handlePost(
+			@RequestHeader("Authorization") String authorizationHeader,
+			@RequestBody BoardPostDTO dto){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+		Authentication authentication =  tokenProvider.getAuthentication(token);
+	    return boardService.postBoard(dto,authentication);
+	}
+	
+	
 	
 	@PutMapping("/alter")
-    public ResponseEntity<?> alterBoard(@RequestBody BoardPostDTO dto) {
-		
-       return boardService.postBoard(dto);
-    }
+	public ResponseEntity<?> alterBoard(
+			@RequestHeader("Authorization") String authorizationHeader,
+			@RequestBody BoardPostDTO dto){
+		String token = tokenProvider.resolveToken(authorizationHeader);
+		Authentication authentication =  tokenProvider.getAuthentication(token);
+	    return boardService.postBoard(dto,authentication);
+	}
 	
 	@GetMapping("/get-detail")
 	public ResponseEntity<?> getDetail(@RequestHeader("Authorization") String authorizationHeader,@RequestParam("id") Long id){

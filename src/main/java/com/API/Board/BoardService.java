@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.API.Alarm.AlarmRepository;
 import com.API.Alarm.Entity.Alarm;
@@ -32,6 +33,7 @@ import com.API.Board.DTO.DeleteCommentDTO;
 import com.API.Board.Entity.Board;
 import com.API.Board.Entity.BoardCategory;
 import com.API.Board.Entity.Comment;
+import com.API.File.FileService;
 import com.API.Report.ReportRepository;
 import com.API.Report.DTO.ReportDTO;
 import com.API.User.UserRepository;
@@ -41,13 +43,15 @@ import com.API.User.Entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class BoardService {
 	
-	
+	@Autowired
+	FileService fileService;
 	
 	@Autowired
 	BoardRepository boardRepository;
@@ -200,42 +204,64 @@ public class BoardService {
 	    return ResponseEntity.ok(page);
 	}
 	
-	public ResponseEntity<String> postBoard(BoardPostDTO dto){
+	@Transactional
+	public ResponseEntity<String> postBoard(BoardPostDTO dto , Authentication authentication){
 		
-		Board board = new Board();
 		try {
+			Long boardId = Long.valueOf(dto.getBoardId());
+			Optional<Board> boardWrap = boardRepository.findById(boardId);
+			if(boardWrap.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			}
+		    Board board = boardWrap.get();
 			String idAsString = dto.getId();
 			Long id = Long.valueOf(idAsString);
 			User author = userRepository.findById(id).orElseThrow(
 		            () -> new EntityNotFoundException("User not found with ID: " + id));
 			String title = dto.getTitle();
 			String content = dto.getContent();
-			if (dto.getBoardId() == null) {
-				BoardCategory category = new BoardCategory();
-				category.setCategory1(dto.getCategory1());
-				category.setCategory2(dto.getCategory2());
-				category.setCategory3(dto.getCategory3());
-				board.setCategory(category);
-				board.setTitle(title);
-				board.setContent(content);
-				board.setAuthor(author);
-				boardRepository.save(board);
-
+			BoardCategory category = new BoardCategory();
+			category.setCategory1(dto.getCategory1());
+			category.setCategory2(dto.getCategory2());
+			category.setCategory3(dto.getCategory3());
+			board.setCategory(category);
+			board.setTitle(title);
+			board.setContent(content);
+			board.setAuthor(author);
+			boardRepository.save(board);
+			return ResponseEntity.status(HttpStatus.OK).body("정상 등록 되었습니다.");
 				
-				return ResponseEntity.status(HttpStatus.OK).body("정상 등록 되었습니다.");
-				
-				}else {
-					
-					Long boardId = Long.valueOf(dto.getBoardId());
-					Optional<Board> board2o = boardRepository.findById(boardId);
-					Board board2 = board2o.get();
-					board2.setAlterDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-					board2.setContent(content);
-					board2.setTitle(title);
-					boardRepository.save(board2);
-					return ResponseEntity.status(HttpStatus.OK).body("정상 수정 되었습니다.");
-				}
-				
+			}catch (ClassCastException e) {
+					    log.error("ClassCastException occurred", e);
+			    return ResponseEntity.badRequest().build(); 
+			} catch (NullPointerException e) {
+			    log.error("NullPointerException occurred", e);
+			    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			} catch(EntityNotFoundException e) {
+			    log.error("EntityNotFoundException occurred", e);
+			    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
+	}
+	
+	@Transactional
+	public ResponseEntity<String> alertBoard(BoardPostDTO dto , Authentication authentication){
+		
+		try {
+		    Board board = new Board();
+			String idAsString = dto.getId();
+			Long id = Long.valueOf(idAsString);
+			User author = userRepository.findById(id).orElseThrow(
+		            () -> new EntityNotFoundException("User not found with ID: " + id));
+			String title = dto.getTitle();
+			String content = dto.getContent();
+			Long boardId = Long.valueOf(dto.getBoardId());
+			Optional<Board> board2o = boardRepository.findById(boardId);
+			Board board2 = board2o.get();
+			board2.setAlterDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+			board2.setContent(content);
+			board2.setTitle(title);
+			boardRepository.save(board2);
+			return ResponseEntity.status(HttpStatus.OK).body("정상 수정 되었습니다.");
 			}catch (ClassCastException e) {
 					    log.error("ClassCastException occurred", e);
 			    return ResponseEntity.badRequest().build(); 
@@ -468,7 +494,7 @@ public class BoardService {
 		Page<ReportDTO> dto = reportRepository.findAllReports(pageable);
 		return ResponseEntity.ok(dto);
 	}
-	
+
 	
 
 }

@@ -310,18 +310,17 @@ methods: {
         border-radius: 10px;
     }
     .content-wrap{
-        height : 1100px;
+        min-height : 1150px;
     }
     .inner-box{
         margin: 0 auto;
         width: 950px;
         padding: 10px;
-        height: 800px;
-        margin-bottom: 50px;
+        min-height: 800px;
     }
     .contents{
         margin-left: 30px;
-        padding: 20px;
+        padding: 30px;
         min-height: 600px;
     }
     .actions {
@@ -403,6 +402,7 @@ methods: {
     .comment-form {
         width: 900px;
         margin: 0 auto;
+        margin-bottom: 50px;
     }
 
     .comment-form .btn {

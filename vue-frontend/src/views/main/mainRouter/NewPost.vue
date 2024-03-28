@@ -54,7 +54,7 @@
             <option value="info">정보</option>
           </select>
         </div>
-        <tip-tap v-model="post.content" @value="handleUpdate" class="tip-tap"/>
+        <tip-tap v-model="post.content" @value="startPost" :stringList="picturesUrl" @imageLoaded="handleImageLoaded" class="tip-tap"/>
         <div class ="sections">
             <button type="submit" class="btn btn-success">새 글 저장하기</button>
             <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
@@ -64,7 +64,6 @@
   </template>
   
   <script>
-import DOMPurify from 'dompurify';
 import TipTap from '@/components/TipTap.vue';
   export default {
     components :{
@@ -72,16 +71,13 @@ import TipTap from '@/components/TipTap.vue';
     },
     data() {
       return {
-
-        //img
-      postContent: '',
-      selectedFile: null,
-      imageUrl: null,
-
+        pictures : [],
+        picturesUrl : [],
         post: {
           title: '',
           content: '',
           id : '',
+          boardId : '',
           category1 :'chat',
           category2 : 'chat',
           category3 : 'free',
@@ -90,44 +86,59 @@ import TipTap from '@/components/TipTap.vue';
       };
     },
     methods: {
-      handleUpdate(newVal){
-        console.log(newVal);
-        this.post.content = newVal;
-      },
       returnMain(){
         this.$router.push('/main')
         },
       submitPost() {
-        if (this.post.title.length >= this.minLength && this.post.content.length >= this.minLength + 6 ) {
+        if (this.post.title.length >= this.minLength ) {
             this.PostServe();
         } else {
         alert(`최소 ${this.minLength} 글자를 입력해야 합니다.`);
          }
       },
        PostServe(){
-        this.post.content = DOMPurify.sanitize(this.post.content);
-        this.$axios.post('/api/board/post',this.post)
-          .then(()=>{
-            this.$router.push('/main')
+        if(this.pictures.length >=1 ){
+          let formData = new FormData();
+          this.pictures.forEach(file => {
+          formData.append('files', file);
+          });
+          this.$axios.post('/api/file/board-img', formData, {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then((response) => {
+            const arrayList = [];
+            this.post.boardId = response.data.id
+            response.data.boardImage.forEach(image => {
+            arrayList.push(image.filePath);
           })
-          .catch(error => {
+          this.picturesUrl = arrayList;
+          }).catch(error => {
             if (error.response) {
               alert("Error: 오류가 발생했습니다.");
             } else if (error.request) {
               alert("Error: 서버로부터 응답이 없습니다.");
             } else {
-              alert("오류가 발생햇습니다.");
+              alert("오류가 발생했습니다.");
             }
-           });
-        },
-        handleFileUpload(event){
-          this.selectedFile = event.target.files[0];
-          console.log('selectedFile:', this.selectedFile);
-          this.imageUrl = URL.createObjectURL(this.selectedFile);
-          console.log('imageUrl:', this.imageUrl);
-    },
+          })
+        }
+
         
         },
+      startPost(newVal){
+        this.post.content = newVal;
+          this.$axios.post('/api/board/post',this.post).then(()=>{
+            this.$router.push('/main');
+          })
+        },
+
+    handleImageLoaded(file){
+      this.pictures.push(file);
+    },
+    },
+
     mounted() {
         this.post.id = sessionStorage.getItem('userIdx');
     },
@@ -221,6 +232,7 @@ import TipTap from '@/components/TipTap.vue';
   border-radius: 4px;
   background-color: #198754;
   cursor: pointer;
+  margin-bottom : 20px;
 }
 
 .editor-select:hover {

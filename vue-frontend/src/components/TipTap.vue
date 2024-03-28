@@ -18,6 +18,13 @@
     <button class="editor-button" @click="editor.chain().focus().toggleStrike().run()" :disabled="!editor.can().chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">
       <span class="material-symbols-outlined">format_strikethrough</span>
     </button>
+
+    
+    <a @click="addImage" class="editor-button" style="background-color:#222831">
+      <input type="file" ref="fileInput"  @change="handleFileChange" style="display: none; ">
+      <span class="material-symbols-outlined" style="color : white">image</span>
+  </a>
+
     <button class="editor-button" @click="editor.chain().focus().toggleCode().run()" :disabled="!editor.can().chain().focus().toggleCode().run()" :class="{ 'is-active': editor.isActive('code') }">
       <span class="material-symbols-outlined">code</span>
     </button>
@@ -34,6 +41,7 @@
     <button class="editor-button" @click="editor.chain().focus().toggleCodeBlock().run()" :class="{ 'is-active': editor.isActive('codeBlock') }">
       <span class="material-symbols-outlined">code_blocks</span>
     </button>
+
     <button class="editor-button" @click="editor.chain().focus().undo().run()" :disabled="!editor.can().chain().focus().undo().run()">
       <span class="material-symbols-outlined">undo</span>
     </button>
@@ -58,6 +66,7 @@
     </editor-menu-bar>
     <editor-content :editor="editor"   class="editor-container"/>
   </div>
+  <resolution-dialog v-if="showResolutionDialog" :image="selectedImage" @close="showResolutionDialog = false" @update="updateImageResolution" />
 </template>
 
 <script setup>
@@ -69,14 +78,19 @@ import Highlight from '@tiptap/extension-highlight'
 import FontFamily from '@tiptap/extension-font-family'
 import Text from '@tiptap/extension-text'
 import TextStyle from '@tiptap/extension-text-style'
+import Image from '@tiptap/extension-image'
 const props = defineProps({
   modelValue: {
     type: String,
     default: ''
-  }
+  },
+  stringList :{
+    type: Array,
+    default: () => [],
+  },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue','imageLoaded','image-added']);
 
 const editor = useEditor({
   content: props.modelValue,
@@ -91,11 +105,48 @@ const editor = useEditor({
           }),
           Text,
         TextStyle,
+        Image.configure({
+          inline: true,
+          }),
       ],
-  onUpdate : () => {
-    emit('value',editor.value.getHTML());
-  },
 });
+
+const findImagePosition = (editor, className) => {
+  let position = null;
+  editor.state.doc.descendants((node, pos) => {
+    if (node.type.name === 'image' && node.attrs.title === className) {
+      position = pos;
+      return false; // 탐색 중지
+    }
+  });
+  return position;
+};
+
+const imageSrcCount = ref(0);
+watch(() => props.stringList, (newList) => {
+  newList.forEach((newImageUrl, index) => {
+    if (editor.value) {
+      const imageClass = `custom-image-${index}`;
+      const position = findImagePosition(editor.value, imageClass);
+
+      if (position !== null) {
+        // 기존 이미지 삭제 및 새 이미지 삽입
+        const imageNode = editor.value.schema.nodes.image.create({ src: newImageUrl, class: imageClass });
+        const transaction = editor.value.state.tr
+          .delete(position, position + 1) // 기존 이미지 삭제
+          .insert(position, imageNode);   // 새 이미지 삽입
+        editor.value.view.dispatch(transaction);
+
+        imageSrcCount.value++;
+      }
+      if (imageSrcCount.value === newList.length) {
+        emit('value', editor.value.getHTML());
+      }
+    }
+  });
+});
+
+
 
 watch (()=> props.modelValue, value => {
 const isSame = editor.value.getHTML() === value;
@@ -107,6 +158,38 @@ const selectedHeadingSize = ref('6');
 watch(selectedHeadingSize, (newSize) => {
   editor.value.chain().focus().toggleHeading({ level: parseInt(newSize) }).run();
 });
+
+const fileInput = ref(null);
+const addImage = () => {
+  fileInput.value.click();
+};
+
+let imageId = 0; // 이미지 ID를 위한 카운터
+
+function handleFileChange(event) {
+  const input = event.target;
+  const file = input.files[0];
+
+  if (file && file.size > (1024 * 1024 * 5)) {
+    alert('파일 크기가 너무 큽니다. 5MB 이하의 파일만 업로드 가능합니다.');
+    return;
+  }
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // 이미지에 고유 번호 또는 클래스를 추가하여 삽입
+      editor.value.chain().focus().setImage({ 
+        src: e.target.result, 
+        title: `custom-image-${imageId}`,
+      }).run();
+
+      emit('imageLoaded', file);
+      imageId++; // 이미지 ID 증가
+    };
+    reader.readAsDataURL(file);
+  }
+}
 </script>
 
 <style lang="scss">
