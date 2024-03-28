@@ -121,8 +121,14 @@ import TipTap from '@/components/TipTap.vue';
               alert("Error: 서버로부터 응답이 없습니다.");
             } else {
               alert("오류가 발생했습니다.");
+
             }
           })
+        }else{
+          const uniqueIdentifier = "\u{1F4A9}\u{1F4A3}\u{1F4A5}\u{1F4AB}\u{1F4A2}";
+          const arrayList = [];
+          arrayList.push(uniqueIdentifier);
+          this.picturesUrl.push(arrayList);
         }
 
         

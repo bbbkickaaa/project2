@@ -206,14 +206,22 @@ public class BoardService {
 	
 	@Transactional
 	public ResponseEntity<String> postBoard(BoardPostDTO dto , Authentication authentication){
-		
+		Board board;
 		try {
+			if(dto.getBoardId() == null) {
 			Long boardId = Long.valueOf(dto.getBoardId());
 			Optional<Board> boardWrap = boardRepository.findById(boardId);
 			if(boardWrap.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.CONFLICT).build();
 			}
-		    Board board = boardWrap.get();
+			
+		    board = boardWrap.get();
+			}else {
+				board = new Board();
+				String BoardIdAsString = dto.getBoardId();
+				Long boardId = Long.valueOf(BoardIdAsString);
+				board.setId(boardId);
+			}
 			String idAsString = dto.getId();
 			Long id = Long.valueOf(idAsString);
 			User author = userRepository.findById(id).orElseThrow(

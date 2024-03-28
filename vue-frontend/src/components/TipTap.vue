@@ -124,7 +124,13 @@ const findImagePosition = (editor, className) => {
 
 const imageSrcCount = ref(0);
 watch(() => props.stringList, (newList) => {
+  if (newList[0].includes("\u{1F4A9}\u{1F4A3}\u{1F4A5}\u{1F4AB}\u{1F4A2}")) {
+    emit('value', editor.value.getHTML());
+    return;
+  }
+
   newList.forEach((newImageUrl, index) => {
+    
     if (editor.value) {
       const imageClass = `custom-image-${index}`;
       const position = findImagePosition(editor.value, imageClass);
