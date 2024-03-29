@@ -1,5 +1,6 @@
 package com.API.File;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File; 
 import java.io.IOException;
@@ -28,8 +29,10 @@ import com.API.Board.BoardRepository;
 import com.API.Board.DTO.BoardIdWithImgDTO;
 import com.API.Board.Entity.Board;
 import com.API.Board.Entity.BoardImage;
+import com.API.File.DTO.AttrDTO;
 import com.API.User.UserRepository;
 import com.API.User.Entity.User;
+import com.fasterxml.jackson.databind.annotation.JsonAppend.Attr;
 
 import jakarta.transaction.Transactional;
 
@@ -81,79 +84,109 @@ public class FileService {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		} 
     	userRepository.save(user);
+    	System.out.println(accessibleUrl);
+    	
     	return ResponseEntity.ok(accessibleUrl);
 
     	
     }
 
 @Transactional
-public ResponseEntity<?> PostBoardImg(Authentication authentication, List<MultipartFile> files) {
-	String userId = authentication.getName();
+public ResponseEntity<?> PostBoardImg(Authentication authentication, List<MultipartFile> files, List<AttrDTO> attrs) {
+    String userId = authentication.getName();
     Optional<User> userWrap = userRepository.findByUserid(userId);
     if (userWrap.isEmpty()) {
-        return null;
+        return ResponseEntity.badRequest().body("User not found");
     }
     User user = userWrap.get();
     Board board = new Board();
     List<BoardImage> imgList = new ArrayList<>();
     List<String> accessibleUrls = new ArrayList<>();
 
-    files.forEach(file -> {
+    for (int i = 0; i < files.size(); i++) {
+        MultipartFile file = files.get(i);
+        AttrDTO attr = attrs.get(i);
         try {
-        	String contentType = file.getContentType();
+            String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
-                return;
+                continue;
             }
-            
-             String fileName = file.getOriginalFilename(); // 파일명 생성
 
+            BufferedImage originalImage = ImageIO.read(file.getInputStream());
+
+	         String widthStr = attr.getStyle().getWidth();
+	         String heightStr = attr.getStyle().getHeight();
+	         int desiredWidth = (widthStr.equals("100%") || widthStr.equals("auto")) ? 800 : parseDimension(widthStr);
+	         int desiredHeight = (heightStr.equals("100%") || heightStr.equals("auto")) ? 800 : parseDimension(heightStr);
+
+	
+	             // 이미지 리사이징 수행
+	             BufferedImage resizedImage = new BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_RGB);
+	             Graphics2D g = resizedImage.createGraphics();
+	             g.drawImage(originalImage, 0, 0, desiredWidth, desiredHeight, null);
+	             g.dispose();
+	             originalImage = resizedImage; // 리사이징된 이미지를 originalImage 변수에 할당
+	
+	         String fileName = file.getOriginalFilename();
 	         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 	         String currentTimestamp = LocalDateTime.now().format(formatter);
-	         String filePath = boardUploadDir + File.separator + "user_" + user.getId() + File.separator + currentTimestamp; // 유저별 디렉토리 경로에 시각 추가
-	         Path targetLocation = Paths.get(filePath).resolve(fileName); // 최종 파일 저장 경로
-	
-	         String baseUrl = "http://localhost:8080/resources/board/";
-	         String userDir = "user_" + user.getId();
-	         String accessibleUrl = baseUrl + userDir + "/" + currentTimestamp + "/" + fileName;
+	         String filePath = boardUploadDir + File.separator + "user_" + user.getId() + File.separator + currentTimestamp;
+	         Path targetLocation = Paths.get(filePath).resolve(fileName);
+	         if (!Files.exists(targetLocation.getParent())) {
+	             Files.createDirectories(targetLocation.getParent());
+	         }
+	         File outputFile = targetLocation.toFile();
+	         ImageIO.write(originalImage, "jpg", outputFile);
 
-         if (!Files.exists(Paths.get(filePath))) {
-             Files.createDirectories(Paths.get(filePath));
-         }
-            // 파일 저장
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            BufferedImage image = ImageIO.read(file.getInputStream());
-            BoardImage img = new BoardImage();
-            if (image == null) {
-            	return;
-            }
-            int width = image.getWidth();
-            int height = image.getHeight();
-
-            // BoardImage 객체에 너비와 높이 설정
-            img.setWidth(width);
-            img.setHeight(height);
-
-        	user.setPicture(accessibleUrl);
+            String baseUrl = "http://localhost:8080/resources/board/";
+            String accessibleUrl = baseUrl + "user_" + user.getId() + "/" + currentTimestamp + "/" + fileName;
             accessibleUrls.add(accessibleUrl);
+
+            BoardImage img = new BoardImage();
+            img.setWidth(desiredWidth);
+            img.setHeight(desiredHeight);
             img.setFileName(fileName);
             img.setFilePath(accessibleUrl);
             imgList.add(img);
 
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-		    });
-		
-		    // 임시 데이터 설정 및 저장
-		    board.setTitle("임시 데이터입니다.");
-		    board.setAuthor(user);
-		    board.setContent("임시 데이터입니다.");
-		    board.setBoardImage(imgList);
-		    Board board_n = boardRepository.save(board);
-		    BoardIdWithImgDTO Imgdto = new BoardIdWithImgDTO();
-		    Imgdto.setId(board_n.getId());
-		    Imgdto.setBoardImage(imgList);
-		    return ResponseEntity.ok(Imgdto);  // 파일 URL 리스트 반환
-		}
-		
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    board.setTitle("임시 데이터입니다.");
+    board.setAuthor(user);
+    board.setContent("임시 데이터입니다.");
+    board.setBoardImage(imgList);
+    Board board_n = boardRepository.save(board);
+
+    BoardIdWithImgDTO Imgdto = new BoardIdWithImgDTO();
+    Imgdto.setId(board_n.getId());
+    Imgdto.setBoardImage(imgList);
+
+    return ResponseEntity.ok(Imgdto);
+}
+private static int parseDimension(String dimension) {
+    if (dimension == null || dimension.isEmpty() || dimension.equals("100%") || dimension.equals("auto")) {
+        return 800;
+    }
+
+    // "px" 제거
+    dimension = dimension.replace("px", "");
+
+    // 소수점 이전의 숫자 부분만 추출
+    int dotIndex = dimension.indexOf('.');
+    if (dotIndex != -1) {
+        dimension = dimension.substring(0, dotIndex);
+    }
+
+    // 숫자만 추출
+    dimension = dimension.replaceAll("[^0-9]", "");
+
+    try {
+        return Integer.parseInt(dimension);
+    } catch (NumberFormatException e) {
+        return 800; // 파싱 실패 시 800 반환
+    }
+}
 		}

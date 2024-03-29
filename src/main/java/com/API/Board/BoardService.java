@@ -208,19 +208,15 @@ public class BoardService {
 	public ResponseEntity<String> postBoard(BoardPostDTO dto , Authentication authentication){
 		Board board;
 		try {
-			if(dto.getBoardId() == null) {
-			Long boardId = Long.valueOf(dto.getBoardId());
-			Optional<Board> boardWrap = boardRepository.findById(boardId);
-			if(boardWrap.isEmpty()) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).build();
-			}
-			
-		    board = boardWrap.get();
-			}else {
+			if(dto.getBoardId() == null || dto.getBoardId().isEmpty()) {
 				board = new Board();
-				String BoardIdAsString = dto.getBoardId();
-				Long boardId = Long.valueOf(BoardIdAsString);
-				board.setId(boardId);
+			}else {
+				Long boardId = Long.valueOf(dto.getBoardId());
+				Optional<Board> boardWrap = boardRepository.findById(boardId);
+				if(boardWrap.isEmpty()) {
+					return ResponseEntity.status(HttpStatus.CONFLICT).build();
+				}
+			    board = boardWrap.get();
 			}
 			String idAsString = dto.getId();
 			Long id = Long.valueOf(idAsString);
@@ -252,24 +248,31 @@ public class BoardService {
 	}
 	
 	@Transactional
-	public ResponseEntity<String> alertBoard(BoardPostDTO dto , Authentication authentication){
+	public ResponseEntity<String> alterBoard(BoardPostDTO dto , Authentication authentication){
 		
+		Board board;
 		try {
-		    Board board = new Board();
+			board = new Board();
+			String BoardIdAsString = dto.getBoardId();
+			Long boardId = Long.valueOf(BoardIdAsString);
+			board.setId(boardId);
 			String idAsString = dto.getId();
 			Long id = Long.valueOf(idAsString);
 			User author = userRepository.findById(id).orElseThrow(
 		            () -> new EntityNotFoundException("User not found with ID: " + id));
 			String title = dto.getTitle();
 			String content = dto.getContent();
-			Long boardId = Long.valueOf(dto.getBoardId());
-			Optional<Board> board2o = boardRepository.findById(boardId);
-			Board board2 = board2o.get();
-			board2.setAlterDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-			board2.setContent(content);
-			board2.setTitle(title);
-			boardRepository.save(board2);
-			return ResponseEntity.status(HttpStatus.OK).body("정상 수정 되었습니다.");
+			BoardCategory category = new BoardCategory();
+			category.setCategory1(dto.getCategory1());
+			category.setCategory2(dto.getCategory2());
+			category.setCategory3(dto.getCategory3());
+			board.setCategory(category);
+			board.setTitle(title);
+			board.setContent(content);
+			board.setAuthor(author);
+			boardRepository.save(board);
+			return ResponseEntity.status(HttpStatus.OK).body("정상 등록 되었습니다.");
+				
 			}catch (ClassCastException e) {
 					    log.error("ClassCastException occurred", e);
 			    return ResponseEntity.badRequest().build(); 

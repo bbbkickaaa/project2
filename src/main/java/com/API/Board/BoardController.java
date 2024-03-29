@@ -94,7 +94,7 @@ public class BoardController {
 			@RequestBody BoardPostDTO dto){
 		String token = tokenProvider.resolveToken(authorizationHeader);
 		Authentication authentication =  tokenProvider.getAuthentication(token);
-	    return boardService.postBoard(dto,authentication);
+	    return boardService.alterBoard(dto,authentication);
 	}
 	
 	@GetMapping("/get-detail")

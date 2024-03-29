@@ -107,6 +107,7 @@ methods:{
       this.$axios.get('/api/member/get-user')
           .then(response => {
             this.userData = response.data;
+            console.log(response.data.userLevel);
             this.getUserPostCount(this.userData.id)
             sessionStorage.setItem('userIdx',this.userData.id)
             this.isLoading = false;

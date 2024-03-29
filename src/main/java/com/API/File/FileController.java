@@ -1,6 +1,6 @@
 package com.API.File;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.API.Board.DTO.BoardPostDTO;
+import com.API.File.DTO.AttrDTO;
 import com.API.User.Jwt.JwtTokenProvider;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
@@ -41,10 +43,13 @@ public class FileController {
 	@PostMapping("/file/board-img")
 	public ResponseEntity<?> PostBoardImg(
 			@RequestHeader("Authorization") String authorizationHeader,
-	        @RequestParam(value = "files") List<MultipartFile> files) throws IOException {
+			@RequestParam("files") List<MultipartFile> files,
+			@RequestParam("attrs") String attrsJson) throws IOException  {
+		ObjectMapper mapper = new ObjectMapper();
+		List<AttrDTO> attrs = mapper.readValue(attrsJson, new TypeReference<List<AttrDTO>>() {});
 		String token = tokenProvider.resolveToken(authorizationHeader);
 		Authentication authentication =  tokenProvider.getAuthentication(token);
-	    return fileSerivce.PostBoardImg(authentication,files);
+	    return fileSerivce.PostBoardImg(authentication,files,attrs);
 	}
 	
 

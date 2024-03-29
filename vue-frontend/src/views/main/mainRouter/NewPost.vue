@@ -54,12 +54,12 @@
             <option value="info">정보</option>
           </select>
         </div>
-        <tip-tap v-model="post.content" @value="startPost" :stringList="picturesUrl" @imageLoaded="handleImageLoaded" class="tip-tap"/>
         <div class ="sections">
-            <button type="submit" class="btn btn-success">새 글 저장하기</button>
-            <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
+          <button type="submit" class="btn btn-success">새 글 저장하기</button>
+          <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
         </div>    
       </form>
+      <tip-tap v-model="post.content" @value="startPost" :stringList="picturesUrl" :readyToPost="readyToPost" @imageLoaded="handleImageLoaded" class="tip-tap"/>
     </div>
   </template>
   
@@ -71,6 +71,7 @@ import TipTap from '@/components/TipTap.vue';
     },
     data() {
       return {
+        readyToPost : false,
         pictures : [],
         picturesUrl : [],
         post: {
@@ -90,18 +91,29 @@ import TipTap from '@/components/TipTap.vue';
         this.$router.push('/main')
         },
       submitPost() {
+        
         if (this.post.title.length >= this.minLength ) {
-            this.PostServe();
+            let submit = false;
+            if(!submit){
+            this.readyToPost = true;
+            submit = true;}
         } else {
         alert(`최소 ${this.minLength} 글자를 입력해야 합니다.`);
          }
+
       },
-       PostServe(){
-        if(this.pictures.length >=1 ){
-          let formData = new FormData();
-          this.pictures.forEach(file => {
-          formData.append('files', file);
-          });
+      PostServe(){
+          if(this.pictures.length >= 1){
+            let formData = new FormData();
+            this.pictures.forEach((item) => {
+              formData.append('files', item.file);
+            });
+
+            // attrs를 루프 바깥에서 계산
+            let attrs = this.pictures.map(item => item.attr);
+            formData.append('attrs', JSON.stringify(attrs));
+
+          
           this.$axios.post('/api/file/board-img', formData, {
             withCredentials: true,
             headers: {
@@ -140,8 +152,9 @@ import TipTap from '@/components/TipTap.vue';
           })
         },
 
-    handleImageLoaded(file){
-      this.pictures.push(file);
+    handleImageLoaded(files){
+      this.pictures = files;
+      this.PostServe();
     },
     },
 
@@ -180,6 +193,7 @@ import TipTap from '@/components/TipTap.vue';
         border-radius: 10px;
         box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
         padding: 50px;
+        position:relative;
     }
     .contents{
         height: 500px;
@@ -193,6 +207,8 @@ import TipTap from '@/components/TipTap.vue';
     }
 
     .sections{
+      position: absolute;
+      bottom : 50px;
         width :1000px;
         display: flex;
     }
@@ -214,6 +230,7 @@ import TipTap from '@/components/TipTap.vue';
     }
     .tip-tap {
       margin-top: 20px;
+
       min-height:700px;
     }
 

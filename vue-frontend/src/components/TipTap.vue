@@ -21,7 +21,7 @@
 
     
     <a @click="addImage" class="editor-button" style="background-color:#222831">
-      <input type="file" ref="fileInput"  @change="handleFileChange" style="display: none; ">
+      <input type="file" ref="fileInput" accept="image/*" @change="handleFileChange" style="display: none; ">
       <span class="material-symbols-outlined" style="color : white">image</span>
   </a>
 
@@ -79,7 +79,13 @@ import FontFamily from '@tiptap/extension-font-family'
 import Text from '@tiptap/extension-text'
 import TextStyle from '@tiptap/extension-text-style'
 import Image from '@tiptap/extension-image'
+import ImageResize from 'tiptap-extension-resize-image'
 const props = defineProps({
+
+
+  readyToPost : {
+    type : Boolean
+  },
   modelValue: {
     type: String,
     default: ''
@@ -95,7 +101,7 @@ const emit = defineEmits(['update:modelValue','imageLoaded','image-added']);
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
-        StarterKit,
+        StarterKit,ImageResize,Image,
         TextAlign.configure({
           types: ['heading', 'paragraph'],
         }),
@@ -114,13 +120,14 @@ const editor = useEditor({
 const findImagePosition = (editor, className) => {
   let position = null;
   editor.state.doc.descendants((node, pos) => {
-    if (node.type.name === 'image' && node.attrs.title === className) {
+    if (node.type.name === 'image' && node.attrs.alt === className) {
       position = pos;
       return false; // 탐색 중지
     }
   });
   return position;
 };
+
 
 const imageSrcCount = ref(0);
 watch(() => props.stringList, (newList) => {
@@ -136,8 +143,7 @@ watch(() => props.stringList, (newList) => {
       const position = findImagePosition(editor.value, imageClass);
 
       if (position !== null) {
-        // 기존 이미지 삭제 및 새 이미지 삽입
-        const imageNode = editor.value.schema.nodes.image.create({ src: newImageUrl, class: imageClass });
+        const imageNode = editor.value.schema.nodes.image.create({ src: newImageUrl, class: imageClass, style : {width : 'auto'} });
         const transaction = editor.value.state.tr
           .delete(position, position + 1) // 기존 이미지 삭제
           .insert(position, imageNode);   // 새 이미지 삽입
@@ -170,7 +176,8 @@ const addImage = () => {
   fileInput.value.click();
 };
 
-let imageId = 0; // 이미지 ID를 위한 카운터
+let imageId = 0;
+let fileList = [];
 
 function handleFileChange(event) {
   const input = event.target;
@@ -182,20 +189,71 @@ function handleFileChange(event) {
   }
 
   if (file) {
+    fileList.push(file);
+
     const reader = new FileReader();
     reader.onload = (e) => {
-      // 이미지에 고유 번호 또는 클래스를 추가하여 삽입
+
       editor.value.chain().focus().setImage({ 
         src: e.target.result, 
-        title: `custom-image-${imageId}`,
+        alt: `custom-image-${imageId}`,
       }).run();
 
-      emit('imageLoaded', file);
-      imageId++; // 이미지 ID 증가
+      imageId++;
     };
     reader.readAsDataURL(file);
   }
 }
+
+
+watch(() => props.readyToPost, (newValue) => {
+  if (newValue) {
+    // 이미지 속성 추출
+    const attrList = extractImageAttributes(editor.value.getJSON().content);
+    console.log(attrList);
+    // 파일과 속성을 결합
+    const combinedList = fileList.map((file, index) => ({
+      file: file, 
+      attr: attrList[index]
+    }));
+    
+    emit('imageLoaded', combinedList);
+  }
+});
+function extractImageAttributes(content) {
+  const attrList = [];
+  content.forEach(item => {
+    if (item.content) {
+      item.content.forEach(innerItem => {
+        if (innerItem.type === 'image' && innerItem.attrs) {
+          const styleObject = parseStyle(innerItem.attrs.style);
+          attrList.push({
+            style: styleObject,
+            alt: innerItem.attrs.alt
+          });
+        }
+      });
+    }
+  });
+  return attrList;
+}
+
+function parseStyle(styleString) {
+  const styles = {};
+  if (styleString) {
+    styleString.split(';').forEach(styleProperty => {
+      const [key, value] = styleProperty.split(':').map(s => s.trim());
+      if (key && value) {
+        styles[key] = value;
+      }
+    });
+  }
+  return styles;
+}
+
+
+
+
 </script>
 
 <style lang="scss">
@@ -245,7 +303,7 @@ function handleFileChange(event) {
 .ProseMirror {
   padding: 30px;
   min-height: 650px;
-  margin-bottom : 50px;
+  margin-bottom : 80px;
   margin-top: 20px;
   border-top : solid 1px #999999; 
   border-bottom : solid 1px #999999; 
