@@ -52,5 +52,18 @@ public class FileController {
 	    return fileSerivce.PostBoardImg(authentication,files,attrs);
 	}
 	
+	@PostMapping("/file/board-imga")
+	public ResponseEntity<?> PostBoardImgAlter(
+			@RequestHeader("Authorization") String authorizationHeader,
+			@RequestParam("files") List<MultipartFile> files,
+			@RequestParam("attrs") String attrsJson,
+	    	@RequestParam("boardId") Long boardId) throws IOException{
+		ObjectMapper mapper = new ObjectMapper();
+		List<AttrDTO> attrs = mapper.readValue(attrsJson, new TypeReference<List<AttrDTO>>() {});
+		String token = tokenProvider.resolveToken(authorizationHeader);
+		Authentication authentication =  tokenProvider.getAuthentication(token);
+	    return fileSerivce.PostBoardImgAlter(authentication,files,attrs,boardId);
+	}
+	
 
 }

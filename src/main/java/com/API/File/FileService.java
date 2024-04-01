@@ -50,6 +50,9 @@ public class FileService {
 	 
 	 @Value("${board.upload-dir}")
 	    private String boardUploadDir;
+	 
+	 @Value("${host-dir}")
+	 private String hostDir;
 
     public ResponseEntity<?> updateProfilePicture(MultipartFile file, Authentication authentication) {
     	String userId = authentication.getName();
@@ -101,7 +104,6 @@ public ResponseEntity<?> PostBoardImg(Authentication authentication, List<Multip
     User user = userWrap.get();
     Board board = new Board();
     List<BoardImage> imgList = new ArrayList<>();
-    List<String> accessibleUrls = new ArrayList<>();
 
     for (int i = 0; i < files.size(); i++) {
         MultipartFile file = files.get(i);
@@ -114,10 +116,13 @@ public ResponseEntity<?> PostBoardImg(Authentication authentication, List<Multip
 
             BufferedImage originalImage = ImageIO.read(file.getInputStream());
 
-	         String widthStr = attr.getStyle().getWidth();
-	         String heightStr = attr.getStyle().getHeight();
-	         int desiredWidth = (widthStr.equals("100%") || widthStr.equals("auto")) ? 800 : parseDimension(widthStr);
-	         int desiredHeight = (heightStr.equals("100%") || heightStr.equals("auto")) ? 800 : parseDimension(heightStr);
+            String widthStr = attr.getStyle().getWidth();
+            String heightStr = attr.getStyle().getHeight();
+            int originalWidth = originalImage.getWidth();
+            int originalHeight = originalImage.getHeight();
+
+            int desiredWidth = (widthStr.equals("100%") || widthStr.equals("auto")) ? originalWidth : parseDimension(widthStr);
+            int desiredHeight = (heightStr.equals("100%") || heightStr.equals("auto")) ? originalHeight : parseDimension(heightStr);
 
 	
 	             // 이미지 리사이징 수행
@@ -138,10 +143,8 @@ public ResponseEntity<?> PostBoardImg(Authentication authentication, List<Multip
 	         File outputFile = targetLocation.toFile();
 	         ImageIO.write(originalImage, "jpg", outputFile);
 
-            String baseUrl = "http://localhost:8080/resources/board/";
+            String baseUrl =hostDir+"/resources/board/";
             String accessibleUrl = baseUrl + "user_" + user.getId() + "/" + currentTimestamp + "/" + fileName;
-            accessibleUrls.add(accessibleUrl);
-
             BoardImage img = new BoardImage();
             img.setWidth(desiredWidth);
             img.setHeight(desiredHeight);
@@ -188,5 +191,80 @@ private static int parseDimension(String dimension) {
     } catch (NumberFormatException e) {
         return 800; // 파싱 실패 시 800 반환
     }
+}
+
+public ResponseEntity<?> PostBoardImgAlter(Authentication authentication, List<MultipartFile> files,
+		List<AttrDTO> attrs, Long boardId) {
+	String userId = authentication.getName();
+    Optional<User> userWrap = userRepository.findByUserid(userId);
+    Optional<Board> boardWrap = boardRepository.findById(boardId);
+    if (userWrap.isEmpty() || boardWrap.isEmpty()){
+        return ResponseEntity.badRequest().body("not found");
+    }
+    User user = userWrap.get();
+    Board board = boardWrap.get();
+    List<BoardImage> imgList = new ArrayList<>();
+
+    for (int i = 0; i < files.size(); i++) {
+        MultipartFile file = files.get(i);
+        AttrDTO attr = attrs.get(i);
+        try {
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                continue;
+            }
+
+            BufferedImage originalImage = ImageIO.read(file.getInputStream());
+
+            String widthStr = attr.getStyle().getWidth();
+            String heightStr = attr.getStyle().getHeight();
+            int originalWidth = originalImage.getWidth();
+            int originalHeight = originalImage.getHeight();
+
+            int desiredWidth = (widthStr.equals("100%") || widthStr.equals("auto")) ? originalWidth : parseDimension(widthStr);
+            int desiredHeight = (heightStr.equals("100%") || heightStr.equals("auto")) ? originalHeight : parseDimension(heightStr);
+
+
+	
+	             // 이미지 리사이징 수행
+	             BufferedImage resizedImage = new BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_RGB);
+	             Graphics2D g = resizedImage.createGraphics();
+	             g.drawImage(originalImage, 0, 0, desiredWidth, desiredHeight, null);
+	             g.dispose();
+	             originalImage = resizedImage; // 리사이징된 이미지를 originalImage 변수에 할당
+	
+	         String fileName = file.getOriginalFilename();
+	         String url = board.getBoardImage().stream().findFirst().map(BoardImage::getFilePath).toString();
+	         String[] parts = url.split("/");
+	         String currentTimestamp = parts[5]; 
+	         String filePath = boardUploadDir + File.separator + "user_" + user.getId() + File.separator + currentTimestamp;
+	         Path targetLocation = Paths.get(filePath).resolve(fileName);
+	         if (!Files.exists(targetLocation.getParent())) {
+	             Files.createDirectories(targetLocation.getParent());
+	         }
+	         File outputFile = targetLocation.toFile();
+	         ImageIO.write(originalImage, "jpg", outputFile);
+
+	        String baseUrl =hostDir+"/resources/board/";
+            String accessibleUrl = baseUrl + "user_" + user.getId() + "/" + currentTimestamp + "/" + fileName;
+            BoardImage img = new BoardImage();
+            img.setWidth(desiredWidth);
+            img.setHeight(desiredHeight);
+            img.setFileName(fileName);
+            img.setFilePath(accessibleUrl);
+            imgList.add(img);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    board.setBoardImage(imgList);
+    boardRepository.save(board);
+
+    BoardIdWithImgDTO Imgdto = new BoardIdWithImgDTO();
+    Imgdto.setId(board.getId());
+    Imgdto.setBoardImage(imgList);
+
+    return ResponseEntity.ok(Imgdto);
 }
 		}

@@ -59,7 +59,7 @@
           <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
         </div>    
       </form>
-      <tip-tap v-model="post.content" @value="startPost" :stringList="picturesUrl" :readyToPost="readyToPost" @imageLoaded="handleImageLoaded" class="tip-tap"/>
+      <tip-tap  @value="startPost" :stringList="picturesUrl" :readyToPost="readyToPost" @imageLoaded="handleImageLoaded" class="tip-tap"/>
     </div>
   </template>
   
@@ -77,7 +77,7 @@ import TipTap from '@/components/TipTap.vue';
         post: {
           title: '',
           content: '',
-          id : '',
+          userIdx : '',
           boardId : '',
           category1 :'chat',
           category2 : 'chat',
@@ -121,7 +121,7 @@ import TipTap from '@/components/TipTap.vue';
             }
           }).then((response) => {
             const arrayList = [];
-            this.post.boardId = response.data.id
+            this.post.id = response.data.id
             response.data.boardImage.forEach(image => {
             arrayList.push(image.filePath);
           })
@@ -146,8 +146,10 @@ import TipTap from '@/components/TipTap.vue';
         
         },
       startPost(newVal){
+        console.log(this.post);
         this.post.content = newVal;
-          this.$axios.post('/api/board/post',this.post).then(()=>{
+          this.$axios.post('/api/board/post',this.post,{
+            withCredentials: true}).then(()=>{
             this.$router.push('/main');
           })
         },
@@ -159,7 +161,7 @@ import TipTap from '@/components/TipTap.vue';
     },
 
     mounted() {
-        this.post.id = sessionStorage.getItem('userIdx');
+        this.post.userIdx = sessionStorage.getItem('userIdx');
     },
     watch: {
     'post.category1'(newValue) {

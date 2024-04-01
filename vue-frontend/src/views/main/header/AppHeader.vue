@@ -117,6 +117,8 @@ methods:{
           .catch(error => {
             loader.hide();
             this.isLoading = false;
+            this.userData.userLevel.level  = 1;
+            this.userData.userLevel.points  = 0;
             if (error.response) {
               alert("Error: 오류가 발생했습니다.");
             } else if (error.request) {

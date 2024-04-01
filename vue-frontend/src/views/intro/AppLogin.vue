@@ -67,6 +67,7 @@
         }
       })
       .catch((e) => {
+        console.log(e.response);
         alert(e.response.data);
       });
   },

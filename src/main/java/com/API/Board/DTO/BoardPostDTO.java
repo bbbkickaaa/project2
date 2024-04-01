@@ -13,8 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BoardPostDTO {
 
-	String id;
-	String boardId;
+	Long id;
+	Long userIdx;
 	String content;
 	String title;
 	String category1;

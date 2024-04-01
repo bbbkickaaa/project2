@@ -59,7 +59,7 @@
           <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
         </div>    
       </form>
-      <tip-tap :modelValue = "post.content" @value="startPost" :stringList="picturesUrl" :readyToPost="readyToPost" @imageLoaded="handleImageLoaded" class="tip-tap"/>
+      <tip-tap :existContent="post.content" @value="startPost" :stringList="picturesUrl" :readyToPost="readyToPost" @imageLoaded="handleImageLoaded" class="tip-tap"/>
     </div>
   </template>
   
@@ -80,9 +80,9 @@ import TipTap from '@/components/TipTap.vue';
           content: '',
           id : '',
           boardId : '',
-          category1 :'chat',
-          category2 : 'chat',
-          category3 : 'free',
+          category1 :'',
+          category2 : '',
+          category3 : '',
         },
         minLength : 5
       };
@@ -110,19 +110,16 @@ import TipTap from '@/components/TipTap.vue';
               formData.append('files', item.file);
             });
 
-            // attrs를 루프 바깥에서 계산
+            formData.append('boardId',this.post.id);
             let attrs = this.pictures.map(item => item.attr);
             formData.append('attrs', JSON.stringify(attrs));
-
-          
-          this.$axios.post('/api/file/board-img', formData, {
+          this.$axios.post('/api/file/board-imga', formData, {
             withCredentials: true,
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           }).then((response) => {
             const arrayList = [];
-            this.post.boardId = response.data.id
             response.data.boardImage.forEach(image => {
             arrayList.push(image.filePath);
           })
@@ -148,7 +145,9 @@ import TipTap from '@/components/TipTap.vue';
         },
       startPost(newVal){
         this.post.content = newVal;
-          this.$axios.post('/api/board/post',this.post).then(()=>{
+        console.log(this.post);
+          this.$axios.put('/api/board/alter',this.post,{
+            withCredentials: true}).then(()=>{
             this.$router.push('/main');
           })
         },
@@ -160,15 +159,10 @@ import TipTap from '@/components/TipTap.vue';
     returnBoardDetail(id){
         this.$router.push(`/main/detail/${id}`)
         },
-        AlterBoard(id){
-        if (this.post.title.length >= this.minLength && this.post.content.length >= this.minLength ) {
-            this.$axios.put('/api/board/alter',this.post).then(()=>
-                {this.$router.push(`/main/detail/${id}`)})
-        }
-        },
+
         getDetail(id){
           this.$axios.get('/api/board/get-detail-only-alter', { params: { id: id }})
-        .then(Response => {this.post.title = Response.data.title; this.post.content = Response.data.content });
+        .then(Response => {this.post = Response.data; console.log(this.post.content)});
         },
 
   },
@@ -176,6 +170,7 @@ import TipTap from '@/components/TipTap.vue';
     mounted() {
         const id = parseInt(this.$route.params.id, 10);
         this.id = id;
+        this.post.boardId = id;
         this.post.boardId = this.$route.params.id;
         this.post.id = sessionStorage.getItem('userIdx');
         this.getDetail(id);

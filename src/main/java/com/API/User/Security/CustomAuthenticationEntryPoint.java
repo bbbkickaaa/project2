@@ -31,7 +31,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             else if(authException instanceof DisabledException) {
             	errorMessage = "탈퇴된 계정입니다.";
         } else {
-            errorMessage = "Authentication failed";
+            errorMessage = "로그인에 실패했습니다.";
         }
         response.getWriter().write("{ \"error\": \"" + errorMessage + "\" }");
 	}

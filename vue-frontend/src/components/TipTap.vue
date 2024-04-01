@@ -80,13 +80,15 @@ import Text from '@tiptap/extension-text'
 import TextStyle from '@tiptap/extension-text-style'
 import Image from '@tiptap/extension-image'
 import ImageResize from 'tiptap-extension-resize-image'
+import { onMounted } from 'vue'
+import { DOMParser as ProseMirrorDOMParser } from 'prosemirror-model';
 const props = defineProps({
 
 
   readyToPost : {
     type : Boolean
   },
-  modelValue: {
+  existContent: {
     type: String,
     default: ''
   },
@@ -99,7 +101,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue','imageLoaded','image-added']);
 
 const editor = useEditor({
-  content: props.modelValue,
   extensions: [
         StarterKit,ImageResize,Image,
         TextAlign.configure({
@@ -115,7 +116,16 @@ const editor = useEditor({
           inline: true,
           }),
       ],
+      content: '', // 초기 콘텐츠 설정
+      autoFocus: true // 에디터에 자동으로 포커스를 맞춥니다.
 });
+onMounted(() => {
+  if (editor.value && editor.value.commands.focus) {
+    editor.value.commands.focus();
+    console.log("focus")
+  }
+});
+
 
 const findImagePosition = (editor, className) => {
   let position = null;
@@ -128,6 +138,19 @@ const findImagePosition = (editor, className) => {
   return position;
 };
 
+function countImgTags(htmlString) {
+  const imgTagRegex = /<img [^>]*src="([^"]+)"[^>]*>/gi;
+  let match;
+  let count = 0;
+
+  while ((match = imgTagRegex.exec(htmlString)) !== null) {
+    if (!match[1].startsWith('data:image/')) { // Base64 이미지는 제외
+      count++;
+    }
+  }
+
+  return count;
+}
 
 const imageSrcCount = ref(0);
 watch(() => props.stringList, (newList) => {
@@ -137,9 +160,12 @@ watch(() => props.stringList, (newList) => {
   }
 
   newList.forEach((newImageUrl, index) => {
-    
-    if (editor.value) {
-      const imageClass = `custom-image-${index}`;
+  const htmlContent = editor.value.getHTML();
+  const existingImagesCount = countImgTags(htmlContent);
+
+  if (editor.value) {
+    const adjustedIndex = index + existingImagesCount;
+    const imageClass = `custom-image-${adjustedIndex}`;
       const position = findImagePosition(editor.value, imageClass);
 
       if (position !== null) {
@@ -158,13 +184,21 @@ watch(() => props.stringList, (newList) => {
   });
 });
 
+watch(() => props.existContent, (newValue) => {
+  if (editor.value && newValue) {
+    const htmlElement = document.createElement('div');
+    htmlElement.innerHTML = newValue;
+
+    const parser = ProseMirrorDOMParser.fromSchema(editor.value.schema);
+    const doc = parser.parse(htmlElement);
+
+    const transaction = editor.value.state.tr.replaceWith(0, editor.value.state.doc.content.size, doc);
+    editor.value.view.dispatch(transaction);
+  }
+});
 
 
-watch (()=> props.modelValue, value => {
-const isSame = editor.value.getHTML() === value;
-if(isSame){ return;}
-editor.value.commands.SVGTextContentElement(value,false);}
-);
+
 
 const selectedHeadingSize = ref('6');
 watch(selectedHeadingSize, (newSize) => {
@@ -190,13 +224,16 @@ function handleFileChange(event) {
 
   if (file) {
     fileList.push(file);
+    const htmlContent = editor.value.getHTML();
+    const existingImagesCount = countImgTags(htmlContent);
+    const adjustedIndex = imageId + existingImagesCount;
 
     const reader = new FileReader();
     reader.onload = (e) => {
 
       editor.value.chain().focus().setImage({ 
         src: e.target.result, 
-        alt: `custom-image-${imageId}`,
+        alt: `custom-image-${adjustedIndex}`,
       }).run();
 
       imageId++;
@@ -205,9 +242,8 @@ function handleFileChange(event) {
   }
 }
 
-
 watch(() => props.readyToPost, (newValue) => {
-  if (newValue) {
+  if (newValue && props.readyToPost) {
     // 이미지 속성 추출
     const attrList = extractImageAttributes(editor.value.getJSON().content);
     console.log(attrList);
@@ -363,5 +399,17 @@ function parseStyle(styleString) {
     border-top: 2px solid rgba(#0D0D0D, 0.1);
     margin: 2rem 0;
   }
+
+
+div[draggable] {
+    width: auto;
+    height: auto;
+    display: inline-block;
+    line-height: 0; /* 이미지 주변의 여백 제거 */
+}
+div[contenteditable]{
+  width :auto !important;
+}
+
 }
 </style>

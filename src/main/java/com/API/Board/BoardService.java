@@ -208,18 +208,17 @@ public class BoardService {
 	public ResponseEntity<String> postBoard(BoardPostDTO dto , Authentication authentication){
 		Board board;
 		try {
-			if(dto.getBoardId() == null || dto.getBoardId().isEmpty()) {
+			if(dto.getId() == null || dto.getId() == 0) {
 				board = new Board();
 			}else {
-				Long boardId = Long.valueOf(dto.getBoardId());
+				Long boardId = Long.valueOf(dto.getId());
 				Optional<Board> boardWrap = boardRepository.findById(boardId);
 				if(boardWrap.isEmpty()) {
 					return ResponseEntity.status(HttpStatus.CONFLICT).build();
 				}
 			    board = boardWrap.get();
 			}
-			String idAsString = dto.getId();
-			Long id = Long.valueOf(idAsString);
+			Long id  = dto.getUserIdx();
 			User author = userRepository.findById(id).orElseThrow(
 		            () -> new EntityNotFoundException("User not found with ID: " + id));
 			String title = dto.getTitle();
@@ -252,12 +251,13 @@ public class BoardService {
 		
 		Board board;
 		try {
-			board = new Board();
-			String BoardIdAsString = dto.getBoardId();
-			Long boardId = Long.valueOf(BoardIdAsString);
-			board.setId(boardId);
-			String idAsString = dto.getId();
-			Long id = Long.valueOf(idAsString);
+			Long BoardId = dto.getId();
+			Optional<Board> boardWrap = boardRepository.findById(BoardId);
+			if(boardWrap.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			}
+			board = boardWrap.get();
+			Long id = dto.getUserIdx();
 			User author = userRepository.findById(id).orElseThrow(
 		            () -> new EntityNotFoundException("User not found with ID: " + id));
 			String title = dto.getTitle();
@@ -325,7 +325,9 @@ public class BoardService {
 			dto.setContent(boards.getContent());
 			dto.setId(id);
 			dto.setUserIdx(boards.getAuthor().getId());
-			
+			dto.setCategory1(boards.getCategory().getCategory1());
+			dto.setCategory2(boards.getCategory().getCategory2());
+			dto.setCategory3(boards.getCategory().getCategory3());
 			return ResponseEntity.ok(dto);
 		}
 	}
