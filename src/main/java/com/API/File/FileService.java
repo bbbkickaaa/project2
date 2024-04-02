@@ -115,7 +115,6 @@ public ResponseEntity<?> PostBoardImg(Authentication authentication, List<Multip
             }
 
             BufferedImage originalImage = ImageIO.read(file.getInputStream());
-
             String widthStr = attr.getStyle().getWidth();
             String heightStr = attr.getStyle().getHeight();
             int originalWidth = originalImage.getWidth();
@@ -220,7 +219,6 @@ public ResponseEntity<?> PostBoardImgAlter(Authentication authentication, List<M
             String heightStr = attr.getStyle().getHeight();
             int originalWidth = originalImage.getWidth();
             int originalHeight = originalImage.getHeight();
-
             int desiredWidth = (widthStr.equals("100%") || widthStr.equals("auto")) ? originalWidth : parseDimension(widthStr);
             int desiredHeight = (heightStr.equals("100%") || heightStr.equals("auto")) ? originalHeight : parseDimension(heightStr);
 
@@ -234,11 +232,24 @@ public ResponseEntity<?> PostBoardImgAlter(Authentication authentication, List<M
 	             originalImage = resizedImage; // 리사이징된 이미지를 originalImage 변수에 할당
 	
 	         String fileName = file.getOriginalFilename();
-	         String url = board.getBoardImage().stream().findFirst().map(BoardImage::getFilePath).toString();
-	         String[] parts = url.split("/");
-	         String currentTimestamp = parts[5]; 
+	         
+	         String url;
+	         String currentTimestamp;
+
+	         if (board.getBoardImage() != null && !board.getBoardImage().isEmpty()) {
+	             url = board.getBoardImage().stream().findFirst().map(BoardImage::getFilePath).toString();
+	             String[] parts = url.split("/");
+	             currentTimestamp = parts[5];
+	         } else {
+	             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	             currentTimestamp = LocalDateTime.now().format(formatter);
+	         }
+
 	         String filePath = boardUploadDir + File.separator + "user_" + user.getId() + File.separator + currentTimestamp;
 	         Path targetLocation = Paths.get(filePath).resolve(fileName);
+	         
+	         
+	         
 	         if (!Files.exists(targetLocation.getParent())) {
 	             Files.createDirectories(targetLocation.getParent());
 	         }

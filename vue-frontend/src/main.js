@@ -38,7 +38,7 @@ axiosInstance.interceptors.request.use(config => {
 }, error => {
   return Promise.reject(error);
 });
-
+let reloadCount = 0;
 let isRefreshing = false;
 let refreshPromise = null;
 // 로그아웃 함수 정의
@@ -69,6 +69,10 @@ axiosInstance.interceptors.response.use(response => {
         sessionStorage.setItem('accessToken', newToken);
         const originalRequest = error.config;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        if(reloadCount < 6){
+          //window.location.reload();
+          reloadCount++;
+        }
         return axiosInstance(originalRequest);
       }).catch(refreshError => {
         logout();

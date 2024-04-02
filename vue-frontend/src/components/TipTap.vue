@@ -144,7 +144,7 @@ function countImgTags(htmlString) {
   let count = 0;
 
   while ((match = imgTagRegex.exec(htmlString)) !== null) {
-    if (!match[1].startsWith('data:image/')) { // Base64 이미지는 제외
+    if (!match[1].startsWith('data:image/')) {
       count++;
     }
   }
@@ -152,32 +152,34 @@ function countImgTags(htmlString) {
   return count;
 }
 
-const imageSrcCount = ref(0);
+let imageSrcCount = 0;
 watch(() => props.stringList, (newList) => {
   if (newList[0].includes("\u{1F4A9}\u{1F4A3}\u{1F4A5}\u{1F4AB}\u{1F4A2}")) {
     emit('value', editor.value.getHTML());
     return;
   }
-
-  newList.forEach((newImageUrl, index) => {
-  const htmlContent = editor.value.getHTML();
-  const existingImagesCount = countImgTags(htmlContent);
-
+  console.log(newList);
+  [...newList].forEach((newImageUrl) => {
   if (editor.value) {
-    const adjustedIndex = index + existingImagesCount;
-    const imageClass = `custom-image-${adjustedIndex}`;
-      const position = findImagePosition(editor.value, imageClass);
 
+    const htmlContent = editor.value.getHTML();
+    const existingImagesCount = countImgTags(htmlContent);
+    const adjustedIndex = existingImagesCount; 
+    const imageClass = `custom-image-${adjustedIndex}`;
+    const position = findImagePosition(editor.value, imageClass);
       if (position !== null) {
-        const imageNode = editor.value.schema.nodes.image.create({ src: newImageUrl, class: imageClass, style : {width : 'auto'} });
+        const imageNode = editor.value.schema.nodes.image.create({ src: newImageUrl, alt: `custom-image-${adjustedIndex}`,class: imageClass, style : {width : 'auto'} });
         const transaction = editor.value.state.tr
           .delete(position, position + 1) // 기존 이미지 삭제
           .insert(position, imageNode);   // 새 이미지 삽입
         editor.value.view.dispatch(transaction);
 
-        imageSrcCount.value++;
+        imageSrcCount++;
+        console.log('이미지카운트' + imageSrcCount);
+        console.log('리스트벨류' +  newList.length)
       }
-      if (imageSrcCount.value === newList.length) {
+      if (imageSrcCount === newList.length) {
+        console.log('goValue');
         emit('value', editor.value.getHTML());
       }
     }
@@ -215,7 +217,7 @@ let fileList = [];
 
 function handleFileChange(event) {
   const input = event.target;
-  const file = input.files[0];
+  let file = input.files[0];
 
   if (file && file.size > (1024 * 1024 * 5)) {
     alert('파일 크기가 너무 큽니다. 5MB 이하의 파일만 업로드 가능합니다.');
@@ -223,6 +225,9 @@ function handleFileChange(event) {
   }
 
   if (file) {
+    const uniqueFileName = getUniqueFileName(file.name);
+    file = new File([file], uniqueFileName, { type: file.type }); // 중복되지 않는 이름으로 파일 객체 재생성
+
     fileList.push(file);
     const htmlContent = editor.value.getHTML();
     const existingImagesCount = countImgTags(htmlContent);
@@ -235,23 +240,37 @@ function handleFileChange(event) {
         src: e.target.result, 
         alt: `custom-image-${adjustedIndex}`,
       }).run();
-
       imageId++;
     };
     reader.readAsDataURL(file);
   }
 }
 
+function getUniqueFileName(originalName) {
+  let counter = 0;
+  let newName = originalName;
+  const originalBaseName = originalName.replace(/\.[^.]+$/, ""); // 확장자 제외 파일 기본 이름
+  const extension = originalName.replace(/^.*\./, ''); // 파일 확장자
+
+  // 파일 이름이 중복되는지 확인하고, 중복된다면 새 이름 생성
+  while (fileList.some(file => file.name === newName)) {
+    counter++;
+    newName = `${originalBaseName}-${counter}.${extension}`;
+  }
+
+  return newName;
+}
+
 watch(() => props.readyToPost, (newValue) => {
   if (newValue && props.readyToPost) {
     // 이미지 속성 추출
     const attrList = extractImageAttributes(editor.value.getJSON().content);
-    console.log(attrList);
     // 파일과 속성을 결합
     const combinedList = fileList.map((file, index) => ({
       file: file, 
       attr: attrList[index]
     }));
+    console.log("속성 : "+combinedList.attr);
     
     emit('imageLoaded', combinedList);
   }
@@ -262,17 +281,21 @@ function extractImageAttributes(content) {
     if (item.content) {
       item.content.forEach(innerItem => {
         if (innerItem.type === 'image' && innerItem.attrs) {
-          const styleObject = parseStyle(innerItem.attrs.style);
-          attrList.push({
-            style: styleObject,
-            alt: innerItem.attrs.alt
-          });
+          // Base64 인코딩된 이미지 확인
+          if (innerItem.attrs.src && innerItem.attrs.src.startsWith('data:image/')) {
+            const styleObject = parseStyle(innerItem.attrs.style);
+            attrList.push({
+              style: styleObject,
+              alt: innerItem.attrs.alt
+            });
+          }
         }
       });
     }
   });
   return attrList;
 }
+
 
 function parseStyle(styleString) {
   const styles = {};

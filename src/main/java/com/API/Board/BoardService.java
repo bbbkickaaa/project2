@@ -81,7 +81,7 @@ public class BoardService {
 		Set<Integer> blockUsers = user.getBlockIds();
 		
 		
-	    String queryString = "SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) FROM Board b JOIN b.author u LEFT JOIN b.comments c";
+	    String queryString = "SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category, COUNT(bi)) FROM Board b JOIN b.author u LEFT JOIN b.comments c LEFT JOIN b.boardImage bi";
 	    String countQueryString = "SELECT COUNT(b) FROM Board b JOIN b.author u";
 
 	    String whereClause = "";
@@ -505,6 +505,12 @@ public class BoardService {
 
 	public ResponseEntity<Page<ReportDTO>> report(Pageable pageable) {
 		Page<ReportDTO> dto = reportRepository.findAllReports(pageable);
+		return ResponseEntity.ok(dto);
+	}
+
+	public ResponseEntity<?> getPopular(Pageable pageable) {
+		String weekAgo = LocalDateTime.now().minusWeeks(1).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+		Page<BoardReviewDTO> dto = boardRepository.findPopular(pageable, weekAgo);
 		return ResponseEntity.ok(dto);
 	}
 

@@ -25,4 +25,5 @@ public class BoardReviewDTO {
     private int likes;
     private Long commentCount;
     private BoardCategory category;
+    private Long ImageCount;
 }

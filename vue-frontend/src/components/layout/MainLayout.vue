@@ -5,6 +5,7 @@
           <a class="main-logo" @click="refreshView"><img src="/MainLogo.png" style="width:150px" alt="logo"></a>
         </div>
         <AppHeader @send-role="saveRole" @Alter-identity="handleAlterIdentity"></AppHeader>
+        <NoticeAndPopular></NoticeAndPopular>
         <AppCategory @category-selected="setCategory1"></AppCategory>
         <div class="wraps">
          <router-view :role="role" :key="refreshKey"></router-view>
@@ -16,10 +17,12 @@
   <script>
   import AppCategory from '@/views/main/Category/AppCategory.vue';
   import AppHeader from '@/views/main/header/AppHeader.vue';
+  import NoticeAndPopular from '@/views/main/noticeAndPopular/NoticeAndPopular.vue';
   export default {
     components: {
         AppHeader,
         AppCategory,
+        NoticeAndPopular,
     },
     data() {
       return {

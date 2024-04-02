@@ -145,6 +145,11 @@ public class BoardController {
 		return boardService.deleteComment(dto);
 	}
 	
+	@GetMapping("get-popular")
+	public ResponseEntity<?> getPopular(
+			@PageableDefault(size = 5, sort = "id") Pageable pageable){
+		return boardService.getPopular(pageable);
+	}
 	
 
 }

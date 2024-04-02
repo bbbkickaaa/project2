@@ -1,5 +1,6 @@
 package com.API.Board;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,12 +30,17 @@ public interface BoardRepository extends Repository<Board, Long> {
 	    void deleteById(Long id);
 	    
 	    
-	    @Query("SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category) " +
-	    	       "FROM Board b JOIN b.author u LEFT JOIN b.comments c " +
+	    @Query("SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category, COUNT(bi)) " +
+	    	       "FROM Board b JOIN b.author u LEFT JOIN b.comments c LEFT JOIN b.boardImage bi " +
 	    	       "WHERE b.id IN (:list) " +
 	    	       "GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category")
 	    Page<BoardReviewDTO> findAllBylist(Pageable pageable, @Param("list") Set<Integer> list);
 
 
+	    @Query("SELECT new com.API.Board.DTO.BoardReviewDTO(b.id, b.title, u.id, u.nickname, b.views, b.likes, COUNT(c), b.category, COUNT(bi)) " +
+	    	       "FROM Board b JOIN b.author u LEFT JOIN b.comments c LEFT JOIN b.boardImage bi " +
+	    	       "WHERE b.writeDate >= :weekAgo " +
+	    	       "GROUP BY b.id, b.title, u.id, u.nickname, b.views, b.likes, b.category")
+	    Page<BoardReviewDTO> findPopular(Pageable pageable, @Param("weekAgo") String weekAgo);
 
 	}

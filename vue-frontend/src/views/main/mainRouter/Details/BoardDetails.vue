@@ -171,6 +171,11 @@ mounted(){
     this.userIdx = sessionStorage.getItem('userIdx');
     this.CommentForm.userIdx = this.userIdx;
     },
+beforeRouteUpdate(to, from, next) {
+    const newId = to.params.id;
+    this.getDetail(newId);
+  next();
+},
 methods: {
   getDetail(id){
     this.$axios.get('/api/board/get-detail', { params: { id: id }, withCredentials: true})
