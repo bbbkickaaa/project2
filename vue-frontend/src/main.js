@@ -70,7 +70,7 @@ axiosInstance.interceptors.response.use(response => {
         const originalRequest = error.config;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         if(reloadCount < 6){
-          //window.location.reload();
+          window.location.reload();
           reloadCount++;
         }
         return axiosInstance(originalRequest);

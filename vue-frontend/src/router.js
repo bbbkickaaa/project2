@@ -15,6 +15,9 @@ import {validateCategoryRoute} from '@/routerGuard';
 import Identity from '@/views/main/mainRouter/IdentityContent.vue';
 import { validateYourRoleRoute } from '@/routerGuard';
 import ReportBoard from '@/views/main/mainRouter/ReportBoard.vue';
+import NoticePost from '@/views/main/mainRouter/NoticePost.vue';
+import NoticeDetail from '@/views/main/mainRouter/Details/NoticeDetails.vue';
+import NoticeAlter from '@/views/main/mainRouter/NoticeAlter.vue';
 const router = createRouter({
   history: createWebHistory(),
   routes : [
@@ -51,6 +54,9 @@ const router = createRouter({
           name: 'BoardAlter', 
           beforeEnter: checkPostOwner
         },
+        {path: 'notice/write', component:NoticePost, beforeEnter:validateYourRoleRoute},
+        {path: 'notice/details/:noticeId', component:NoticeDetail},
+        {path: 'notice/details/:noticeId/edit', component:NoticeAlter}
       ]
     },
     

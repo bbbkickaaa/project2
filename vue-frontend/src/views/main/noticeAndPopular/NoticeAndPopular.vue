@@ -12,7 +12,12 @@
     <div v-if="showSection === 'notices'" class="mt-3 the-list">
       <h4 style=""><label style="font-weight: bold; float: left; margin-left: 10px; line-height: 30px; font-size: 40px;">|</label>    <span style="padding-left: 20px;">공지사항</span></h4>
       <ul class="list-group">
-        <li class="list-group-item" v-for="(notice,index) in notices" :key="notice.id"><span style="margin-right: 10px;" class="badge bg-danger">{{index + 1}}</span> {{ notice.title }}</li>
+        <li @click="toNotice(notice.noticeId)" class="list-group-item" v-for="(notice,index) in noticePosts" :key="notice.noticeId">
+          <span style="margin-right: 10px;" class="badge bg-danger">{{index + 1}}</span>
+          <span v-if="notice.imageCount>0" style=" vertical-align: bottom; font-weight: bold; color: #198754; font-size: 25px;" class="material-symbols-outlined">image</span>
+          <span style="font-weight: 600;">{{ notice.title }}</span>
+          <span v-if="notice.likes > 0" style="font-size: 14px; font-weight: bold; color: palevioletred; margin: 0 5px;" >{{ '   +' +   notice.likes }}</span>
+        </li>
       </ul>
     </div>
 
@@ -20,9 +25,12 @@
     <div v-if="showSection === 'popular'" class="mt-3 the-list">
       <h4 style=""><label style="font-weight: bold; float: left; margin-left: 10px; line-height: 30px; font-size: 40px;">|</label>    <span style="padding-left: 20px;">금주 인기글</span></h4>
       <ul class="list-group">
-        <li class="list-group-item" @click="toPath(post.category.category1,post.category.category2,post.category.category3,post.boardId)" v-for="(post,index) in popularPosts" :key="post.id">
-        <span style="margin-right: 10px;" class="badge bg-success">{{index + 1}}</span>  {{ post.title }}
-        <span v-if="post.commentCount > 0">{{ + post.commentCount }}</span>
+        <li class="list-group-item" @click="toPath(post.category.category1,post.category.category2,post.category.category3,post.boardId)" v-for="(post,index) in popularPosts" :key="post.boardId">
+          <span style="margin-right: 10px;" class="badge bg-success">{{index + 1}}</span>
+          <span v-if="post.imageCount>0" style="vertical-align: bottom; font-weight: bold; color: #198754; font-size: 25px;" class="material-symbols-outlined">image</span>
+          <span style="font-weight: 600; "> {{ post.title }}</span>
+        <span v-if="post.commentCount > 0" style="font-size: 14px; font-weight: bold; color: darkgreen; margin-left: 5px;" >{{ '[' + post.commentCount + ']' }}</span>
+        <span v-if="post.likes > 0" style="font-size: 14px; font-weight: bold; color: palevioletred; margin: 0 5px;" >{{ '   +' +   post.likes }}</span>
         </li>
       </ul>
     </div>
@@ -33,30 +41,33 @@
 export default {
   data() {
     return {
-      showSection: 'notices', // 초기에 보여줄 섹션
-      notices: [
-        { id: 1, title: "공지사항 1" },
-        { id: 2, title: "공지사항 2" },
-        { id: 3, title: "공지사항 3" },
-        { id: 4, title: "공지사항 4" },
-        { id: 5, title: "공지사항 5" }
-      ],
+      showSection: 'notices',
+      noticePosts : [],
       popularPosts: []
     };
   },
   methods : {
     getPopular(){
       this.$axios.get('/api/board/get-popular')
-      .then((response)=>{this.popularPosts = response.data.content; console.log(this.popularPosts)})
+      .then((response)=>{this.popularPosts = response.data.content;})
     },
     toPath(category1,category2,category3,id){
-      console.log(`/${category1}/${category2}/${category3}/detail/${id}`);
+
       this.$router.push({path:`/main/${category1}/${category2}/${category3}/detail/${id}`})
+    },
+    getNotice(){
+      this.$axios.get('api/notice/get-all')
+      .then((response)=>{this.noticePosts = response.data.content; console.log(this.noticePosts)})
+    },
+    toNotice(id){
+      this.$router.push(`main/notice/details/${id}`)
+
     },
 
   },
   mounted(){
     this.getPopular();
+    this.getNotice();
 
   }
 };
@@ -71,6 +82,7 @@ export default {
 
   }
   .the-list{
+    height: 304px;
     width: 1000px;
     box-sizing: border-box;
     border-radius: 10px;

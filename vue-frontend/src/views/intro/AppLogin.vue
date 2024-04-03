@@ -68,7 +68,7 @@
       })
       .catch((e) => {
         console.log(e.response);
-        alert(e.response.data);
+        alert(e.response.data.error);
       });
   },
   forgotPassword(){

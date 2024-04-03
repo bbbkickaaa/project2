@@ -58,7 +58,7 @@
                             <button  class="btn btn-danger"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px; color:white;">search</span></button>
                             <button v-if="isSearched"  @click="resetSearch" style=" margin-left: 5px;" class="btn btn-secondary"><span class="material-symbols-outlined" style="vertical-align: bottom; font-size: 30px; color:white">close</span></button>
                         </form>
-                        <button class="btn btn-primary write-board" v-if="role==='ADMIN'">공지사항 작성하기</button>
+                        <button class="btn btn-primary write-board" @click="toNotice" v-if="role==='ADMIN'">공지사항 작성하기</button>
                         <button v-if="!isFavorite" @click="writePost" class="btn btn-success write-board">새 글 작성하기</button>
                     </div>
                 <nav aria-label="Page navigation" class="paging mt-4">
@@ -370,6 +370,9 @@ methods :{
     },
     handleSwitchModal(newModal) {
       this.recentModal = newModal;
+    },
+    toNotice(){
+        this.$router.push('main/notice/write')
     },
 
 }

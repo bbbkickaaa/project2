@@ -78,7 +78,7 @@ import TipTap from '@/components/TipTap.vue';
           title: '',
           content: '',
           userIdx : '',
-          boardId : '',
+          id : '',
           category1 :'chat',
           category2 : 'chat',
           category3 : 'free',
@@ -115,6 +115,7 @@ import TipTap from '@/components/TipTap.vue';
 
           
           this.$axios.post('/api/file/board-img', formData, {
+            
             withCredentials: true,
             headers: {
               'Content-Type': 'multipart/form-data'

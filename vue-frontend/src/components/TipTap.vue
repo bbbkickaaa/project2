@@ -158,7 +158,7 @@ watch(() => props.stringList, (newList) => {
     emit('value', editor.value.getHTML());
     return;
   }
-  console.log(newList);
+  console.log(props.stringList);
   [...newList].forEach((newImageUrl) => {
   if (editor.value) {
 
@@ -263,14 +263,12 @@ function getUniqueFileName(originalName) {
 
 watch(() => props.readyToPost, (newValue) => {
   if (newValue && props.readyToPost) {
-    // 이미지 속성 추출
     const attrList = extractImageAttributes(editor.value.getJSON().content);
     // 파일과 속성을 결합
     const combinedList = fileList.map((file, index) => ({
       file: file, 
       attr: attrList[index]
     }));
-    console.log("속성 : "+combinedList.attr);
     
     emit('imageLoaded', combinedList);
   }

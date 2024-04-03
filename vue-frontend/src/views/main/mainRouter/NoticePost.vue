@@ -5,61 +5,12 @@
         <div class="mb-3">
           <input type="text" class="form-control" id="titleInput" v-model="post.title" maxlength="80" :minlength="minLength" required placeholder="제목을 입력하세요">
         </div>
-        <div>
-          <select v-model="post.category1" class="editor-select">
-              <option value="chat">잡담</option>
-              <option value="game">게임</option>
-              <option value="beauty">뷰티</option>
-              <option value="study">공부</option>
-              <option value="travel">여행</option>
-          </select>
-          <select v-if="post.category1 === 'chat'" v-model="post.category2" class="editor-select">
-            <option value="chat">잡담</option>
-            <option value="common">일상</option>
-            <option value="star">연예</option>
-            <option value="love">사랑</option>
-            <option value="food">음식</option>
-          </select>
-          <select v-if="post.category1 === 'game'" v-model="post.category2" class="editor-select">
-            <option value="lol">리그오브레전드</option>
-            <option value ="overwatch">오버워치</option>
-            <option value="maplestory">메이플스토리</option>
-            <option value="varolant">발로란트</option>
-            <option value="mabinogi">마비노기</option>
-          </select>
-          <select v-if="post.category1 === 'beauty'" v-model="post.category2" class="editor-select">
-            <option value="makeup">화장</option>
-            <option value ="fashion">패션</option>
-            <option value="skin">피부</option>
-            <option value="diet">다이어트</option>
-            <option value="hairstyle">헤어스타일</option>
-          </select>
-          <select v-if="post.category1 === 'study'" v-model="post.category2" class="editor-select">
-            <option value="certification">자격증</option>
-            <option value ="suneung">수능</option>
-            <option value="toeic">토익</option>
-            <option value="hobby">취미</option>
-            <option value="interview">면접</option>
-          </select>
-          <select v-if="post.category1 === 'travel'" v-model="post.category2" class="editor-select">
-            <option value="oversea">해외</option>
-            <option value ="domestic">국내</option>
-            <option value="festival">축제</option>
-            <option value="event">이벤트</option>
-          </select>
-
-          <select v-model="post.category3" class="editor-select">
-            <option value="free">자유</option>
-            <option value ="ask">질문</option>
-            <option value="info">정보</option>
-          </select>
-        </div>
         <div class ="sections">
-          <button type="submit" class="btn btn-success">새 글 저장하기</button>
+          <button type="submit" class="btn btn-success">공지사항 저장하기</button>
           <button type="submit" @click="returnMain" class="btn btn-secondary">취소</button>
         </div>    
       </form>
-      <tip-tap :existContent="post.content" @value="startPost" :stringList="picturesUrl" :readyToPost="readyToPost" @imageLoaded="handleImageLoaded" class="tip-tap"/>
+      <tip-tap  @value="startPost" :stringList="picturesUrl" :readyToPost="readyToPost" @imageLoaded="handleImageLoaded" class="tip-tap"/>
     </div>
   </template>
   
@@ -71,17 +22,14 @@ import TipTap from '@/components/TipTap.vue';
     },
     data() {
       return {
-        id : null,
         readyToPost : false,
         pictures : [],
         picturesUrl : [],
         post: {
           title: '',
           content: '',
-          id : '',
-          category1 :'',
-          category2 : '',
-          category3 : '',
+          userIdx : '',
+          noticeId : '',
         },
         minLength : 5
       };
@@ -109,24 +57,29 @@ import TipTap from '@/components/TipTap.vue';
               formData.append('files', item.file);
             });
 
-            formData.append('boardId',this.post.id);
+            // attrs를 루프 바깥에서 계산
             let attrs = this.pictures.map(item => item.attr);
             formData.append('attrs', JSON.stringify(attrs));
-          this.$axios.post('/api/file/board-imga', formData, {
+
+          
+          this.$axios.post('/api/file/notice-img', formData, {
             withCredentials: true,
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           }).then((response) => {
             const arrayList = [];
-            response.data.boardImage.forEach(image => {
-            arrayList.push(image.filePath);
-          })
+            this.post.noticeId = response.data.id
+            response.data.noticeImage.forEach(image => {
+              arrayList.push(image.filePath);
+            })
           this.picturesUrl = arrayList;
           }).catch(error => {
             if (error.response) {
+              console.log(error);
               alert("Error: 오류가 발생했습니다.");
             } else if (error.request) {
+              console.log(error);
               alert("Error: 서버로부터 응답이 없습니다.");
             } else {
               alert("오류가 발생했습니다.");
@@ -144,8 +97,7 @@ import TipTap from '@/components/TipTap.vue';
         },
       startPost(newVal){
         this.post.content = newVal;
-        console.log(this.post);
-          this.$axios.put('/api/board/alter',this.post,{
+          this.$axios.post('/api/notice/post',this.post,{
             withCredentials: true}).then(()=>{
             this.$router.push('/main');
           })
@@ -155,43 +107,11 @@ import TipTap from '@/components/TipTap.vue';
       this.pictures = files;
       this.PostServe();
     },
-    returnBoardDetail(id){
-        this.$router.push(`/main/detail/${id}`)
-        },
-
-        getDetail(id){
-          this.$axios.get('/api/board/get-detail-only-alter', { params: { id: id }})
-        .then(Response => {this.post = Response.data; console.log(this.post.content)});
-        },
-
-  },
+    },
 
     mounted() {
-        const id = parseInt(this.$route.params.id, 10);
-        this.id = id;
-        this.post.id = id;
         this.post.userIdx = sessionStorage.getItem('userIdx');
-        this.getDetail(id);
     },
-    watch: {
-    'post.category1'(newValue) {
-      if (newValue === 'chat') {
-        this.post.category2 = 'chat';
-        this.post.category3 = 'free';
-      } else if (newValue === 'game') {
-        this.post.category2 = 'lol';
-        this.post.category3 = 'free';
-      } else if (newValue === 'beauty') {
-        this.post.category2 = 'makeup';
-        this.post.category3 = 'free';
-      }else if (newValue === 'study') {
-        this.post.category2 = 'toeic';
-        this.post.category3 = 'free';
-      }else if (newValue === 'travel') {
-        this.post.category2 = 'oversea';
-        this.post.category3 = 'free';}
-  }
-}
   }
 
   </script>

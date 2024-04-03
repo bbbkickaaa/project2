@@ -30,6 +30,10 @@ import com.API.Board.DTO.BoardIdWithImgDTO;
 import com.API.Board.Entity.Board;
 import com.API.Board.Entity.BoardImage;
 import com.API.File.DTO.AttrDTO;
+import com.API.Notice.NoticeRepository;
+import com.API.Notice.DTO.NoticeIdWithImgDTO;
+import com.API.Notice.Entity.Notice;
+import com.API.Notice.Entity.NoticeImage;
 import com.API.User.UserRepository;
 import com.API.User.Entity.User;
 import com.fasterxml.jackson.databind.annotation.JsonAppend.Attr;
@@ -45,11 +49,17 @@ public class FileService {
 	@Autowired
 	BoardRepository boardRepository;
 	
+	@Autowired
+	NoticeRepository noticeRepository;
+	
 	 @Value("${profile.upload-dir}")
 	    private String profileUploadDir;
 	 
 	 @Value("${board.upload-dir}")
 	    private String boardUploadDir;
+	 
+	 @Value("${notice.upload-dir}")
+	 private String noticeUploadDir;
 	 
 	 @Value("${host-dir}")
 	 private String hostDir;
@@ -278,4 +288,167 @@ public ResponseEntity<?> PostBoardImgAlter(Authentication authentication, List<M
 
     return ResponseEntity.ok(Imgdto);
 }
-		}
+
+public ResponseEntity<?> PostNoticeImg(Authentication authentication, List<MultipartFile> files, List<AttrDTO> attrs) {
+	 String userId = authentication.getName();
+	    Optional<User> userWrap = userRepository.findByUserid(userId);
+	    if (userWrap.isEmpty()) {
+	        return ResponseEntity.badRequest().body("User not found");
+	    }
+	    User user = userWrap.get();
+	    Notice notice = new Notice();
+	    List<NoticeImage> imgList = new ArrayList<>();
+
+	    for (int i = 0; i < files.size(); i++) {
+	        MultipartFile file = files.get(i);
+	        AttrDTO attr = attrs.get(i);
+	        try {
+	            String contentType = file.getContentType();
+	            if (contentType == null || !contentType.startsWith("image/")) {
+	                continue;
+	            }
+
+	            BufferedImage originalImage = ImageIO.read(file.getInputStream());
+	            String widthStr = attr.getStyle().getWidth();
+	            String heightStr = attr.getStyle().getHeight();
+	            int originalWidth = originalImage.getWidth();
+	            int originalHeight = originalImage.getHeight();
+
+	            int desiredWidth = (widthStr.equals("100%") || widthStr.equals("auto")) ? originalWidth : parseDimension(widthStr);
+	            int desiredHeight = (heightStr.equals("100%") || heightStr.equals("auto")) ? originalHeight : parseDimension(heightStr);
+
+		
+		             // 이미지 리사이징 수행
+		             BufferedImage resizedImage = new BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_RGB);
+		             Graphics2D g = resizedImage.createGraphics();
+		             g.drawImage(originalImage, 0, 0, desiredWidth, desiredHeight, null);
+		             g.dispose();
+		             originalImage = resizedImage; // 리사이징된 이미지를 originalImage 변수에 할당
+		
+		         String fileName = file.getOriginalFilename();
+		         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+		         String currentTimestamp = LocalDateTime.now().format(formatter);
+		         String filePath = noticeUploadDir + File.separator + "admin_" + user.getId() + File.separator + currentTimestamp;
+		         Path targetLocation = Paths.get(filePath).resolve(fileName);
+		         if (!Files.exists(targetLocation.getParent())) {
+		             Files.createDirectories(targetLocation.getParent());
+		         }
+		         File outputFile = targetLocation.toFile();
+		         ImageIO.write(originalImage, "jpg", outputFile);
+
+	            String baseUrl =hostDir+"/resources/notice/";
+	            String accessibleUrl = baseUrl + "admin_" + user.getId() + "/" + currentTimestamp + "/" + fileName;
+	            NoticeImage img = new NoticeImage();
+	            img.setWidth(desiredWidth);
+	            img.setHeight(desiredHeight);
+	            img.setFileName(fileName);
+	            img.setFilePath(accessibleUrl);
+	            imgList.add(img);
+
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    notice.setTitle("임시 데이터입니다.");
+	    notice.setAuthor(user);
+	    notice.setContent("임시 데이터입니다.");
+	    notice.setNoticeImage(imgList);
+	    Notice notice_n = noticeRepository.save(notice);
+
+	    NoticeIdWithImgDTO Imgdto = new NoticeIdWithImgDTO();
+	    Imgdto.setId(notice_n.getId());
+	    Imgdto.setNoticeImage(imgList);
+
+	    return ResponseEntity.ok(Imgdto);
+}
+
+public ResponseEntity<?> PostNoticeImgAlter(Authentication authentication, List<MultipartFile> files,
+		List<AttrDTO> attrs, Long noticeId) {
+	String userId = authentication.getName();
+    Optional<User> userWrap = userRepository.findByUserid(userId);
+    Optional<Notice> noticeWrap = noticeRepository.findById(noticeId);
+    if (userWrap.isEmpty() || noticeWrap.isEmpty()){
+        return ResponseEntity.badRequest().body("not found");
+    }
+    User user = userWrap.get();
+    Notice notice = noticeWrap.get();
+    List<NoticeImage> imgList = new ArrayList<>();
+
+    for (int i = 0; i < files.size(); i++) {
+        MultipartFile file = files.get(i);
+        AttrDTO attr = attrs.get(i);
+        try {
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                continue;
+            }
+
+            BufferedImage originalImage = ImageIO.read(file.getInputStream());
+
+            String widthStr = attr.getStyle().getWidth();
+            String heightStr = attr.getStyle().getHeight();
+            int originalWidth = originalImage.getWidth();
+            int originalHeight = originalImage.getHeight();
+            int desiredWidth = (widthStr.equals("100%") || widthStr.equals("auto")) ? originalWidth : parseDimension(widthStr);
+            int desiredHeight = (heightStr.equals("100%") || heightStr.equals("auto")) ? originalHeight : parseDimension(heightStr);
+
+
+	
+	             // 이미지 리사이징 수행
+	             BufferedImage resizedImage = new BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_RGB);
+	             Graphics2D g = resizedImage.createGraphics();
+	             g.drawImage(originalImage, 0, 0, desiredWidth, desiredHeight, null);
+	             g.dispose();
+	             originalImage = resizedImage; // 리사이징된 이미지를 originalImage 변수에 할당
+	
+	         String fileName = file.getOriginalFilename();
+	         
+	         String url;
+	         String currentTimestamp;
+
+	         if (notice.getNoticeImage() != null && !notice.getNoticeImage().isEmpty()) {
+	             url = notice.getNoticeImage().stream().findFirst().map(NoticeImage::getFilePath).toString();
+	             String[] parts = url.split("/");
+	             currentTimestamp = parts[5];
+	         } else {
+	             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	             currentTimestamp = LocalDateTime.now().format(formatter);
+	         }
+
+	         String filePath = noticeUploadDir + File.separator + "admin_" + user.getId() + File.separator + currentTimestamp;
+	         Path targetLocation = Paths.get(filePath).resolve(fileName);
+	         
+	         
+	         
+	         if (!Files.exists(targetLocation.getParent())) {
+	             Files.createDirectories(targetLocation.getParent());
+	         }
+	         File outputFile = targetLocation.toFile();
+	         ImageIO.write(originalImage, "jpg", outputFile);
+
+	        String baseUrl =hostDir+"/resources/notice/";
+            String accessibleUrl = baseUrl + "admin_" + user.getId() + "/" + currentTimestamp + "/" + fileName;
+            NoticeImage img = new NoticeImage();
+            img.setWidth(desiredWidth);
+            img.setHeight(desiredHeight);
+            img.setFileName(fileName);
+            img.setFilePath(accessibleUrl);
+            imgList.add(img);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    notice.setNoticeImage(imgList);
+    noticeRepository.save(notice);
+
+    NoticeIdWithImgDTO Imgdto = new NoticeIdWithImgDTO();
+    Imgdto.setId(notice.getId());
+    Imgdto.setNoticeImage(imgList);
+
+    return ResponseEntity.ok(Imgdto);
+}
+	
+	
+}

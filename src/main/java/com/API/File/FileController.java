@@ -65,5 +65,30 @@ public class FileController {
 	    return fileSerivce.PostBoardImgAlter(authentication,files,attrs,boardId);
 	}
 	
+	@PostMapping("/file/notice-img")
+	public ResponseEntity<?> PostNoticeImg(
+			@RequestHeader("Authorization") String authorizationHeader,
+			@RequestParam("files") List<MultipartFile> files,
+			@RequestParam("attrs") String attrsJson) throws IOException  {
+		ObjectMapper mapper = new ObjectMapper();
+		List<AttrDTO> attrs = mapper.readValue(attrsJson, new TypeReference<List<AttrDTO>>() {});
+		String token = tokenProvider.resolveToken(authorizationHeader);
+		Authentication authentication =  tokenProvider.getAuthentication(token);
+	    return fileSerivce.PostNoticeImg(authentication,files,attrs);
+	}
+	
+	@PostMapping("/file/notice-imga")
+	public ResponseEntity<?> PostNoticeImgAlter(
+			@RequestHeader("Authorization") String authorizationHeader,
+			@RequestParam("files") List<MultipartFile> files,
+			@RequestParam("attrs") String attrsJson,
+	    	@RequestParam("noticeId") Long noticeId) throws IOException{
+		ObjectMapper mapper = new ObjectMapper();
+		List<AttrDTO> attrs = mapper.readValue(attrsJson, new TypeReference<List<AttrDTO>>() {});
+		String token = tokenProvider.resolveToken(authorizationHeader);
+		Authentication authentication =  tokenProvider.getAuthentication(token);
+	    return fileSerivce.PostNoticeImgAlter(authentication,files,attrs,noticeId);
+	}
+	
 
 }

@@ -4,64 +4,30 @@
             <span class="material-symbols-outlined symbols turn-back" @click="ToMain">undo</span>
             <span class="material-symbols-outlined symbols heart" v-if="!IsRecommended" @click="PostRecommend">favorite</span>
             <span class="material-symbols-outlined symbols heart fill-heart" v-if="IsRecommended" @click="PostRecommend">favorite</span>
-            <span class="material-symbols-outlined symbols star" v-if="!IsFavorite" @click="PostFavorite">star</span>
-            <span class="material-symbols-outlined symbols star fill-star" v-if="IsFavorite" @click="PostFavorite">star</span>
             <span @click="URLModalOpen" class="material-symbols-outlined symbols airplane ">near_me</span>
         </div>
         <div class="container mt-4 content-wrap">
             <div class="post-detail inner-box">
                 <div class ="post-title ">
-                    <ul class="infos">
-                        <li v-if="BoardInfo.alterDate">수정 : {{ formAlterDate }}</li>
-                        <li >{{ formWriteDate }}</li>
-                    </ul>
                     <div class="user">
-                        <img :src="BoardInfo.picture" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid darkolivegreen;" alt="user-picture">
-                        <p class="author">{{ BoardInfo.nickname }} <span class="badge bg-secondary">{{ BoardInfo.level }}</span></p>
+                        <img :src="NoticeInfo.picture" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid darkolivegreen;" alt="user-picture">
+                        <p class="author">{{ NoticeInfo.nickname }} <span class="badge bg-secondary">{{ NoticeInfo.level }}</span></p>
                     </div>
-                    <h3 class="titles">{{ BoardInfo.title  }}</h3>
+                    <h3 class="titles">{{ NoticeInfo.title  }}</h3>
                     <div class="emoticon">
-                        <p style="color: #999999;" class="count"><span style="vertical-align: bottom;" class="material-symbols-outlined">visibility</span> {{ BoardInfo.views }}</p>
-                        <p style="color: #999999;" class="content-count"><span style="vertical-align: bottom;"  class="material-symbols-outlined">chat</span> {{ BoardInfo.comments.length }}</p>
+                        <p style="color: #999999;" class="count"><span style="vertical-align: bottom;" class="material-symbols-outlined">visibility</span> {{ NoticeInfo.views }}</p>
                     </div>
-                    <p class ="category" v-if="BoardInfo.category"> 
-                        <a> {{ getKoreanCategoryName(BoardInfo.category.category1,1) }} </a>
-                        <span style="vertical-align: bottom;" class="material-symbols-outlined">arrow_right_alt</span>
-                        <a> {{ getKoreanCategoryName(BoardInfo.category.category2,2) }} </a>
-                        <span style="vertical-align: bottom;"  class="material-symbols-outlined">arrow_right_alt</span>
-                        <a> {{ getKoreanCategoryName(BoardInfo.category.category3,3) }} </a>
-                    </p>
+                    <p class="category">공지사항</p>
                  </div>
-                <p class="post-content contents" v-html="BoardInfo.content"></p>
+                <p class="post-content contents" v-html="NoticeInfo.content"></p>
             </div>
                 
             <div class="actions">
                 <button class="btn btn-secondary" v-if="CompareWithUsersAlter()" @click="AlterBoard(id)">수정</button>
                 <button class="btn btn-secondary" v-if="CompareWithUsersDelete()" @click="ShowModal = true" @close="closeModal">삭제</button>
             </div>
-        
-        <!-- 댓글 입력 폼 -->
-            <form @submit.prevent="PostComment">
-                <div class="comment-form mt-4" >
-                    <textarea v-model="CommentForm.comment" class="form-control" maxlength="80"  placeholder="댓글을 입력하세요" rows="3"></textarea>
-                    <button class="btn btn-success mt-2" :disabled="CommentForm.comment.length == 0" >댓글 작성</button>
-                </div>
-            </form>
         </div>
         </div>  
-    <!-- 댓글 리스트 -->
-    <div class="comment-list mt-4" v-if="BoardInfo.comments.length>0">
-        <div class="comment-box" v-if="BoardInfo.comments">
-            <div class="comment" v-for="(list,index) in BoardInfo.comments" :key="list.commentId" >
-                <p class="comment-nickname"><span  class="comment-idx">{{ index + 1 }}. </span>
-                <span><img :src="list.picture" style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid darkolivegreen;" alt="list-picture"></span>
-                <span style="vertical-align: bottom; margin-left: 10px;">{{  list.nickname }}<span style="font-size: 10px;margin-left: 4px; vertical-align: middle;" class="badge bg-secondary">{{ list.level  }}</span><label class="comment-writeDate">{{ '(' + formatDate(list.writeDate) + ')' }}</label></span> </p>
-                
-                <p class="comment-content">{{list.content}}</p>
-                <a v-if="list.userid == userIdx" @click="DeleteComment(list.commentId,BoardInfo.id)" class="comment-delete">삭제</a>
-            </div>
-        </div>
-    </div>
 
     <modal-component :show="ShowModal" @close="ShowModal = false" class="">
                 <div class="modal-inner">
@@ -89,51 +55,11 @@ import DOMPurify from 'dompurify';
     props:['role'],
     data(){
         return{
-            category1Mapping: {
-            'chat': '잡담',
-            'game': '게임',
-            'beauty': '뷰티',
-            'study': '공부',
-            'travel': '여행',
-        },
-        category2Mapping:{
-            'chat' : '잡담',            
-            'common': '일상',
-            'star': '연예',
-            'love': '사랑',
-            'food': '음식',
-            'lol': '리그오브레전드',
-            'overwatch': '오버워치',
-            'maplestory': '메이플스토리',
-            'valorant': '발로란트',
-            'mabinogi': '마비노기',
-            'makeup': '화장',
-            'fashion': '패션',
-            'skin': '피부',
-            'diet': '다이어트',
-            'hairstyle': '헤어스타일',
-            'certification': '자격증',
-            'suneung': '수능',
-            'toeic': '토익',
-            'hobby': '취미',
-            'interview': '면접',
-            'oversea': '해외',
-            'domestic': '국내',
-            'festival': '축제',
-            'event': '이벤트'
-        },
-        category3Mapping:{
-            'ask' : '질문',
-            'info' :'정보',
-            'free' : '자유',
-        },
-
             ShowModalURL : false,
             formWriteDate : '',
-            formAlterDate : '',
             formContentDate : '',
             CommentForm:{
-                BoardId : '',
+                noticeId : '',
                 userIdx : '',
                 comment : '',
                 whereParam :'',
@@ -143,7 +69,7 @@ import DOMPurify from 'dompurify';
             ShowModal: false,
             userIdx : '',
             id: null,
-            BoardInfo : {
+            NoticeInfo : {
                 title :'',
                 content:'',
                 id:'',
@@ -152,11 +78,8 @@ import DOMPurify from 'dompurify';
                 userIdx : '',
                 views : '',
                 writeDate : '',
-                alterDate : '',
                 picture:'',
-                comments:[],
                 level:null,
-                category:[],
                 likesUser:{},
                 favorite:null,
                 role:'',
@@ -165,7 +88,7 @@ import DOMPurify from 'dompurify';
     },
 mounted(){
     this.CommentForm.whereParam = this.$route.path;
-    const id = parseInt(this.$route.params.id, 10);
+    const id = parseInt(this.$route.params.noticeId, 10);
     this.id = id;
     this.getDetail(id);
     this.userIdx = sessionStorage.getItem('userIdx');
@@ -178,18 +101,13 @@ beforeRouteUpdate(to, from, next) {
 },
 methods: {
   getDetail(id){
-    this.$axios.get('/api/board/get-detail', { params: { id: id }, withCredentials: true})
+    this.$axios.get('/api/notice/get-detail', { params: { id: id }, withCredentials: true})
     .then(response => {
-            this.BoardInfo = response.data;
-            this.CommentForm.BoardId = response.data.id;
-            this.BoardInfo.content = DOMPurify.sanitize(response.data.content);
+            this.NoticeInfo = response.data;
+            this.CommentForm.noticeId = response.data.id;
+            this.NoticeInfo.content = DOMPurify.sanitize(response.data.content);
             this.PlusViews();
             this.checkRecommend();
-            this.checkFavorite();
-            if(this.BoardInfo.writeDate){
-            this.formWriteDate = this.formatDate(this.BoardInfo.writeDate);}
-            if(this.BoardInfo.alterDate){
-            this.formAlterDate = this.formatDate(this.BoardInfo.alterDate);}
           })
           .catch(error => {
             if (error.response) {
@@ -199,23 +117,23 @@ methods: {
             } else {
               alert(`${error.message}`);
             }
-            this.$router.push('/main');
+            this.$router.push('/main')
         });
   },
   ToMain(){
     this.$router.push('/main');
   },
   CompareWithUsersAlter(){
-    return this.userIdx == this.BoardInfo.userIdx
+    return this.userIdx == this.NoticeInfo.userIdx
   },
   CompareWithUsersDelete(){
-    return this.userIdx == this.BoardInfo.userIdx || this.role =="ADMIN";
+    return this.userIdx == this.NoticeInfo.userIdx || this.role =="ADMIN";
   },
   PlusViews(){
-    this.$axios.post('/api/board/post-views', this.BoardInfo.id)
+    this.$axios.post('/api/notice/post-views', this.NoticeInfo.id)
   },
   DeleteBoard(){
-    this.$axios.post('/api/board/delete-board', this.BoardInfo.id)
+    this.$axios.post('/api/notice/delete-notice', this.NoticeInfo.id)
     .then(()=> {this.$router.push('/main')})
     .catch(error => {
             if (error.response) {
@@ -227,30 +145,12 @@ methods: {
             }})
         },
   PostRecommend (){
-    this.$axios.post('/api/board/post-recommend', this.CommentForm)
+    this.$axios.post('/api/notice/post-recommend', this.CommentForm)
     .then(()=>{this.IsRecommended = !this.IsRecommended;})
     .catch((response)=>{alert(response.response.data);})
   },
-  PostFavorite(){
-    this.$axios.post('/api/board/post-favorite', this.CommentForm)
-    .then(()=>{this.IsFavorite = !this.IsFavorite;})
-    .catch((response)=>{alert(response.response.data);})
-  },
-  PostComment(){
-    this.$axios.post('/api/board/post-comment', this.CommentForm)
-    .then(response => {
-      this.CommentForm.comment = '';
-      response.data[response.data.length-1].picture = this.BoardInfo.picture;
-      response.data[response.data.length-1].level = this.BoardInfo.level;
-      this.BoardInfo.comments.push(response.data[response.data.length - 1])
-    })
-    },
-    DeleteComment(commentId,boardId){
-    this.$axios.post('/api/board/delete-comment', {commentId,boardId})
-    .then(()=>this.BoardInfo.comments = this.BoardInfo.comments.filter(comment => comment.commentId !== commentId))
-    },
     AlterBoard(id) {
-    this.$router.push({ name: 'BoardAlter', params: { id: id } });
+    this.$router.push(`/main/notice/details/${id}/edit`);
     },
     formatDate(dateStr) {
       const year = dateStr.slice(0, 4);
@@ -262,15 +162,9 @@ methods: {
       return `${year}년 ${month}월 ${day}일 ${hour}:${minute}:${second}`;
     },
     checkRecommend() {
-    this.IsRecommended = this.BoardInfo.likesUser.some(userId => 
+    this.IsRecommended = this.NoticeInfo.likesUser.some(userId => 
         userId === Number.parseInt(this.userIdx)
     )},
-    checkFavorite() {
-        if(this.BoardInfo.favorite){
-            this.IsFavorite = true;
-
-        }
-    },
     URLModalOpen(){
         this.ShowModalURL = !this.ShowModalURL
     },
@@ -480,16 +374,10 @@ methods: {
     .symbol{
         position: relative;
     }
-    .star{
-        font-weight: 300;
-        color: mediumturquoise;
-        position: absolute; 
-        right: 100px;
-    }
     .heart{
         color: pink;
         top: 10px;
-        right: 180px;
+        right: 100px;
         position: absolute;
     }
     .airplane {
