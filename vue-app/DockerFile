@@ -1,3 +1,12 @@
 FROM node:latest as builder
 
+WORKDIR /app
+COPY package.json ./
+RUN yarn insatall
+COPY . .
+RUN yarn run build
+
+FROM nginx:latest
+COPY --from=builder /app/dist /app
+
 EXPOSE 80
