@@ -76,7 +76,7 @@ public class FileService {
     	String filePath = profileUploadDir + File.separator + "user_" + user.getId(); // 유저별 디렉토리 경로
     	Path targetLocation = Paths.get(filePath).resolve(fileName); // 최종 파일 저장 경로
     	
-    	String baseUrl = "http://localhost:8080/resources/user/";
+    	String baseUrl = hostDir + "/resources/user/";
     	String userDir = "user_" + user.getId();
     	String accessibleUrl = baseUrl + userDir + "/" + fileName;
     	user.setPicture(accessibleUrl);
@@ -97,8 +97,6 @@ public class FileService {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		} 
     	userRepository.save(user);
-    	System.out.println(accessibleUrl);
-    	
     	return ResponseEntity.ok(accessibleUrl);
 
     	

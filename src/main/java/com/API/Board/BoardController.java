@@ -73,7 +73,6 @@ public class BoardController {
 	@GetMapping("/report")
 	public ResponseEntity<Page<ReportDTO>> report(
 			@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
-			
 	return boardService.report(pageable);
 	}
 	

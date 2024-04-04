@@ -28,7 +28,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
+    @Column(length = 300)
     private String content;
     
     @ManyToOne(fetch = FetchType.EAGER)

@@ -56,7 +56,7 @@ const router = createRouter({
         },
         {path: 'notice/write', component:NoticePost, beforeEnter:validateYourRoleRoute},
         {path: 'notice/details/:noticeId', component:NoticeDetail},
-        {path: 'notice/details/:noticeId/edit', component:NoticeAlter}
+        {path: 'notice/details/:noticeId/edit', component:NoticeAlter,beforeEnter:validateYourRoleRoute}
       ]
     },
     

@@ -52,7 +52,6 @@ public class LoginServiceImpl implements LoginService{
 	        response.addCookie(refreshTokenCookie);
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.set("Authorization", "Bearer " + accessToken);
-	        System.out.println(accessToken);
 	        return ResponseEntity.ok().headers(headers).body("로그인 성공.");
 	}
 	

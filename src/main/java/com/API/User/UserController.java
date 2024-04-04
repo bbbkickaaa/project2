@@ -103,7 +103,6 @@ public class UserController {
 	
     @PostMapping ("/public/mail-send")
     public ResponseEntity<?> mailSend(@RequestBody @Valid EmailRequestDTO emailDto){
-    System.out.println(emailDto.getEmail());
         return mailService.joinEmail(emailDto.getEmail());
 	    }
     

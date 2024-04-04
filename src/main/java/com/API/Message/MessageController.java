@@ -33,7 +33,6 @@ public class MessageController {
 	
 	@GetMapping("/get-message/{id}")
 	public ResponseEntity<?> getMessage(@PathVariable("id") Long id){
-		System.out.println(123);
 		return messageService.getMessage(id);
 	}
 }

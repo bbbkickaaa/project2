@@ -8,7 +8,7 @@
                 <input type="text" class="form-control" id="recipient" :value="nickname" :disabled="nickname">
             </div>
             <div class="mb-3">
-                <textarea style="height: 200px;" class="form-control" minlength="5" placeholder="메세지를 입력해 주세요." id="messageText" rows="3" v-model="message.content"></textarea>
+                <textarea style="height: 200px;" class="form-control" minlength="5" maxlength="50" placeholder="메세지를 입력해 주세요." id="messageText" rows="3" v-model="message.content"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">보내기</button>
             <button @click="toMain()" type="submit" class="btn btn-secondary">취소</button>
